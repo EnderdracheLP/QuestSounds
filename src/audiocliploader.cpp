@@ -21,12 +21,12 @@ bool audioClipLoader::loader::load()
     //Stage 1
     Il2CppString* filePathStr = il2cpp_utils::createcsstr(filePath);
     audioClipRequest = CRASH_UNLESS(il2cpp_utils::RunMethod("UnityEngine.Networking", "UnityWebRequestMultimedia", "GetAudioClip", filePath, audioType));
-    audioClipAsync = CRASH_UNLESS(il2cpp_utils::RunMethod(webRequest, "SendWebRequest"));
+    audioClipAsync = CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipRequest, "SendWebRequest"));
     
     //Stage 2
     const MethodInfo* addCompletedMethod = CRASH_UNLESS(il2cpp_utils::FindMethodUnsafe(audioClipAsync, "add_completed", 1));
     auto action = CRASH_UNLESS(il2cpp_utils::MakeAction(addCompletedMethod, 0, this, audioClipCompleted));
-    CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipAsync, completedMethod, action));
+    CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipAsync, addCompletedMethod, action));
     return true;
 }
 

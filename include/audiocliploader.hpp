@@ -7,13 +7,13 @@
 #include "../extern/beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 namespace audioClipLoader
 {
-    class loader : Il2CppObject*
+    class loader : Il2CppObject
     {
         public:
+            //static Logger logger;
             std::string filePath;
             int audioType;
             Il2CppObject* loadedClip; //Audioclip
-            Il2CppObject* action;
             bool loaded = false;
             bool load();
         private: 
