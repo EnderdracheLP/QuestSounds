@@ -12,7 +12,7 @@ namespace audioClipLoader
         public:
             //static Logger logger;
             std::string filePath;
-            int audioType;
+            int audioType = 11;
             Il2CppObject* loadedClip; //Audioclip
             bool loaded = false;
             bool load();
