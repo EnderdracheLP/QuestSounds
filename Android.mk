@@ -32,7 +32,7 @@ include $(PREBUILT_SHARED_LIBRARY)
 # Build the beatsaber-hook shared library, SPECIFICALLY VERSIONED!
 include $(CLEAR_VARS)
 LOCAL_MODULE	        := beatsaber-hook_2019_3_0f6_0_1_0
-LOCAL_SRC_FILES         := ./extern/beatsaber-hook/libs/arm64-v8a/libbeatsaber-hook_2019_3_0f6.so
+LOCAL_SRC_FILES         := ./extern/beatsaber-hook/libs/arm64-v8a/libbeatsaber-hook_2019_3_0f6_0_1_0.so
 LOCAL_EXPORT_C_INCLUDES := ./extern/beatsaber-hook/
 include $(PREBUILT_SHARED_LIBRARY)
 
