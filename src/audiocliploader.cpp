@@ -10,10 +10,10 @@ bool audioClipLoader::loader::load()
     {
         if(!fileError)
         {
-            // log file doesn't exist error!
+            
         } else 
         {
-            // Log another error!
+            
         }
         return false;
     }
