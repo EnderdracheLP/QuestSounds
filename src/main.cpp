@@ -13,7 +13,7 @@ audioClipLoader::loader hitSoundLoader0; // hitSound
 audioClipLoader::loader hitSoundLoader1; // badHitSound
 audioClipLoader::loader musicLoader0;    // menuMusic
 Il2CppArray* hitSounds0; // hitSoundArray
-Array<Il2CppObject*>* hitSounds1; // badHitSoundArray
+Il2CppArray* hitSounds1; // badHitSoundArray
 bool audioSet;
 Il2CppObject *GetFirstObjectOfType(Il2CppClass *klass)
 {
@@ -52,6 +52,19 @@ MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, Il2CppObject* self)
     NoteCutSoundEffectManager_Start(self);
 }
 
+MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, Il2CppObject* self)
+{
+    if(hitSoundLoader1.loaded)
+    {
+        Il2CppObject* audioClip = hitSoundLoader1.getClip();
+        hitSounds1 = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
+        il2cpp_array_set(hitSounds1, Il2CppObject*, 0, audioClip);
+        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_badCutSoundEffectAudioClips", hitSounds1));
+    }
+    NoteCutSoundEffect_Awake(self);
+}
+
+
 MAKE_HOOK_OFFSETLESS(SceneManager_SetActiveScene, void, Scene previousActiveScene, Scene scene)
 {
     Il2CppString* activeSceneName = CRASH_UNLESS(il2cpp_utils::RunMethod<Il2CppString*>(il2cpp_utils::GetClassFromName("UnityEngine.SceneManagement", "Scene"), "GetNameInternal", scene.m_Handle));
@@ -63,12 +76,11 @@ MAKE_HOOK_OFFSETLESS(SceneManager_SetActiveScene, void, Scene previousActiveScen
     {
         //Load all the audioclips
         hitSoundLoader0.filePath = "sdcard/Android/data/com.beatgames.beatsaber/files/sounds/HitSound.ogg";
-        //hitSoundLoader1.filePath = "sdcard/Android/data/com.beatgames.beatsaber/files/sounds/BadHitSound.ogg";
+        hitSoundLoader1.filePath = "sdcard/Android/data/com.beatgames.beatsaber/files/sounds/BadHitSound.ogg";
         musicLoader0.filePath = "sdcard/Android/data/com.beatgames.beatsaber/files/sounds/MenuMusic.ogg";
         hitSoundLoader0.load();
-        //hitSoundLoader1.load();
+        hitSoundLoader1.load();
         musicLoader0.load();
-        //hitSounds1 = reinterpret_cast<Array<Il2CppObject*>*>(il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
     }
 
     SceneManager_SetActiveScene(previousActiveScene, scene);
@@ -91,6 +103,6 @@ extern "C" void load()
     INSTALL_HOOK_OFFSETLESS(SceneManager_SetActiveScene, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
     INSTALL_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0));
     INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0));
-
+    INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0));
     logger->debug("Installed QuestSounds!");
 }
