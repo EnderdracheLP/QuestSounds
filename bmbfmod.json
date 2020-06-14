@@ -20,6 +20,11 @@
             "uninstallAction": {
                 "removeLibraryFile": "libquestsounds.so"
             }
-        }
+        },
+	{
+            "type": "FileCopyMod",
+            "sourceFileName": "libbeatsaber-hook_2019_3_0f6_0_1_0",
+            "targetRootedPathAndFileName": "/sdcard/Android/data/com.beatgames.beatsaber/files/libs/libbeatsaber-hook_2019_3_0f6_0_1_0"
+        },
     ]
 }
