@@ -1,11 +1,12 @@
-#include "../include/soundconfig.hpp"
 
+#include "../include/soundconfig.hpp"
 // Edited AddChildVector made by Darknight1050
 void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, ConfigDocument::AllocatorType& allocator)
 {
     ConfigValue value(rapidjson::kObjectType);
     value.AddMember("activated", active, allocator);
-    value.AddMember("filepath", (ConfigValue::StringRefType)filePath.data(), allocator);
+    std::string data(filePath);
+    value.AddMember("filepath", data, allocator);
     parent.AddMember((ConfigValue::StringRefType)soundName.data(), value, allocator);
 }
 

@@ -5,17 +5,25 @@
 #include "../extern/beatsaber-hook/shared/utils/typedefs.h"
 #include "../extern/beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "../extern/beatsaber-hook/shared/utils/il2cpp-functions.hpp"
+#include "../include/soundconfig.hpp"
 #include "../extern/beatsaber-hook/shared/config/config-utils.hpp"
 #include "../include/audiocliploader.hpp"
-#include "../include/soundconfig.hpp"
+
+
 
 static ModInfo modInfo;
 
+Configuration& getConfig() {
+    static Configuration config(modInfo);
+    return config;
+}
 
 const Logger& getLogger() {
   static const Logger& logger(modInfo);
   return logger;
 }
+
+
 
 audioClipLoader::loader hitSoundLoader; // hitSound
 audioClipLoader::loader badHitSoundLoader; // badHitSound
@@ -133,12 +141,10 @@ extern "C" void setup(ModInfo &info)
 {
     info.id = "QuestSounds";
     info.version = "0.1.0";
-    modInfo2 = info;
     modInfo = info;
-    getLogger();
+    getConfig();
     getLogger().info("Completed setup!");
     getLogger().info("Modloader name: %s", Modloader::getInfo().name.c_str());
-    getConfig();
 }  
 
 

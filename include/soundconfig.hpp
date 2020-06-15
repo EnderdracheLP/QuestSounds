@@ -1,13 +1,8 @@
-#include <dlfcn.h>
+#define RAPIDJSON_HAS_STDSTRING 1
 #include "../extern/beatsaber-hook/shared/utils/utils.h"
 #include "../extern/beatsaber-hook/shared/config/config-utils.hpp"
 
-static ModInfo modInfo2;
-
-static Configuration& getConfig() {
-    static Configuration config(modInfo2);
-    return config;
-}
+Configuration& getConfig();
 
 static struct Config_t 
 {
