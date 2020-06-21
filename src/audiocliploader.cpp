@@ -1,7 +1,21 @@
 #include "../include/audiocliploader.hpp"
 
+    int getAudioType(std::string path) {
+    if (path.ends_with(".ogg")) {
+        return 0xE;
+    } else if (path.ends_with(".wav")) {
+        return 0x14;
+    } else if (path.ends_with(".mp3")) {
+        return 0xD;
+    }
+    return 0;
+    }
+
 bool audioClipLoader::loader::load()
 {
+
+
+
     //TODO figure out how to get logging working here!
     //Stage 0 
     bool fileError = fileexists(filePath.c_str());
@@ -20,6 +34,9 @@ bool audioClipLoader::loader::load()
 
     //Stage 1
     Il2CppString* filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
+
+
+    audioType = getAudioType(filePath);
     audioClipRequest = CRASH_UNLESS(il2cpp_utils::RunMethod("UnityEngine.Networking", "UnityWebRequestMultimedia", "GetAudioClip", filePathStr, audioType));
     audioClipAsync = CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipRequest, "SendWebRequest"));
     
