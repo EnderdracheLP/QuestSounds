@@ -14,39 +14,37 @@
 
 
 LOCAL_PATH := $(call my-dir)
-
-TARGET_ARCH_ABI := arm64-v8a
-
-include $(CLEAR_VARS)
-LOCAL_MODULE := hook
+TARGET_ARCH_ABI := $(APP_ABI)
 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
 # Build the modloader shared library
 include $(CLEAR_VARS)
-LOCAL_MODULE	        := modloader
-LOCAL_SRC_FILES         := ./extern/beatsaber-hook/include/libs/libmodloader.so
-LOCAL_EXPORT_C_INCLUDES := ./extern/beatsaber-hook/include
+LOCAL_MODULE := modloader
+LOCAL_EXPORT_C_INCLUDES := extern/modloader
+LOCAL_SRC_FILES := extern/libmodloader.so
 include $(PREBUILT_SHARED_LIBRARY)
 
-# Build the beatsaber-hook shared library, SPECIFICALLY VERSIONED!
+
+# Creating prebuilt for dependency: beatsaber-hook - version: 0.4.4
 include $(CLEAR_VARS)
-LOCAL_MODULE	        := beatsaber-hook_2019_3_0f6_0_1_0
-LOCAL_SRC_FILES         := ./extern/beatsaber-hook/libs/arm64-v8a/libbeatsaber-hook_2019_3_0f6_0_1_0.so
-LOCAL_EXPORT_C_INCLUDES := ./extern/beatsaber-hook/
+LOCAL_MODULE := beatsaber-hook_0_6_0
+LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
+LOCAL_SRC_FILES := extern/libbeatsaber-hook_0_6_0.so
+LOCAL_EXPORT_C_FLAGS := -DNEED_UNSAFE_CSHARP
 include $(PREBUILT_SHARED_LIBRARY)
 
+# If you would like to use more shared libraries (such as custom UI, utils, or more) add them here, following the format above.
+# In addition, ensure that you add them to the shared library build below.
+
 include $(CLEAR_VARS)
-# Include the two libraries
-LOCAL_SHARED_LIBRARIES := modloader
-LOCAL_SHARED_LIBRARIES += beatsaber-hook_2019_3_0f6_0_1_0
-LOCAL_LDLIBS     := -llog
-LOCAL_CFLAGS     := -I"C:\Program Files\Unity\Hub\Editor\2019.3.0f6\Editor\Data\il2cpp\libil2cpp"
-LOCAL_MODULE     := questsounds
-LOCAL_CPPFLAGS   := -std=c++2a
-LOCAL_C_INCLUDES := ./include ./src
-LOCAL_SRC_FILES  += $(call rwildcard,src/,*.cpp)
+LOCAL_MODULE := QuestSettingsPlus
+LOCAL_SRC_FILES += $(call rwildcard,src/,*.cpp)
+LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.cpp)
+LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
+LOCAL_SHARED_LIBRARIES += modloader
+LOCAL_SHARED_LIBRARIES += beatsaber-hook_0_6_0
+LOCAL_LDLIBS += -llog
+LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp/' -isystem 'extern' -I'./shared' -I'./extern'
+LOCAL_C_INCLUDES += ./include ./src
 include $(BUILD_SHARED_LIBRARY)
-
-# In order to make this mod work with BMBF, you must provide a zip file with the specific libbeatsaber-hook.so (file copied to the libs directory)
-# and the mod itself (installed as a hook mod)

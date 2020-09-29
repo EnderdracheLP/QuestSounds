@@ -1,9 +1,9 @@
 #include <dlfcn.h>
 #define RAPIDJSON_HAS_STDSTRING 1
 #define SOUND_PATH_FORMAT "/sdcard/Android/data/%s/files/sounds/"
-#include "../extern/beatsaber-hook/shared/utils/utils.h"
+#include "beatsaber-hook/shared/utils/utils.h"
 #include "../extern/beatsaber-hook/shared/utils/logging.hpp"
-#include "../extern/beatsaber-hook/include/modloader.hpp"
+#include "modloader/shared/modloader.hpp"
 #include "../extern/beatsaber-hook/shared/utils/typedefs.h"
 #include "../extern/beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "../extern/beatsaber-hook/shared/utils/il2cpp-functions.hpp"
@@ -228,15 +228,13 @@ MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActive
 extern "C" void setup(ModInfo &info)
 {
     info.id = "QuestSounds";
-    info.version = "0.1.0";
+    info.version = "0.1.1";
     modInfo = info;
     getConfig();
     getLogger().info("Completed setup!");
     getLogger().info("Modloader name: %s", Modloader::getInfo().name.c_str());
 }  
 
-
-// This function is called when the mod is loaded for the first time, immediately after il2cpp_init.
 extern "C" void load()
 {
     if(!LoadConfig()) SaveConfig();
