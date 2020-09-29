@@ -1,5 +1,6 @@
 #include "modloader/shared/modloader.hpp"
 #include "beatsaber-hook/shared/config/config-utils.hpp"
+
 #define SOUND_PATH_FORMAT "/sdcard/Android/data/%s/files/sounds/"
 
 std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
