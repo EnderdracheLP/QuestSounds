@@ -29,7 +29,7 @@ void makeFolder()
     
     if(!direxists(soundPath.c_str()))
     {
-        int makePath = mkpath(soundPath.data(), 0700);
+        int makePath = mkpath(soundPath.data());
         if(makePath == -1)
         {
             getLogger().debug("Failed to make path!");
