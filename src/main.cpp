@@ -14,47 +14,14 @@
 
 static ModInfo modInfo;
 
-static Configuration& getConfig() {
-    static Configuration config(modInfo);
-    return config;
-}
-
 const Logger& getLogger() {
   static const Logger& logger(modInfo);
   return logger;
 }
 std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
-void makeFolder() 
-{
-    
-    if(!direxists(soundPath.c_str()))
-    {
-        int makePath = mkpath(soundPath.data(), 0700);
-        if(makePath == -1)
-        {
-            getLogger().debug("Failed to make path!");
-        }
-    }
-}
 
 
 
-//Config stuff
-static struct Config_t 
-{
-    bool hitSound_Active = true;
-    bool badHitSound_Active = true;
-    bool menuMusic_Active = true;
-    bool menuClick_Active = true;
-    bool firework_Active = true;
-    bool levelCleared_Active = true;
-    std::string hitSound_filepath = soundPath + "HitSound.ogg";
-    std::string badHitSound_filepath = soundPath + "BadHitSound.ogg";
-    std::string menuMusic_filepath = soundPath + "MenuMusic.ogg";
-    std::string menuClick_filepath = soundPath + "MenuClick.ogg";
-    std::string firework_filepath = soundPath + "Firework.ogg";
-    std::string levelCleared_filepath = soundPath + "LevelCleared.ogg";
-} Config;
 
 
 audioClipLoader::loader hitSoundLoader; // hitSound
@@ -68,21 +35,6 @@ Il2CppArray* badHitSoundArr; // badHitSoundArray
 Il2CppArray* menuClickArr;
 Il2CppArray* fireworkSoundArr; 
 
-void loadAudioClips()
-{
-    hitSoundLoader.filePath = Config.hitSound_filepath;
-    badHitSoundLoader.filePath = Config.badHitSound_filepath;
-    menuMusicLoader.filePath = Config.menuMusic_filepath;
-    menuClickLoader.filePath = Config.menuClick_filepath;
-    fireworkSoundLoader.filePath = Config.firework_filepath;
-    levelClearedLoader.filePath =  Config.levelCleared_filepath;
-    if(Config.hitSound_Active) hitSoundLoader.load();
-    if(Config.badHitSound_Active) badHitSoundLoader.load();
-    if(Config.menuMusic_Active) menuMusicLoader.load();
-    if(Config.menuClick_Active) menuClickLoader.load();
-    if(Config.firework_Active) fireworkSoundLoader.load();
-    if(Config.levelCleared_Active) levelClearedLoader.load();
-}
 
 Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
 {
@@ -100,20 +52,6 @@ MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, Il2CppObject* self
         CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_levelClearedAudioClip", audioClip));
     } 
     ResultsViewController_DidActivate(self, firstActivation, activationType);
-}
-
-MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
-{
-    
-    getLogger().info("is it true: %i", menuMusicLoader.loaded);
-    if(menuMusicLoader.loaded)
-    {
-        Il2CppObject* audioClip = menuMusicLoader.getClip();
-        if(audioClip != nullptr)
-            CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_defaultAudioClip", audioClip));
-    }
-    SongPreviewPlayer_OnEnable(self);
-
 }
 
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, Il2CppObject* self)
@@ -181,10 +119,8 @@ extern "C" void setup(ModInfo &info)
 
 extern "C" void load()
 {
-    makeFolder();
     getLogger().debug("Installing QuestSounds!");
     INSTALL_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
-    INSTALL_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0));
     INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0));
     INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0));
     INSTALL_HOOK_OFFSETLESS(FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
