@@ -28,9 +28,9 @@ include $(PREBUILT_SHARED_LIBRARY)
 
 # Creating prebuilt for dependency: beatsaber-hook - version: 0.4.4
 include $(CLEAR_VARS)
-LOCAL_MODULE := beatsaber-hook_0_7_1
+LOCAL_MODULE := beatsaber-hook_0_8_2
 LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
-LOCAL_SRC_FILES := extern/libbeatsaber-hook_0_7_1.so
+LOCAL_SRC_FILES := extern/libbeatsaber-hook_0_8_2.so
 LOCAL_EXPORT_C_FLAGS := -DNEED_UNSAFE_CSHARP
 include $(PREBUILT_SHARED_LIBRARY)
 
@@ -43,7 +43,7 @@ LOCAL_SRC_FILES += $(call rwildcard,src/,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
 LOCAL_SHARED_LIBRARIES += modloader
-LOCAL_SHARED_LIBRARIES += beatsaber-hook_0_7_1
+LOCAL_SHARED_LIBRARIES += beatsaber-hook_0_8_2
 LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp/' -isystem 'extern' -I'./shared' -I'./extern'
 LOCAL_C_INCLUDES += ./include ./src

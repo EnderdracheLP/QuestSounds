@@ -148,14 +148,14 @@ Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
     return temporaryArray;
 }
 
-MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, Il2CppObject* self, bool firstActivation, int activationType)
+MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
-    if(levelClearedLoader.loaded && activationType == 0)
+    if(levelClearedLoader.loaded && addedToHierarchy)
     {
         Il2CppObject* audioClip = levelClearedLoader.getClip();
         CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_levelClearedAudioClip", audioClip));
     } 
-    ResultsViewController_DidActivate(self, firstActivation, activationType);
+    ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
 MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
@@ -240,12 +240,19 @@ extern "C" void load()
     if(!LoadConfig()) SaveConfig();
     makeFolder();
     getLogger().debug("Installing QuestSounds!");
-    INSTALL_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
-    INSTALL_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0));
-    INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0));
-    INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0));
-    INSTALL_HOOK_OFFSETLESS(FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
-    INSTALL_HOOK_OFFSETLESS(BasicUIAudioManager_Start, il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0));
-    INSTALL_HOOK_OFFSETLESS(ResultsViewController_DidActivate, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 2));
+    auto* SM_ActiveSceneChanged =   il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2);
+    auto* RVC_DidActivate =         il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3);
+    auto* SPP_OnEnable =            il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0);
+    auto* NCSEM_Start =             il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0);
+    auto* BUIAM_Start =             il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0);
+    auto* NCSE_Awake =              il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0);
+    auto* FIC_Awake =               il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0);
+    INSTALL_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged);
+    INSTALL_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, SPP_OnEnable);
+    INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, NCSEM_Start);
+    INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, NCSE_Awake);
+    INSTALL_HOOK_OFFSETLESS(FireworkItemController_Awake, FIC_Awake);
+    INSTALL_HOOK_OFFSETLESS(BasicUIAudioManager_Start, BUIAM_Start);
+    INSTALL_HOOK_OFFSETLESS(ResultsViewController_DidActivate, RVC_DidActivate);
     getLogger().debug("Installed QuestSounds!");
 }
