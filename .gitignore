@@ -37,7 +37,7 @@
 !.vscode/tasks.json
 
 # VS Stuff
-.vs
+.vs/
 
 # NDK stuff
 out/
