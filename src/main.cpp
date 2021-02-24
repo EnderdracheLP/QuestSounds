@@ -1,14 +1,7 @@
+#include "main.hpp"
 #include <dlfcn.h>
 #define RAPIDJSON_HAS_STDSTRING 1
-#define SOUND_PATH_FORMAT "/sdcard/Android/data/%s/files/sounds/"
-#include "beatsaber-hook/shared/utils/utils.h"
-#include "../extern/beatsaber-hook/shared/utils/logging.hpp"
-#include "modloader/shared/modloader.hpp"
-#include "../extern/beatsaber-hook/shared/utils/typedefs.h"
-#include "../extern/beatsaber-hook/shared/utils/il2cpp-utils.hpp"
-#include "../extern/beatsaber-hook/shared/utils/il2cpp-functions.hpp"
-#include "../extern/beatsaber-hook/shared/config/config-utils.hpp"
-#include "../include/audiocliploader.hpp"
+#define SOUND_PATH_FORMAT "/sdcard/BMBFData/customSounds/"
 
 
 
@@ -19,9 +12,13 @@ static Configuration& getConfig() {
     return config;
 }
 
+//Logger& logger() {
+//    static auto logger = new Logger(modInfo, LoggerOptions(false, true));
+//    return *logger;
+//}
 const Logger& getLogger() {
-  static const Logger& logger(modInfo);
-  return logger;
+    static const Logger& logger(modInfo);
+    return logger;
 }
 std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
 void makeFolder() 
@@ -36,8 +33,6 @@ void makeFolder()
         }
     }
 }
-
-
 
 //Config stuff
 static struct Config_t 
@@ -228,7 +223,7 @@ MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActive
 extern "C" void setup(ModInfo &info)
 {
     info.id = "QuestSounds";
-    info.version = "0.1.1";
+    info.version = "0.2.0";
     modInfo = info;
     getConfig();
     getLogger().info("Completed setup!");

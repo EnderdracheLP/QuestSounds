@@ -1,15 +1,15 @@
 {
-    "id": "questsounds",
+    "id": "QuestSounds",
     "name": "QuestSounds",
-    "author": "Rugtveit",
+    "author": "Rugtveit, EnderdracheLP",
     "description": [
         
         "Allows users to change their sfx sounds easily!"
         
     ],
     "category": "Gameplay",
-    "gameVersion": "1.10.0",
-    "version": "0.1.2",
+    "gameVersion": "1.13.2",
+    "version": "0.2.0",
     "platform": "Quest",
     "components": [
         {
@@ -24,7 +24,7 @@
 		{
             "type": "HookModLibrary",
             "installAction": {
-                "installLibraryFile": "libbeatsaber-hook_0_8_2.so"
+                "installLibraryFile": "libbeatsaber-hook_0_8_4.so"
             }
         }
     ]

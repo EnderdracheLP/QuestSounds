@@ -1,11 +1,14 @@
-#include "../include/audiocliploader.hpp"
+#include "../include/main.hpp"
 
     int getAudioType(std::string path) {
     if (path.ends_with(".ogg")) {
+        getLogger().debug("File is ogg");
         return 0xE;
     } else if (path.ends_with(".wav")) {
+        getLogger().debug("File is wav");
         return 0x14;
     } else if (path.ends_with(".mp3")) {
+        getLogger().debug("File is mp3");
         return 0xD;
     }
     return 0;
@@ -16,7 +19,6 @@ bool audioClipLoader::loader::load()
 
 
 
-    //TODO figure out how to get logging working here!
     //Stage 0 
     bool fileError = fileexists(filePath.c_str());
     bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
@@ -24,11 +26,12 @@ bool audioClipLoader::loader::load()
     {
         if(!fileError)
         {
-            
+            getLogger().error("File Error");
         } else 
         {
-            
+            getLogger().info("File Loaded");
         }
+        getLogger().info("Stage 0 Done");
         return false;
     }
 
@@ -44,6 +47,7 @@ bool audioClipLoader::loader::load()
     const MethodInfo* addCompletedMethod = CRASH_UNLESS(il2cpp_utils::FindMethodUnsafe(audioClipAsync, "add_completed", 1));
     auto action = CRASH_UNLESS(il2cpp_utils::MakeDelegate(addCompletedMethod, 0, (Il2CppObject*)this, audioClipCompleted));
     CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipAsync, addCompletedMethod, action));
+    getLogger().debug("Stage 2 done");
     return true;
 }
 
@@ -60,6 +64,7 @@ void audioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject* asyn
         CRASH_UNLESS(il2cpp_utils::SetPropertyValue(obj->audioSource, "clip", temporaryClip));
         CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipGO, "DontDestroyOnLoad", audioClipGO));
         obj->loaded = true;
+        getLogger().debug("Stage 1 done");
     }
     // Finished
 }
