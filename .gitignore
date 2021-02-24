@@ -36,6 +36,9 @@
 !.vscode/c_cpp_properties.json
 !.vscode/tasks.json
 
+# VS Stuff
+.vs
+
 # NDK stuff
 out/
 [Ll]ib/
