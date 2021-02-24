@@ -1,7 +1,7 @@
 #include "main.hpp"
 #include <dlfcn.h>
 #define RAPIDJSON_HAS_STDSTRING 1
-#define SOUND_PATH_FORMAT "/sdcard/BMBFData/customSounds/"
+#define SOUND_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/"
 
 
 
