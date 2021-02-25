@@ -12,14 +12,14 @@ static Configuration& getConfig() {
     return config;
 }
 
-//Logger& logger() {
-//    static auto logger = new Logger(modInfo, LoggerOptions(false, true));
-//    return *logger;
-//}
-const Logger& getLogger() {
-    static const Logger& logger(modInfo);
-    return logger;
+Logger& getLogger() {
+    static auto logger = new Logger(modInfo, LoggerOptions(false, true));
+    return *logger;
 }
+//const Logger& getLogger() {
+//    static const Logger& logger(modInfo);
+//    return logger;
+//}
 std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
 void makeFolder() 
 {
@@ -232,6 +232,7 @@ extern "C" void setup(ModInfo &info)
 
 extern "C" void load()
 {
+    Logger& hkLog = getLogger();
     if(!LoadConfig()) SaveConfig();
     makeFolder();
     getLogger().debug("Installing QuestSounds!");
@@ -242,12 +243,12 @@ extern "C" void load()
     auto* BUIAM_Start =             il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0);
     auto* NCSE_Awake =              il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0);
     auto* FIC_Awake =               il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0);
-    INSTALL_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged);
-    INSTALL_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, SPP_OnEnable);
-    INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, NCSEM_Start);
-    INSTALL_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, NCSE_Awake);
-    INSTALL_HOOK_OFFSETLESS(FireworkItemController_Awake, FIC_Awake);
-    INSTALL_HOOK_OFFSETLESS(BasicUIAudioManager_Start, BUIAM_Start);
-    INSTALL_HOOK_OFFSETLESS(ResultsViewController_DidActivate, RVC_DidActivate);
+    INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged);
+    INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, SPP_OnEnable);
+    INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_Start, NCSEM_Start);
+    INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffect_Awake, NCSE_Awake);
+    INSTALL_HOOK_OFFSETLESS(hkLog, FireworkItemController_Awake, FIC_Awake);
+    INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, BUIAM_Start);
+    INSTALL_HOOK_OFFSETLESS(hkLog, ResultsViewController_DidActivate, RVC_DidActivate);
     getLogger().debug("Installed QuestSounds!");
 }
