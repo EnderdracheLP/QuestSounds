@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include <dlfcn.h>
 namespace audioClipLoader
+
 {
     class loader : Il2CppObject
     {
