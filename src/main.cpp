@@ -1,14 +1,37 @@
 #include "main.hpp"
+#include "audiocliploader.hpp"
 #include <dlfcn.h>
+
+#include "GlobalNamespace/ResultsViewController.hpp"
+#include "GlobalNamespace/SongPreviewPlayer.hpp"
+#include "GlobalNamespace/NoteCutSoundEffectManager.hpp"
+#include "GlobalNamespace/NoteCutSoundEffect.hpp"
+#include "GlobalNamespace/BasicUIAudioManager.hpp"
+#include "GlobalNamespace/FireworkItemController.hpp"
+using namespace GlobalNamespace;
+
+#include "UnityEngine/SceneManagement/Scene.hpp"
+using namespace UnityEngine;
+
+#include "questui/shared/BeatSaberUI.hpp"
+#include "questui/shared/QuestUI.hpp"
+using namespace QuestUI;
+
+//#include "NewAudioClipLoader.hpp"
+#include "QSoundsViewController.hpp"
+using namespace QuestSounds;
+
+#include "custom-types/shared/register.hpp"
+using namespace custom_types;
+
 #define RAPIDJSON_HAS_STDSTRING 1
 #define SOUND_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/"
 
+ModInfo modInfo;
 
-
-static ModInfo modInfo;
-
-static Configuration& getConfig() {
+Configuration& getConfig() {
     static Configuration config(modInfo);
+    config.Load();
     return config;
 }
 
@@ -16,10 +39,7 @@ Logger& getLogger() {
     static auto logger = new Logger(modInfo, LoggerOptions(false, true));
     return *logger;
 }
-//const Logger& getLogger() {
-//    static const Logger& logger(modInfo);
-//    return logger;
-//}
+
 std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
 void makeFolder() 
 {
@@ -85,7 +105,7 @@ void SaveConfig()
     AddChildSound(soundsValue, "MenuClick", Config.menuClick_Active, Config.menuClick_filepath, allocator);  
     AddChildSound(soundsValue, "Firework", Config.firework_Active, Config.firework_filepath, allocator);  
     AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, allocator); 
-    getConfig().config.AddMember("Sounds", soundsValue, allocator); 
+    getConfig().config.AddMember("Sounds 1.0.0", soundsValue, allocator); 
     getConfig().Write();
 
 }
@@ -94,9 +114,9 @@ bool LoadConfig()
 {
     getConfig().Load();
 
-    if(getConfig().config.HasMember("Sounds") && getConfig().config["Sounds"].IsObject())
+    if(getConfig().config.HasMember("Sounds 1.0.0") && getConfig().config["Sounds 1.0.0"].IsObject())
     {
-        ConfigValue soundsValue = getConfig().config["Sounds"].GetObject();
+        ConfigValue soundsValue = getConfig().config["Sounds 1.0.0"].GetObject();
         if(!ParseSound(Config.hitSound_Active, Config.hitSound_filepath, soundsValue, "HitSound")) return false;
         if(!ParseSound(Config.badHitSound_Active, Config.badHitSound_filepath, soundsValue, "BadHitSound")) return false;
         if(!ParseSound(Config.menuMusic_Active, Config.menuMusic_filepath, soundsValue, "MenuMusic")) return false;
@@ -143,87 +163,126 @@ Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
     return temporaryArray;
 }
 
-MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
-{
-    if(levelClearedLoader.loaded && addedToHierarchy)
-    {
-        Il2CppObject* audioClip = levelClearedLoader.getClip();
-        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_levelClearedAudioClip", audioClip));
-    } 
+//MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+//{
+//    if(levelClearedLoader.loaded && addedToHierarchy)
+//    {
+//        Il2CppObject* audioClip = levelClearedLoader.getClip();
+//        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_levelClearedAudioClip", audioClip));
+//    } 
+//    ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
+//}
+
+MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
-}
 
-MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
-{
-    
-    getLogger().info("is it true: %i", menuMusicLoader.loaded);
-    if(menuMusicLoader.loaded)
+    if (levelClearedLoader.loaded && addedToHierarchy)
     {
-        Il2CppObject* audioClip = menuMusicLoader.getClip();
-        if(audioClip != nullptr)
-            CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_defaultAudioClip", audioClip));
+        ResultsViewController* audioClip = levelClearedLoader.getClip();
+        self->levelClearedAudioClip = audioClip;
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_levelClearedAudioClip", audioClip));
     }
-    SongPreviewPlayer_OnEnable(self);
-
 }
 
-MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, Il2CppObject* self)
-{
+//MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
+//{
+//    
+//    getLogger().info("is it true: %i", menuMusicLoader.loaded);
+//    if(menuMusicLoader.loaded)
+//    {
+//        Il2CppObject* audioClip = menuMusicLoader.getClip();
+//        if(audioClip != nullptr)
+//            CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_defaultAudioClip", audioClip));
+//    }
+//    SongPreviewPlayer_OnEnable(self);
+//
+//}
+
+MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, SongPreviewPlayer* self) {
+    SongPreviewPlayer_OnEnable(self);
+    getLogger().info("is it true: %i", menuMusicLoader.loaded);
+
+    if (menuMusicLoader.loaded)
+    {
+        SongPreviewPlayer* audioClip = menuMusicLoader.getClip();
+        if (audioClip != nullptr)
+            self->defaultAudioClip = audioClip;
+            //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_defaultAudioClip", audioClip));
+    }
+}
+
+MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, NoteCutSoundEffectManager* self) {
+    NoteCutSoundEffectManager_Start(self);
     if(hitSoundLoader.loaded)
     {
         hitSoundArr = createAudioClipArray(hitSoundLoader);
-        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_longCutEffectsAudioClips", hitSoundArr));
-        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_shortCutEffectsAudioClips", hitSoundArr));
+        self->longCutEffectsAudioClips = hitSoundArr;
+        self->shortCutEffectsAudioClips = hitSoundArr;
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_longCutEffectsAudioClips", hitSoundArr));
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_shortCutEffectsAudioClips", hitSoundArr));
     }
-    NoteCutSoundEffectManager_Start(self);
 }
 
-MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, Il2CppObject* self)
-{
+MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, NoteCutSoundEffect* self) {
+    NoteCutSoundEffect_Awake(self);
     if(badHitSoundLoader.loaded)
     {
         badHitSoundArr = createAudioClipArray(badHitSoundLoader);
-        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_badCutSoundEffectAudioClips", badHitSoundArr));
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_badCutSoundEffectAudioClips", badHitSoundArr));
+        self->badCutSoundEffectAudioClips = badHitSoundArr;
     }
-    NoteCutSoundEffect_Awake(self);
+
 }
 
-MAKE_HOOK_OFFSETLESS(BasicUIAudioManager_Start, void, Il2CppObject* self)
-{
+MAKE_HOOK_OFFSETLESS(BasicUIAudioManager_Start, void, BasicUIAudioManager* self) {
+    BasicUIAudioManager_Start(self);
     if(menuClickLoader.loaded)
     {
         menuClickArr = createAudioClipArray(menuClickLoader);
-        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_clickSounds", menuClickArr));
+        self->clickSounds = menuClickArr;
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_clickSounds", menuClickArr));
     }
-    BasicUIAudioManager_Start(self);
 }
 
-MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, Il2CppObject* self)
-{
+MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, FireworkItemController* self) {
+    FireworkItemController_Awake(self);
     if(fireworkSoundLoader.loaded)
     {
         fireworkSoundArr = createAudioClipArray(fireworkSoundLoader);
-        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_explosionClips", fireworkSoundArr));
+        self->explosionClips = fireworkSoundArr;
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_explosionClips", fireworkSoundArr));
     }
-    FireworkItemController_Awake(self);
 }
 
-MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActiveScene, Scene nextActiveScene)
-{
-    Il2CppString* activeSceneName = CRASH_UNLESS(il2cpp_utils::RunMethod<Il2CppString*>(il2cpp_utils::GetClassFromName("UnityEngine.SceneManagement", "Scene"), "GetNameInternal", nextActiveScene.m_Handle));
-    std::string activeSceneStr  = to_utf8(csstrtostr(activeSceneName));
-    getLogger().info("Scene found: %s",  activeSceneStr.data());
-    
-    std::string shaderWarmup = "ShaderWarmup";
-    if(activeSceneStr == shaderWarmup) loadAudioClips();
+//MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActiveScene, Scene nextActiveScene) {
+//    SceneManager_ActiveSceneChanged(previousActiveScene, nextActiveScene);
+//    Il2CppString* activeSceneName = CRASH_UNLESS(il2cpp_utils::RunMethod<Il2CppString*>(il2cpp_utils::GetClassFromName("UnityEngine.SceneManagement", "Scene"), "GetNameInternal", nextActiveScene.m_Handle));
+//    std::string activeSceneStr  = to_utf8(csstrtostr(activeSceneName));
+//    getLogger().info("Scene found: %s",  activeSceneStr.data());
+//    
+//    std::string shaderWarmup = "ShaderWarmup";
+//    if(activeSceneStr == shaderWarmup) loadAudioClips();
+//
+//
+//}
 
-    SceneManager_ActiveSceneChanged(previousActiveScene, nextActiveScene);
+MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
+    SceneManager_Internal_ActiveSceneChanged(prevScene, nextScene);
+    if (nextScene.IsValid()) {
+        std::string sceneName = to_utf8(csstrtostr(nextScene.get_name()));
+        getLogger().info("Scene found: %s", sceneName.data());
+
+        std::string shaderWarmup = "ShaderWarmup";
+            if(sceneName == shaderWarmup) loadAudioClips();
+        //if (sceneName.find("MenuViewControllers") != std::string::npos) { //Don't use find
+        //}
+    }
 }
 
 extern "C" void setup(ModInfo &info)
 {
     info.id = "QuestSounds";
-    info.version = "0.2.0";
+    info.version = VERSION;
     modInfo = info;
     getConfig();
     getLogger().info("Completed setup!");
@@ -232,7 +291,11 @@ extern "C" void setup(ModInfo &info)
 
 extern "C" void load()
 {
+    il2cpp_functions::Init();
+    QuestUI::Init();
+
     Logger& hkLog = getLogger();
+
     if(!LoadConfig()) SaveConfig();
     makeFolder();
     getLogger().debug("Installing QuestSounds!");

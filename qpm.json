@@ -4,7 +4,7 @@
   "info": {
     "name": "QuestSounds",
     "id": "QuestSounds",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "url": null,
     "additionalData": {}
   },
@@ -17,6 +17,16 @@
           "src/inline-hook"
         ]
       }
+    },
+    {
+      "id": "codegen",
+      "versionRange": "*",
+      "additionalData": {}
+    },
+    {
+      "id": "questui",
+      "versionRange": "*",
+      "additionalData": {}
     }
   ],
   "additionalData": {}
