@@ -16,10 +16,7 @@ Logger& getLogger() {
     static auto logger = new Logger(modInfo, LoggerOptions(false, true));
     return *logger;
 }
-//const Logger& getLogger() {
-//    static const Logger& logger(modInfo);
-//    return logger;
-//}
+
 std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
 void makeFolder() 
 {
@@ -223,7 +220,7 @@ MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActive
 extern "C" void setup(ModInfo &info)
 {
     info.id = "QuestSounds";
-    info.version = "0.2.0";
+    info.version = "0.2.1";
     modInfo = info;
     getConfig();
     getLogger().info("Completed setup!");
