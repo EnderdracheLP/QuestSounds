@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include "audiocliploader.hpp"
 #include <dlfcn.h>
+using namespace audioClipLoader
 
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
@@ -157,9 +158,12 @@ void loadAudioClips()
 
 Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
 {
-    Il2CppObject* tempClip = clipLoader.getClip();
-    Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
-    il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
+    //Il2CppObject* tempClip = clipLoader.getClip();
+    AudioClip* tempClip = clipLoader.getClip();
+    //Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
+    Il2CppArray* temporaryArray = (il2cpp_functions::array_new(AudioClip*), 1));
+    //il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
+    il2cpp_array_set(temporaryArray, AudioClip*, 0, tempClip);
     return temporaryArray;
 }
 
@@ -231,7 +235,6 @@ MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, NoteCutSoundEffect* self) {
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_badCutSoundEffectAudioClips", badHitSoundArr));
         self->badCutSoundEffectAudioClips = badHitSoundArr;
     }
-
 }
 
 MAKE_HOOK_OFFSETLESS(BasicUIAudioManager_Start, void, BasicUIAudioManager* self) {
