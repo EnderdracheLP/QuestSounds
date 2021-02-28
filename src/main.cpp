@@ -2,6 +2,7 @@
 #include "audiocliploader.hpp"
 #include <dlfcn.h>
 //using namespace audioClipLoader;
+using ::Configuration;
 
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
@@ -10,6 +11,9 @@
 #include "GlobalNamespace/BasicUIAudioManager.hpp"
 #include "GlobalNamespace/FireworkItemController.hpp"
 using namespace GlobalNamespace;
+
+#include "System/Array.hpp"
+using namespace System;
 
 #include "UnityEngine/SceneManagement/Scene.hpp"
 using namespace UnityEngine::SceneManagement;
@@ -30,9 +34,14 @@ using namespace custom_types;
 
 ModInfo modInfo;
 
+// Loads the config from disk using our modInfo, then returns it for use
+//Configuration& getConfig() {
+//    static Configuration config(modInfo);   // TODO: Why is this ambigous.
+//    config.Load();
+//    return config;
+//}
 Configuration& getConfig() {
     static Configuration config(modInfo);
-    config.Load();
     return config;
 }
 
@@ -135,10 +144,16 @@ audioClipLoader::loader menuMusicLoader;    // menuMusic
 audioClipLoader::loader menuClickLoader;
 audioClipLoader::loader fireworkSoundLoader;
 audioClipLoader::loader levelClearedLoader;
-Il2CppArray* hitSoundArr; // hitSoundArray
-Il2CppArray* badHitSoundArr; // badHitSoundArray
-Il2CppArray* menuClickArr;
-Il2CppArray* fireworkSoundArr; 
+::Array<UnityEngine::AudioClip*>* hitSoundArr; // hitSoundArray
+::Array<UnityEngine::AudioClip*>* badHitSoundArr; // badHitSoundArray
+::Array<UnityEngine::AudioClip*>* menuClickArr;
+::Array<UnityEngine::AudioClip*>* fireworkSoundArr;
+
+//Il2CppArray* hitSoundArr; // hitSoundArray
+//Il2CppArray* badHitSoundArr; // badHitSoundArray
+//Il2CppArray* menuClickArr;
+//Il2CppArray* fireworkSoundArr;
+
 
 void loadAudioClips()
 {
@@ -156,12 +171,12 @@ void loadAudioClips()
     if(Config.levelCleared_Active) levelClearedLoader.load();
 }
 
-Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
+::Array<UnityEngine::AudioClip*>* createAudioClipArray(audioClipLoader::loader clipLoader)
 {
     //Il2CppObject* tempClip = clipLoader.getClip();
     Il2CppObject* tempClip = clipLoader.getClip();
     //Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
-    Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
+    ::Array<UnityEngine::AudioClip*>* temporaryArray;
     //il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
     il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
     return temporaryArray;
@@ -178,14 +193,13 @@ Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
 //}
 
 MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
-    ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
-
     if (levelClearedLoader.loaded && addedToHierarchy)
-    {
-        ResultsViewController* audioClip = levelClearedLoader.getClip();
+    {   // TODO: Write the audioClip stuff correctly.
+        UnityEngine::AudioClip* audioClip = levelClearedLoader.getClip();
         self->levelClearedAudioClip = audioClip;
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_levelClearedAudioClip", audioClip));
     }
+    ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
 //MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
@@ -203,20 +217,19 @@ MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, ResultsViewControl
 //}
 
 MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, SongPreviewPlayer* self) {
-    SongPreviewPlayer_OnEnable(self);
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
 
     if (menuMusicLoader.loaded)
-    {
-        SongPreviewPlayer* audioClip = menuMusicLoader.getClip();
+    {   // TODO: Write the audioClip stuff correctly.
+        UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
         if (audioClip != nullptr)
             self->defaultAudioClip = audioClip;
             //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_defaultAudioClip", audioClip));
     }
+    SongPreviewPlayer_OnEnable(self);
 }
 
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, NoteCutSoundEffectManager* self) {
-    NoteCutSoundEffectManager_Start(self);
     if(hitSoundLoader.loaded)
     {
         hitSoundArr = createAudioClipArray(hitSoundLoader);
@@ -225,36 +238,37 @@ MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, NoteCutSoundEffectMa
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_longCutEffectsAudioClips", hitSoundArr));
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_shortCutEffectsAudioClips", hitSoundArr));
     }
+    NoteCutSoundEffectManager_Start(self);
 }
 
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, NoteCutSoundEffect* self) {
-    NoteCutSoundEffect_Awake(self);
     if(badHitSoundLoader.loaded)
     {
         badHitSoundArr = createAudioClipArray(badHitSoundLoader);
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_badCutSoundEffectAudioClips", badHitSoundArr));
         self->badCutSoundEffectAudioClips = badHitSoundArr;
     }
+    NoteCutSoundEffect_Awake(self);
 }
 
 MAKE_HOOK_OFFSETLESS(BasicUIAudioManager_Start, void, BasicUIAudioManager* self) {
-    BasicUIAudioManager_Start(self);
     if(menuClickLoader.loaded)
     {
         menuClickArr = createAudioClipArray(menuClickLoader);
         self->clickSounds = menuClickArr;
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_clickSounds", menuClickArr));
     }
+    BasicUIAudioManager_Start(self);
 }
 
 MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, FireworkItemController* self) {
-    FireworkItemController_Awake(self);
     if(fireworkSoundLoader.loaded)
     {
         fireworkSoundArr = createAudioClipArray(fireworkSoundLoader);
         self->explosionClips = fireworkSoundArr;
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_explosionClips", fireworkSoundArr));
     }
+    FireworkItemController_Awake(self);
 }
 
 //MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActiveScene, Scene nextActiveScene) {
@@ -269,10 +283,9 @@ MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, FireworkItemController*
 //
 //}
 
-MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
-    SceneManager_Internal_ActiveSceneChanged(prevScene, nextScene);
-    if (nextScene.IsValid()) {
-        std::string sceneName = to_utf8(csstrtostr(nextScene.get_name()));
+MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, UnityEngine::SceneManagement::Scene previousActiveScene, UnityEngine::SceneManagement::Scene nextActiveScene) {
+    if (nextActiveScene.IsValid()) {
+        std::string sceneName = to_utf8(csstrtostr(nextActiveScene.get_name()));
         getLogger().info("Scene found: %s", sceneName.data());
 
         std::string shaderWarmup = "ShaderWarmup";
@@ -280,6 +293,7 @@ MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine
         //if (sceneName.find("MenuViewControllers") != std::string::npos) { //Don't use find
         //}
     }
+    SceneManager_ActiveSceneChanged(previousActiveScene, nextActiveScene);
 }
 
 extern "C" void setup(ModInfo &info)

@@ -1,4 +1,4 @@
-#include "main.hpp"
+#pragma once
 #include <dlfcn.h>
 
 #include "UnityEngine/AudioSource.hpp"
@@ -20,7 +20,7 @@ namespace audioClipLoader
         int audioType = 14;
         UnityEngine::AudioSource* audioSource;
         UnityEngine::AudioClip* audioClip;
-        UnityEngine::AudioSource* getClip(); //Audioclip
+        UnityEngine::AudioClip* getClip(); //Audioclip
         bool loaded = false;
         bool load();
     private:

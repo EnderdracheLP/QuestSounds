@@ -1,7 +1,6 @@
-#include "main.hpp"
 #include "audiocliploader.hpp"
+#include "main.hpp"
 //using namespace audioClipLoader;
-
 
 #include "UnityEngine\Networking\DownloadHandlerAudioClip.hpp"
 #include "UnityEngine\Networking\UnityWebRequestMultimedia.hpp"
@@ -95,12 +94,12 @@ void audioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject* asyn
     // Finished
 }
 
-UnityEngine::AudioSource* audioClipLoader::loader::getClip()
+UnityEngine::AudioClip* audioClipLoader::loader::getClip()
 {
     if(audioSource != nullptr && loaded)
     {
         //return CRASH_UNLESS(il2cpp_utils::GetPropertyValue(audioSource, "clip"));
-        return (AudioSource*)audioSource->get_clip();
+        return audioSource->get_clip();
     } else
     {
         return nullptr;
