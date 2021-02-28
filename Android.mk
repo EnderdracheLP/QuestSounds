@@ -28,6 +28,7 @@ LOCAL_MODULE := beatsaber-hook_1_1_0
 LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
 LOCAL_SRC_FILES := extern/libbeatsaber-hook_1_1_0.so
 LOCAL_EXPORT_C_FLAGS := -DNEED_UNSAFE_CSHARP
+LOCAL_CPP_FEATURES := exceptions
 include $(PREBUILT_SHARED_LIBRARY)
 # Creating prebuilt for dependency: modloader - version: 1.0.4
 include $(CLEAR_VARS)
@@ -68,7 +69,7 @@ LOCAL_SHARED_LIBRARIES += codegen_0_6_2
 LOCAL_SHARED_LIBRARIES += questui
 LOCAL_SHARED_LIBRARIES += custom-types
 LOCAL_LDLIBS += -llog
-LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp/' -I"./extern/codegen/include" -DID='"QuestSounds"' -DVERSION='"0.3.0"' -I'./shared' -I'./extern' -isystem'extern/codegen/include'
+LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp/' -DID='"QuestSounds"' -DVERSION='"1.0.0"' -I'./shared' -I'./extern' -isystem'extern/codegen/include'
 LOCAL_CPPFLAGS += -std=c++2a
-LOCAL_C_INCLUDES += ./include ./src ./extern/codegen/include
+LOCAL_C_INCLUDES += ./include ./src
 include $(BUILD_SHARED_LIBRARY)

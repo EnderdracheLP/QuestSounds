@@ -1,16 +1,15 @@
 #include "main.hpp"
 #include "audiocliploader.hpp"
+//using namespace audioClipLoader;
 
 #include "UnityEngine\Networking\DownloadHandlerAudioClip.hpp"
 #include "UnityEngine\Networking\UnityWebRequestMultimedia.hpp"
 using namespace UnityEngine::Networking;
 
 #include "UnityEngine/GameObject.hpp"
-#include "UnityEngine/AudioSource.hpp"
+//#include "UnityEngine/AudioSource.hpp"
 #include "UnityEngine/MonoBehaviour.hpp" // Added incase it's somehow needed
 using namespace UnityEngine;
-
-//DEFINE_CLASS(audioClipLoader::Loader)
 
     int getAudioType(std::string path) {
     if (path.ends_with(".ogg")) {
@@ -48,21 +47,22 @@ bool audioClipLoader::loader::load()
     Il2CppString* filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
     //std::string filePathStr = "file:///" + filePath;
 
-
+    //reinterpret_cast<type*>(instance)
     audioType = getAudioType(filePath);
-    audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
+    audioClipRequest = reinterpret_cast<UnityEngine::Networking::UnityWebRequestAsyncOperation*>(UnityEngine::Networking::GetAudioClip(filePathStr, audioType));
     //audioClipRequest = CRASH_UNLESS(il2cpp_utils::RunMethod("UnityEngine.Networking", "UnityWebRequestMultimedia", "GetAudioClip", filePathStr, audioType));
     audioClipAsync = audioClipRequest->SendWebRequest();
-    //audioClipAsync = audioClipRequest->SendWebRequest();
     //audioClipAsync = CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipRequest, "SendWebRequest"));
     
     //Stage 2
-    const MethodInfo* addCompletedMethod = CRASH_UNLESS(il2cpp_utils::FindMethodUnsafe(audioClipAsync, "add_completed", 1));
+    //const MethodInfo* addCompletedMethod = CRASH_UNLESS(il2cpp_utils::FindMethodUnsafe(audioClipAsync, "add_completed", 1));
     //auto action = CRASH_UNLESS(il2cpp_utils::MakeDelegate(addCompletedMethod, 0, (Il2CppObject*)this, audioClipCompleted));
-    auto action = il2cpp_utils::MakeDelegate<delegate type in here>(classof(<delegate type in here>), this, audioClipCompleted)
+    auto action = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<Il2CppObject*>(classof(<UnityEngine::Events::UnityAction_1<Il2CppObject*>), this, audioClipCompleted)
+
+        // UnityEngine::Networking::UnityWebRequest* audioClipAsync;
 
         // example
-    auto onInSongSettingChange = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(classof(UnityEngine::Events::UnityAction_1<bool>*), this, InSongToggle);
+    //auto onInSongSettingChange = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(classof(UnityEngine::Events::UnityAction_1<bool>*), this, InSongToggle);
 
     audioClipAsync->add_completed(action);
     //CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipAsync, addCompletedMethod, action));
@@ -89,14 +89,14 @@ void audioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject* asyn
         obj->audioSource->set_clip(temporaryClip);
         //CRASH_UNLESS(il2cpp_utils::SetPropertyValue(obj->audioSource, "clip", temporaryClip));
         //CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipGO, "DontDestroyOnLoad", audioClipGO));
-        Object::DontDestroyOnLoad(audioClipGO);
+        UnityEngine::Object::DontDestroyOnLoad(audioClipGO);
         obj->loaded = true;
         getLogger().debug("Stage 1 done");
     }
     // Finished
 }
 
-Il2CppObject* audioClipLoader::loader::getClip()
+Il2CppObject* audioClipLoader::loader::get_Clip()
 {
     if(audioSource != nullptr && loaded)
     {

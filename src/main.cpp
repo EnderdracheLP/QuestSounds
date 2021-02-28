@@ -1,7 +1,7 @@
 #include "main.hpp"
 #include "audiocliploader.hpp"
 #include <dlfcn.h>
-using namespace audioClipLoader
+//using namespace audioClipLoader;
 
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
@@ -14,13 +14,13 @@ using namespace GlobalNamespace;
 #include "UnityEngine/SceneManagement/Scene.hpp"
 using namespace UnityEngine;
 
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/QuestUI.hpp"
-using namespace QuestUI;
+//#include "questui/shared/BeatSaberUI.hpp"
+//#include "questui/shared/QuestUI.hpp"
+//using namespace QuestUI;
 
 //#include "NewAudioClipLoader.hpp"
-#include "QSoundsViewController.hpp"
-using namespace QuestSounds;
+//#include "QSoundsViewController.hpp"
+//using namespace QuestSounds;
 
 #include "custom-types/shared/register.hpp"
 using namespace custom_types;
@@ -159,7 +159,7 @@ void loadAudioClips()
 Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
 {
     //Il2CppObject* tempClip = clipLoader.getClip();
-    AudioClip* tempClip = clipLoader.getClip();
+    UnityEngine::AudioClip* tempClip = clipLoader.getClip();
     //Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
     Il2CppArray* temporaryArray = (il2cpp_functions::array_new(AudioClip*), 1));
     //il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
@@ -295,7 +295,7 @@ extern "C" void setup(ModInfo &info)
 extern "C" void load()
 {
     il2cpp_functions::Init();
-    QuestUI::Init();
+    //QuestUI::Init();
 
     Logger& hkLog = getLogger();
 
