@@ -12,7 +12,7 @@
     // TODO: figure out all Il2CppObjects
 namespace audioClipLoader
 {
-    class loader : Il2CppObject
+    class loader : public Il2CppObject
     {
     public:
         //static Logger logger;
@@ -20,15 +20,13 @@ namespace audioClipLoader
         int audioType = 14;
         UnityEngine::AudioSource* audioSource;
         UnityEngine::AudioClip* audioClip;
-        UnityEngine::AudioSource* get_Clip(); //Audioclip
+        UnityEngine::AudioSource* getClip(); //Audioclip
         bool loaded = false;
         bool load();
     private:
-
         static void audioClipCompleted(loader* obj, Il2CppObject* asyncOp);
 
-        UnityEngine::Networking::UnityWebRequest* audioClipAsync;
-        UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipRequest;
-
+        UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipAsync;
+        UnityEngine::Networking::UnityWebRequest* audioClipRequest;
     };
 }

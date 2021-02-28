@@ -2,12 +2,16 @@
 #include "audiocliploader.hpp"
 //using namespace audioClipLoader;
 
+
 #include "UnityEngine\Networking\DownloadHandlerAudioClip.hpp"
 #include "UnityEngine\Networking\UnityWebRequestMultimedia.hpp"
 using namespace UnityEngine::Networking;
 
+#include "System/Action_1.hpp"
+using namespace System;
+
+#include "UnityEngine/AsyncOperation.hpp"
 #include "UnityEngine/GameObject.hpp"
-//#include "UnityEngine/AudioSource.hpp"
 #include "UnityEngine/MonoBehaviour.hpp" // Added incase it's somehow needed
 using namespace UnityEngine;
 
@@ -49,7 +53,7 @@ bool audioClipLoader::loader::load()
 
     //reinterpret_cast<type*>(instance)
     audioType = getAudioType(filePath);
-    audioClipRequest = reinterpret_cast<UnityEngine::Networking::UnityWebRequestAsyncOperation*>(UnityEngine::Networking::GetAudioClip(filePathStr, audioType));
+    audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
     //audioClipRequest = CRASH_UNLESS(il2cpp_utils::RunMethod("UnityEngine.Networking", "UnityWebRequestMultimedia", "GetAudioClip", filePathStr, audioType));
     audioClipAsync = audioClipRequest->SendWebRequest();
     //audioClipAsync = CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipRequest, "SendWebRequest"));
@@ -57,13 +61,8 @@ bool audioClipLoader::loader::load()
     //Stage 2
     //const MethodInfo* addCompletedMethod = CRASH_UNLESS(il2cpp_utils::FindMethodUnsafe(audioClipAsync, "add_completed", 1));
     //auto action = CRASH_UNLESS(il2cpp_utils::MakeDelegate(addCompletedMethod, 0, (Il2CppObject*)this, audioClipCompleted));
-    auto action = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<Il2CppObject*>(classof(<UnityEngine::Events::UnityAction_1<Il2CppObject*>), this, audioClipCompleted)
-
-        // UnityEngine::Networking::UnityWebRequest* audioClipAsync;
-
-        // example
-    //auto onInSongSettingChange = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(classof(UnityEngine::Events::UnityAction_1<bool>*), this, InSongToggle);
-
+    auto action = il2cpp_utils::MakeDelegate<System::Action_1<UnityEngine::AsyncOperation*>*>(classof(System::Action_1<UnityEngine::AsyncOperation*>*), this, audioClipCompleted);
+    
     audioClipAsync->add_completed(action);
     //CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipAsync, addCompletedMethod, action));
     getLogger().debug("Stage 2 done");
@@ -73,7 +72,7 @@ bool audioClipLoader::loader::load()
 void audioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject* asyncOp)
 {
     // Stage 1
-    temporaryClip = obj->audioClipRequest->GetContent();
+    UnityEngine::AudioClip* temporaryClip = UnityEngine::Networking::DownloadHandlerAudioClip::GetContent(obj->audioClipRequest);
     //Il2CppObject* temporaryClip = CRASH_UNLESS(il2cpp_utils::RunMethod("UnityEngine.Networking", "DownloadHandlerAudioClip", "GetContent", obj->audioClipRequest));
     if(temporaryClip != nullptr)
     {  
@@ -96,11 +95,12 @@ void audioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject* asyn
     // Finished
 }
 
-Il2CppObject* audioClipLoader::loader::get_Clip()
+UnityEngine::AudioSource* audioClipLoader::loader::getClip()
 {
     if(audioSource != nullptr && loaded)
     {
-        return CRASH_UNLESS(il2cpp_utils::GetPropertyValue(audioSource, "clip"));
+        //return CRASH_UNLESS(il2cpp_utils::GetPropertyValue(audioSource, "clip"));
+        return (AudioSource*)audioSource->get_clip();
     } else
     {
         return nullptr;
