@@ -2,7 +2,6 @@
 #include "audiocliploader.hpp"
 #include <dlfcn.h>
 //using namespace audioClipLoader;
-using ::Configuration;
 
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
@@ -12,11 +11,9 @@ using ::Configuration;
 #include "GlobalNamespace/FireworkItemController.hpp"
 using namespace GlobalNamespace;
 
-#include "System/Array.hpp"
-using namespace System;
 
 #include "UnityEngine/SceneManagement/Scene.hpp"
-using namespace UnityEngine::SceneManagement;
+//using namespace UnityEngine::SceneManagement;
 
 //#include "questui/shared/BeatSaberUI.hpp"
 //#include "questui/shared/QuestUI.hpp"
@@ -117,7 +114,6 @@ void SaveConfig()
     AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, allocator); 
     getConfig().config.AddMember("Sounds 1.0.0", soundsValue, allocator); 
     getConfig().Write();
-
 }
 
 bool LoadConfig()
@@ -144,10 +140,17 @@ audioClipLoader::loader menuMusicLoader;    // menuMusic
 audioClipLoader::loader menuClickLoader;
 audioClipLoader::loader fireworkSoundLoader;
 audioClipLoader::loader levelClearedLoader;
-::Array<UnityEngine::AudioClip*>* hitSoundArr; // hitSoundArray
-::Array<UnityEngine::AudioClip*>* badHitSoundArr; // badHitSoundArray
-::Array<UnityEngine::AudioClip*>* menuClickArr;
-::Array<UnityEngine::AudioClip*>* fireworkSoundArr;
+Array<UnityEngine::AudioClip*>* hitSoundArr; // hitSoundArray
+Array<UnityEngine::AudioClip*>* badHitSoundArr; // badHitSoundArray
+Array<UnityEngine::AudioClip*>* menuClickArr;
+Array<UnityEngine::AudioClip*>* fireworkSoundArr;
+
+
+/*
+also lines 147 to 150 is not only bad practice
+(because holding pointers to C# objects like that may not consider the possibilities if the object is GC'd)
+but also bad because you set them to null
+*/
 
 //Il2CppArray* hitSoundArr; // hitSoundArray
 //Il2CppArray* badHitSoundArr; // badHitSoundArray
@@ -171,14 +174,19 @@ void loadAudioClips()
     if(Config.levelCleared_Active) levelClearedLoader.load();
 }
 
-::Array<UnityEngine::AudioClip*>* createAudioClipArray(audioClipLoader::loader clipLoader)
+// Creates an Array, of AudioClips
+Array<UnityEngine::AudioClip*>* createAudioClipArray(audioClipLoader::loader clipLoader)
 {
-    //Il2CppObject* tempClip = clipLoader.getClip();
-    Il2CppObject* tempClip = clipLoader.getClip();
-    //Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
-    ::Array<UnityEngine::AudioClip*>* temporaryArray;
+    ////Il2CppObject* tempClip = clipLoader.getClip();
+    UnityEngine::AudioClip* tempClip = clipLoader.getClip();
+    ////Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
+    //::Array<UnityEngine::AudioClip*>* temporaryArray;
+    ////il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
     //il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
-    il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
+    //return temporaryArray;
+    //auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(/*length you want of your array*/);
+    auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(tempClip);
+    temporaryArray->values[0] = tempClip;
     return temporaryArray;
 }
 
@@ -283,9 +291,9 @@ MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, FireworkItemController*
 //
 //}
 
-MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, UnityEngine::SceneManagement::Scene previousActiveScene, UnityEngine::SceneManagement::Scene nextActiveScene) {
-    if (nextActiveScene.IsValid()) {
-        std::string sceneName = to_utf8(csstrtostr(nextActiveScene.get_name()));
+MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
+    if (nextScene.IsValid()) {
+        std::string sceneName = to_utf8(csstrtostr(nextScene.get_name()));
         getLogger().info("Scene found: %s", sceneName.data());
 
         std::string shaderWarmup = "ShaderWarmup";
@@ -293,8 +301,17 @@ MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, UnityEngine::SceneMa
         //if (sceneName.find("MenuViewControllers") != std::string::npos) { //Don't use find
         //}
     }
-    SceneManager_ActiveSceneChanged(previousActiveScene, nextActiveScene);
+    SceneManager_Internal_ActiveSceneChanged(prevScene, nextScene);
 }
+
+/*
+MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
+    SceneManager_Internal_ActiveSceneChanged(prevScene, nextScene);
+    if(prevScene.IsValid() && nextScene.IsValid()) {
+        std::string prevSceneName = to_utf8(csstrtostr(prevScene.get_name()));
+        std::string nextSceneName = to_utf8(csstrtostr(nextScene.get_name()));
+        getLogger().info("Scene change from %s to %s", prevSceneName.c_str(), nextSceneName.c_str());
+*/
 
 extern "C" void setup(ModInfo &info)
 {
@@ -323,7 +340,8 @@ extern "C" void load()
     //auto* BUIAM_Start =             il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0);
     //auto* NCSE_Awake =              il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0);
     //auto* FIC_Awake =               il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0);
-    INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine::SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
+    //INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine::SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
+    INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_Internal_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
     INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0));
     INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_Start, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0));
     INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffect_Awake, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0));
