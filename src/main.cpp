@@ -1,3 +1,4 @@
+#define NO_CODEGEN_USE
 #include "main.hpp"
 #include <dlfcn.h>
 #define RAPIDJSON_HAS_STDSTRING 1
@@ -205,14 +206,20 @@ MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, Il2CppObject* self)
     FireworkItemController_Awake(self);
 }
 
+// This is needed because typedefs were removed in current BS-Hook
+struct Scene {
+    int m_Handle;
+};
+DEFINE_IL2CPP_ARG_TYPE(Scene, "UnityEngine.SceneManagement", "Scene");
+
 MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActiveScene, Scene nextActiveScene)
 {
     Il2CppString* activeSceneName = CRASH_UNLESS(il2cpp_utils::RunMethod<Il2CppString*>(il2cpp_utils::GetClassFromName("UnityEngine.SceneManagement", "Scene"), "GetNameInternal", nextActiveScene.m_Handle));
-    std::string activeSceneStr  = to_utf8(csstrtostr(activeSceneName));
-    getLogger().info("Scene found: %s",  activeSceneStr.data());
-    
+    std::string activeSceneStr = to_utf8(csstrtostr(activeSceneName));
+    getLogger().info("Scene found: %s", activeSceneStr.data());
+
     std::string shaderWarmup = "ShaderWarmup";
-    if(activeSceneStr == shaderWarmup) loadAudioClips();
+    if (activeSceneStr == shaderWarmup) loadAudioClips();
 
     SceneManager_ActiveSceneChanged(previousActiveScene, nextActiveScene);
 }
