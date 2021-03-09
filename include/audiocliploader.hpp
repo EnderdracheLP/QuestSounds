@@ -8,8 +8,6 @@
 #include "UnityEngine\Networking\UnityWebRequestMultimedia.hpp"
 #include "UnityEngine\Networking\UnityWebRequest.hpp"
 
-
-    // TODO: figure out all Il2CppObjects
 namespace audioClipLoader
 {
     class loader : public Il2CppObject

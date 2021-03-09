@@ -1,28 +1,34 @@
 {
-    "Sounds": {
+    "Sounds 1.0.0": {
         "HitSound": {
             "activated": true,
-            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSound.ogg"
+            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSound.ogg",
+            "Volume": 1.0
         },
         "BadHitSound": {
             "activated": true,
-            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSound.ogg"
+            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSound.ogg",
+            "Volume": 1.0
         },
         "MenuMusic": {
             "activated": true,
-            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic.ogg"
+            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic.ogg",
+            "Volume": 1.0
         },
         "MenuClick": {
             "activated": true,
-            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuClick.ogg"
+            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuClick.ogg",
+            "Volume": 1.0
         },
         "Firework": {
             "activated": true,
-            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Firework.ogg"
+            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Firework.ogg",
+            "Volume": 1.0
         },
         "LevelCleared": {
             "activated": true,
-            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared.ogg"
+            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared.ogg",
+            "Volume": 1.0
         }
     }
 }

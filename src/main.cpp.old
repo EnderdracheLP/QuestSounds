@@ -1,5 +1,7 @@
 #include "main.hpp"
+#include "audiocliploader.hpp"
 #include <dlfcn.h>
+//using namespace audioClipLoader;
 
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
@@ -9,16 +11,17 @@
 #include "GlobalNamespace/FireworkItemController.hpp"
 using namespace GlobalNamespace;
 
+
 #include "UnityEngine/SceneManagement/Scene.hpp"
-using namespace UnityEngine;
+//using namespace UnityEngine::SceneManagement;
 
-//#include "questui/shared/BeatSaberUI.hpp"
-//#include "questui/shared/QuestUI.hpp"
-//using namespace QuestUI;
+#include "questui/shared/BeatSaberUI.hpp"
+#include "questui/shared/QuestUI.hpp"
+using namespace QuestUI;
 
-#include "NewAudioClipLoader.hpp"
+//#include "NewAudioClipLoader.hpp"
 //#include "QSoundsViewController.hpp"
-using namespace QuestSounds;
+//using namespace QuestSounds;
 
 #include "custom-types/shared/register.hpp"
 using namespace custom_types;
@@ -28,9 +31,14 @@ using namespace custom_types;
 
 ModInfo modInfo;
 
+// Loads the config from disk using our modInfo, then returns it for use
+//Configuration& getConfig() {
+//    static Configuration config(modInfo);   // TODO: Why is this ambigous.
+//    config.Load();
+//    return config;
+//}
 Configuration& getConfig() {
     static Configuration config(modInfo);
-    config.Load();
     return config;
 }
 
@@ -53,29 +61,16 @@ void makeFolder()
     }
 }
 
-//Config stuff
-static struct Config_t 
-{
-    bool hitSound_Active = true;
-    bool badHitSound_Active = true;
-    bool menuMusic_Active = true;
-    bool menuClick_Active = true;
-    bool firework_Active = true;
-    bool levelCleared_Active = true;
-    std::string hitSound_filepath = soundPath + "HitSound.ogg";
-    std::string badHitSound_filepath = soundPath + "BadHitSound.ogg";
-    std::string menuMusic_filepath = soundPath + "MenuMusic.ogg";
-    std::string menuClick_filepath = soundPath + "MenuClick.ogg";
-    std::string firework_filepath = soundPath + "Firework.ogg";
-    std::string levelCleared_filepath = soundPath + "LevelCleared.ogg";
-} Config;
+Config_t Config;
 
-void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, ConfigDocument::AllocatorType& allocator)
+void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, std::string Volume, ConfigDocument::AllocatorType& allocator)
 {
     ConfigValue value(rapidjson::kObjectType);
     value.AddMember("activated", active, allocator);
     std::string data(filePath);
     value.AddMember("filepath", data, allocator);
+    std::string volume((double)Volume);
+    value.AddMember("volume", );
     parent.AddMember((ConfigValue::StringRefType)soundName.data(), value, allocator);
 }
 
@@ -98,15 +93,14 @@ void SaveConfig()
     auto& allocator = getConfig().config.GetAllocator();
 
     ConfigValue soundsValue(rapidjson::kObjectType);
-    AddChildSound(soundsValue, "HitSound", Config.hitSound_Active, Config.hitSound_filepath, allocator);
-    AddChildSound(soundsValue, "BadHitSound", Config.badHitSound_Active, Config.badHitSound_filepath, allocator);  
+    AddChildSound(soundsValue, "HitSound", Config.hitSound_Active, Config.hitSound_filepath, Config.hitSound_Volume, allocator);
+    AddChildSound(soundsValue, "BadHitSound", Config.badHitSound_Active, Config.badHitSound_filepath, Config.badHitSound_Volume, allocator);  
     AddChildSound(soundsValue, "MenuMusic", Config.menuMusic_Active, Config.menuMusic_filepath, allocator);  
     AddChildSound(soundsValue, "MenuClick", Config.menuClick_Active, Config.menuClick_filepath, allocator);  
     AddChildSound(soundsValue, "Firework", Config.firework_Active, Config.firework_filepath, allocator);  
     AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, allocator); 
     getConfig().config.AddMember("Sounds 1.0.0", soundsValue, allocator); 
     getConfig().Write();
-
 }
 
 bool LoadConfig()
@@ -127,16 +121,23 @@ bool LoadConfig()
     return true;
 }
 
-AudioClipLoader hitSoundLoader; // hitSound
-AudioClipLoader badHitSoundLoader; // badHitSound
-AudioClipLoader menuMusicLoader;    // menuMusic
-AudioClipLoader menuClickLoader;    // menuClickSound
-AudioClipLoader fireworkSoundLoader;    // fireworkSound
-AudioClipLoader levelClearedLoader;     // levelClearedSound
-Il2CppArray* hitSoundArr; // hitSoundArray
-Il2CppArray* badHitSoundArr; // badHitSoundArray
-Il2CppArray* menuClickArr;  //menuClickSoundArray
-Il2CppArray* fireworkSoundArr;  //fireworkSoundArr
+audioClipLoader::loader hitSoundLoader; // hitSound
+audioClipLoader::loader badHitSoundLoader; // badHitSound
+audioClipLoader::loader menuMusicLoader;    // menuMusic
+audioClipLoader::loader menuClickLoader;
+audioClipLoader::loader fireworkSoundLoader;
+audioClipLoader::loader levelClearedLoader;
+Array<UnityEngine::AudioClip*>* hitSoundArr; // hitSoundArray
+Array<UnityEngine::AudioClip*>* badHitSoundArr; // badHitSoundArray
+Array<UnityEngine::AudioClip*>* menuClickArr;
+Array<UnityEngine::AudioClip*>* fireworkSoundArr;
+
+
+/*
+also lines 147 to 150 is not only bad practice
+(because holding pointers to C# objects like that may not consider the possibilities if the object is GC'd)
+but also bad because you set them to null
+*/
 
 void loadAudioClips()
 {
@@ -154,14 +155,19 @@ void loadAudioClips()
     if(Config.levelCleared_Active) levelClearedLoader.load();
 }
 
-Il2CppArray* createAudioClipArray(AudioClipLoader clipLoader)
+// Creates an Array, of AudioClips
+Array<UnityEngine::AudioClip*>* createAudioClipArray(audioClipLoader::loader clipLoader)
 {
-    //Il2CppObject* tempClip = clipLoader.getClip();
+    ////Il2CppObject* tempClip = clipLoader.getClip();
     UnityEngine::AudioClip* tempClip = clipLoader.getClip();
-    //Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
-    Il2CppArray* temporaryArray = (il2cpp_functions::array_new(AudioClip*), 1));
+    ////Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
+    //::Array<UnityEngine::AudioClip*>* temporaryArray;
+    ////il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
     //il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
-    il2cpp_array_set(temporaryArray, AudioClip*, 0, tempClip);
+    //return temporaryArray;
+    //auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(/*length you want of your array*/);
+    auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(tempClip);
+    temporaryArray->values[0] = tempClip;
     return temporaryArray;
 }
 
@@ -176,14 +182,13 @@ Il2CppArray* createAudioClipArray(AudioClipLoader clipLoader)
 //}
 
 MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
-    ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
-
     if (levelClearedLoader.loaded && addedToHierarchy)
-    {
-        ResultsViewController* audioClip = levelClearedLoader.getClip();
+    {   // TODO: Write the audioClip stuff correctly.
+        UnityEngine::AudioClip* audioClip = levelClearedLoader.getClip();
         self->levelClearedAudioClip = audioClip;
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_levelClearedAudioClip", audioClip));
     }
+    ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
 //MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
@@ -201,16 +206,16 @@ MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, ResultsViewControl
 //}
 
 MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, SongPreviewPlayer* self) {
-    SongPreviewPlayer_OnEnable(self);
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
 
     if (menuMusicLoader.loaded)
-    {
-        SongPreviewPlayer* audioClip = menuMusicLoader.getClip();
+    {   // TODO: Write the audioClip stuff correctly.
+        UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
         if (audioClip != nullptr)
             self->defaultAudioClip = audioClip;
             //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_defaultAudioClip", audioClip));
     }
+    SongPreviewPlayer_OnEnable(self);
 }
 
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, NoteCutSoundEffectManager* self) {
@@ -221,7 +226,7 @@ MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, NoteCutSoundEffectMa
         self->shortCutEffectsAudioClips = hitSoundArr;
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_longCutEffectsAudioClips", hitSoundArr));
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_shortCutEffectsAudioClips", hitSoundArr));
-    }    
+    }
     NoteCutSoundEffectManager_Start(self);
 }
 
@@ -229,6 +234,7 @@ MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, NoteCutSoundEffect* self) {
     if(badHitSoundLoader.loaded)
     {
         badHitSoundArr = createAudioClipArray(badHitSoundLoader);
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_badCutSoundEffectAudioClips", badHitSoundArr));
         self->badCutSoundEffectAudioClips = badHitSoundArr;
     }
     NoteCutSoundEffect_Awake(self);
@@ -239,18 +245,19 @@ MAKE_HOOK_OFFSETLESS(BasicUIAudioManager_Start, void, BasicUIAudioManager* self)
     {
         menuClickArr = createAudioClipArray(menuClickLoader);
         self->clickSounds = menuClickArr;
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_clickSounds", menuClickArr));
     }
     BasicUIAudioManager_Start(self);
 }
 
 MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, FireworkItemController* self) {
-    FireworkItemController_Awake(self);
     if(fireworkSoundLoader.loaded)
     {
         fireworkSoundArr = createAudioClipArray(fireworkSoundLoader);
         self->explosionClips = fireworkSoundArr;
         //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_explosionClips", fireworkSoundArr));
     }
+    FireworkItemController_Awake(self);
 }
 
 //MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActiveScene, Scene nextActiveScene) {
@@ -266,7 +273,6 @@ MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, FireworkItemController*
 //}
 
 MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
-    SceneManager_Internal_ActiveSceneChanged(prevScene, nextScene);
     if (nextScene.IsValid()) {
         std::string sceneName = to_utf8(csstrtostr(nextScene.get_name()));
         getLogger().info("Scene found: %s", sceneName.data());
@@ -276,7 +282,17 @@ MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine
         //if (sceneName.find("MenuViewControllers") != std::string::npos) { //Don't use find
         //}
     }
+    SceneManager_Internal_ActiveSceneChanged(prevScene, nextScene);
 }
+
+/*
+MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine::SceneManagement::Scene prevScene, UnityEngine::SceneManagement::Scene nextScene) {
+    SceneManager_Internal_ActiveSceneChanged(prevScene, nextScene);
+    if(prevScene.IsValid() && nextScene.IsValid()) {
+        std::string prevSceneName = to_utf8(csstrtostr(prevScene.get_name()));
+        std::string nextSceneName = to_utf8(csstrtostr(nextScene.get_name()));
+        getLogger().info("Scene change from %s to %s", prevSceneName.c_str(), nextSceneName.c_str());
+*/
 
 extern "C" void setup(ModInfo &info)
 {
@@ -291,29 +307,27 @@ extern "C" void setup(ModInfo &info)
 extern "C" void load()
 {
     il2cpp_functions::Init();
-    //QuestUI::Init();
-
-    custom_types::Register::RegisterType<QuestSounds::AudioClipLoader>();
-    //QuestUI::Register::RegisterModSettingsViewController<QuestSounds::QSoundsViewController*>(modInfo);
+    QuestUI::Init();
 
     Logger& hkLog = getLogger();
 
     if(!LoadConfig()) SaveConfig();
     makeFolder();
     getLogger().debug("Installing QuestSounds!");
-    auto* SM_ActiveSceneChanged =   il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2);
-    auto* RVC_DidActivate =         il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3);
-    auto* SPP_OnEnable =            il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0);
-    auto* NCSEM_Start =             il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0);
-    auto* BUIAM_Start =             il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0);
-    auto* NCSE_Awake =              il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0);
-    auto* FIC_Awake =               il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0);
-    INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged);
-    INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, SPP_OnEnable);
-    INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_Start, NCSEM_Start);
-    INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffect_Awake, NCSE_Awake);
-    INSTALL_HOOK_OFFSETLESS(hkLog, FireworkItemController_Awake, FIC_Awake);
-    INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, BUIAM_Start);
-    INSTALL_HOOK_OFFSETLESS(hkLog, ResultsViewController_DidActivate, RVC_DidActivate);
+    //auto* SM_ActiveSceneChanged =   il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2);
+    //auto* RVC_DidActivate =         il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3);
+    //auto* SPP_OnEnable =            il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0);
+    //auto* NCSEM_Start =             il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0);
+    //auto* BUIAM_Start =             il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0);
+    //auto* NCSE_Awake =              il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0);
+    //auto* FIC_Awake =               il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0);
+    //INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine::SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
+    INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_Internal_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
+    INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0));
+    INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_Start, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0));
+    INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffect_Awake, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0));
+    INSTALL_HOOK_OFFSETLESS(hkLog, FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
+    INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0));
+    INSTALL_HOOK_OFFSETLESS(hkLog, ResultsViewController_DidActivate, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3));
     getLogger().debug("Installed QuestSounds!");
 }
