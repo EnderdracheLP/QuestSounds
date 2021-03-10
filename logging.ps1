@@ -1,7 +1,12 @@
 $timestamp = Get-Date -Format "MM-dd HH:mm:ss.fff"
-adb logcat -T "$timestamp" main-modloader:W QuestHook[QuestSounds`|v0.2.0]:* AndroidRuntime:E *:S QuestHook[UtilsLogger`|v0.8.4]:E QuestHook[UtilsLogger`|v1.0.12]:E
+adb logcat -T "$timestamp" main-modloader:W QuestHook[QuestSounds`|v0.2.1]:* AndroidRuntime:E *:S QuestHook[UtilsLogger`|v1.1.6]:E QuestHook[UtilsLogger`|v1.1.5]:E QuestHook[UtilsLogger`|v1.1.4]:E
         if ($args[0] -eq "--debug") {
             $timestamp = Get-Date -Format "MM-dd HH:mm:ss.fff"
-            adb logcat -T "$timestamp" main-modloader:W QuestHook[QuestSounds`|v0.2.0]:* AndroidRuntime:E *:S QuestHook[UtilsLogger`|v0.8.4]:* QuestHook[UtilsLogger`|v1.0.12]:*
+            adb logcat -T "$timestamp" main-modloader:W QuestHook[QuestSounds`|v0.2.1]:* AndroidRuntime:E *:S QuestHook[UtilsLogger`|v1.1.6]:* QuestHook[UtilsLogger`|v1.1.5]:*
         }
+                if ($args[0] -eq "--insane") {
+            $timestamp = Get-Date -Format "MM-dd HH:mm:ss.fff"
+            adb logcat -T "$timestamp" main-modloader:W QuestHook[QuestSounds`|v0.2.1]:* AndroidRuntime:E *:S QuestHook[UtilsLogger`|v1.1.6]:* QuestHook[UtilsLogger`|v1.1.5]:*
+        }
+
 echo "Exiting logging.ps1"

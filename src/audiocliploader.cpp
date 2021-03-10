@@ -19,19 +19,28 @@ bool audioClipLoader::loader::load()
 {
     //Stage 0 
     bool fileError = fileexists(filePath.c_str());
+    //bool fileError = true;
     bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
+    getLogger().info("File error is %s", fileError);
     if(error)
     {
-        if(!fileError)
+        if(!fileError) // If fileError is null or false?
         {
-            getLogger().error("File Error");
+            getLogger().error("Found file but Web Request for file %s failed", filePath.c_str());
+            if (audioClipAsync == nullptr) {
+                getLogger().error("audioClipAsync is null");
+            }
+            if (audioSource == nullptr) {
+                getLogger().error("audioSource is null");
+            }
         } else 
         {
-            getLogger().info("File Loaded");
+            getLogger().error("fileError file %s not found", filePath.c_str());
         }
-        getLogger().info("Stage 0 Done");
+        getLogger().error("Stage 0 Failed");
         return false;
     }
+    getLogger().info("Stage 0 Done");
 
     //Stage 1
     Il2CppString* filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
@@ -74,6 +83,7 @@ Il2CppObject* audioClipLoader::loader::getClip()
         return CRASH_UNLESS(il2cpp_utils::GetPropertyValue(audioSource, "clip"));
     } else
     {
+        getLogger().debug("getClip nullptr");
         return nullptr;
     }
 }

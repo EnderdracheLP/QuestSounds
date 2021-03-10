@@ -10,6 +10,7 @@ static ModInfo modInfo;
 
 static Configuration& getConfig() {
     static Configuration config(modInfo);
+    config.Load();
     return config;
 }
 
@@ -85,7 +86,6 @@ void SaveConfig()
     AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, allocator); 
     getConfig().config.AddMember("Sounds", soundsValue, allocator); 
     getConfig().Write();
-
 }
 
 bool LoadConfig()
@@ -227,7 +227,7 @@ MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActive
 extern "C" void setup(ModInfo &info)
 {
     info.id = "QuestSounds";
-    info.version = "0.2.1";
+    info.version = VERSION;
     modInfo = info;
     getConfig();
     getLogger().info("Completed setup!");
