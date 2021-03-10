@@ -22,11 +22,11 @@ rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 include $(CLEAR_VARS)
 LOCAL_MODULE := 
 include $(CLEAR_VARS)
-# Creating prebuilt for dependency: beatsaber-hook - version: 1.1.5
+# Creating prebuilt for dependency: beatsaber-hook - version: 1.1.6
 include $(CLEAR_VARS)
-LOCAL_MODULE := beatsaber-hook_1_1_5
+LOCAL_MODULE := beatsaber-hook_1_1_6
 LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
-LOCAL_SRC_FILES := extern/libbeatsaber-hook_1_1_5.so
+LOCAL_SRC_FILES := extern/libbeatsaber-hook_1_1_6.so
 LOCAL_EXPORT_C_FLAGS := -DNEED_UNSAFE_CSHARP
 include $(PREBUILT_SHARED_LIBRARY)
 # Creating prebuilt for dependency: modloader - version: 1.0.4
@@ -45,7 +45,7 @@ LOCAL_SRC_FILES += $(call rwildcard,src/,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
 LOCAL_SHARED_LIBRARIES += modloader
-LOCAL_SHARED_LIBRARIES += beatsaber-hook_1_1_5
+LOCAL_SHARED_LIBRARIES += beatsaber-hook_1_1_6
 LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp/' -DID='"QuestSounds"' -DVERSION='"0.2.1"' -isystem 'extern' -I'./shared' -I'./extern'
 LOCAL_C_INCLUDES += ./include ./src
