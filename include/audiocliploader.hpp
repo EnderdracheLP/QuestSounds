@@ -1,5 +1,5 @@
 #pragma once
-//#include <dlfcn.h>
+#include <dlfcn.h>
 #include "main.hpp"
 //#include <dlfcn.h>
 //#include "../extern/beatsaber-hook/shared/utils/utils.h"

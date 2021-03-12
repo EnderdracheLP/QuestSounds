@@ -20,7 +20,7 @@ bool audioClipLoader::loader::load()
     //Stage 0 
     bool fileError = fileexists(filePath.c_str());
     //bool fileError = true;
-    bool error = (audioClipAsync != nullptr || audioSource != nullptr || fileError);
+    bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
     getLogger().info("File error is %s", fileError);
     if(error)
     {

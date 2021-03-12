@@ -248,7 +248,6 @@ extern "C" void setup(ModInfo &info)
     info.id = "QuestSounds";
     info.version = VERSION;
     modInfo = info;
-    getConfig();
     getLogger().info("Completed setup!");
     getLogger().info("Modloader name: %s", Modloader::getInfo().name.c_str());
 }  
@@ -256,9 +255,14 @@ extern "C" void setup(ModInfo &info)
 extern "C" void load()
 {
     Logger& hkLog = getLogger();
+    getLogger().info("Loading Config");
+    getConfig();
     if(!LoadConfig()) SaveConfig();
     makeFolder();
-    getLogger().debug("Installing QuestSounds!");
+    if (Modloader::getAllConstructed()) {
+        getLogger().info("Modloader Finished");
+    }
+    getLogger().info("Installing QuestSounds!");
     auto* SM_ActiveSceneChanged =   il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2);
     auto* RVC_DidActivate =         il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3);
     auto* SPP_OnEnable =            il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0);
@@ -275,5 +279,5 @@ extern "C" void load()
     INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, BUIAM_Start);
     INSTALL_HOOK_OFFSETLESS(hkLog, ResultsViewController_DidActivate, RVC_DidActivate);
     INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidActivate, GSLFC_DidActivate);  // Added for switching out MP Lobby Music
-    getLogger().debug("Installed QuestSounds!");
+    getLogger().info("Installed QuestSounds!");
 }
