@@ -42,12 +42,14 @@ static struct Config_t
     bool menuClick_Active = true;
     bool firework_Active = true;
     bool levelCleared_Active = true;
+    bool lobbyAmbience_Active = true;
     std::string hitSound_filepath = soundPath + "HitSound.ogg";
     std::string badHitSound_filepath = soundPath + "BadHitSound.ogg";
     std::string menuMusic_filepath = soundPath + "MenuMusic.ogg";
     std::string menuClick_filepath = soundPath + "MenuClick.ogg";
     std::string firework_filepath = soundPath + "Firework.ogg";
     std::string levelCleared_filepath = soundPath + "LevelCleared.ogg";
+    std::string lobbyAmbience_filepath = soundPath + "LevelCleared.ogg";
 } Config;
 
 void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, ConfigDocument::AllocatorType& allocator)
@@ -101,6 +103,7 @@ bool LoadConfig()
         if(!ParseSound(Config.menuClick_Active, Config.menuClick_filepath, soundsValue, "MenuClick")) return false;
         if(!ParseSound(Config.firework_Active, Config.firework_filepath, soundsValue, "Firework")) return false;
         if(!ParseSound(Config.levelCleared_Active, Config.levelCleared_filepath, soundsValue, "LevelCleared")) return false;
+        if (!ParseSound(Config.lobbyAmbience_Active, Config.levelCleared_filepath, soundsValue, "LevelCleared")) return false;
     } else return false;
     
     return true;
@@ -112,6 +115,7 @@ audioClipLoader::loader menuMusicLoader;    // menuMusic
 audioClipLoader::loader menuClickLoader;
 audioClipLoader::loader fireworkSoundLoader;
 audioClipLoader::loader levelClearedLoader;
+audioClipLoader::loader lobbyAmbienceLoader;    // Added for LobbyMusic
 Il2CppArray* hitSoundArr; // hitSoundArray
 Il2CppArray* badHitSoundArr; // badHitSoundArray
 Il2CppArray* menuClickArr;
@@ -125,12 +129,14 @@ void loadAudioClips()
     menuClickLoader.filePath = Config.menuClick_filepath;
     fireworkSoundLoader.filePath = Config.firework_filepath;
     levelClearedLoader.filePath =  Config.levelCleared_filepath;
+    lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath;
     if(Config.hitSound_Active) hitSoundLoader.load();
     if(Config.badHitSound_Active) badHitSoundLoader.load();
     if(Config.menuMusic_Active) menuMusicLoader.load();
     if(Config.menuClick_Active) menuClickLoader.load();
     if(Config.firework_Active) fireworkSoundLoader.load();
     if(Config.levelCleared_Active) levelClearedLoader.load();
+    if (Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
 }
 
 Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
@@ -162,6 +168,19 @@ MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
             CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_defaultAudioClip", audioClip));
     }
     SongPreviewPlayer_OnEnable(self);
+
+}
+
+MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+{
+
+    getLogger().info("is it true: %i", lobbyAmbienceLoader.loaded);
+    if (lobbyAmbienceLoader.loaded && addedToHierarchy)
+    {
+        Il2CppObject* audioClip = lobbyAmbienceLoader.getClip();
+        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, " _ambienceAudioClip", audioClip));
+    }
+    GameServerLobbyFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 
 }
 
@@ -247,6 +266,7 @@ extern "C" void load()
     auto* BUIAM_Start =             il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0);
     auto* NCSE_Awake =              il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0);
     auto* FIC_Awake =               il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0);
+    auto* GSLFC_DidActivate =       il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidActivate", 3);
     INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged);
     INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, SPP_OnEnable);
     INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_Start, NCSEM_Start);
@@ -254,5 +274,6 @@ extern "C" void load()
     INSTALL_HOOK_OFFSETLESS(hkLog, FireworkItemController_Awake, FIC_Awake);
     INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, BUIAM_Start);
     INSTALL_HOOK_OFFSETLESS(hkLog, ResultsViewController_DidActivate, RVC_DidActivate);
+    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidActivate, GSLFC_DidActivate);  // Added for switching out MP Lobby Music
     getLogger().debug("Installed QuestSounds!");
 }
