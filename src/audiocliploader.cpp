@@ -37,8 +37,8 @@ bool audioClipLoader::loader::load()
     bool fileError = fileexists(filePath);
     getLogger().info("File error is %d", fileError);
     //bool fileError = true;
-    bool error = (audioClipAsync != nullptr || audioSource != nullptr /*|| !fileError*/);
-    getLogger().info("error is %s", error);
+    bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
+    getLogger().info("error is %d", error);
     if(error)
     {
         if(!fileError) // If fileError is null or false?
