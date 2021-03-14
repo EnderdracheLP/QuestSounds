@@ -17,6 +17,11 @@
           "src/inline-hook"
         ]
       }
+    },
+    {
+      "id": "custom-types",
+      "versionRange": "*",
+      "additionalData": {}
     }
   ],
   "additionalData": {}

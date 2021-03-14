@@ -1,5 +1,6 @@
 #include "main.hpp"
 #include "audiocliploader.hpp"
+#include <unistd.h>
 
     int getAudioType(std::string path) {
     if (path.ends_with(".ogg")) {
@@ -15,13 +16,29 @@
     return 0;
     }
 
+    //bool doesfileexist(std::string_view filename) {
+    //    int accessStr = access(filename.data(), X_OK);
+    //    getLogger().debug("Root Access %d", accessStr);
+    //    if (access(filename.data(), X_OK) != -1) {
+    //        return true;
+    //    } else if (access(filename.data(), W_OK | R_OK) != -1) {
+    //        int accessStr = access(filename.data(), W_OK | R_OK);
+    //        getLogger().debug("Normal Read Write Access %d", accessStr);
+    //        return true;
+    //    } else return false;
+    //}
+
 bool audioClipLoader::loader::load()
 {
     //Stage 0 
-    bool fileError = fileexists(filePath.c_str());
+    getLogger().info("Starting Stage 0");
+    getLogger().info("FilePath to check is %s", filePath.c_str());
+    //bool fileError = doesfileexist(filePath);
+    bool fileError = fileexists(filePath);
+    getLogger().info("File error is %d", fileError);
     //bool fileError = true;
-    bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
-    getLogger().info("File error is %s", fileError);
+    bool error = (audioClipAsync != nullptr || audioSource != nullptr /*|| !fileError*/);
+    getLogger().info("error is %s", error);
     if(error)
     {
         if(!fileError) // If fileError is null or false?

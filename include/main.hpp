@@ -12,7 +12,6 @@
 #include "../extern/beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "../extern/beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 #include "../extern/beatsaber-hook/shared/config/config-utils.hpp"
-#include "../include/audiocliploader.hpp"
 
 
 // Define these functions here so that we can easily read configuration and log information from other files

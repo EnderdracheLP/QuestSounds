@@ -1,4 +1,5 @@
 #define NO_CODEGEN_USE
+#include "audiocliploader.hpp"
 #include "main.hpp"
 #include <dlfcn.h>
 #define RAPIDJSON_HAS_STDSTRING 1
@@ -54,6 +55,7 @@ static struct Config_t
 
 void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, ConfigDocument::AllocatorType& allocator)
 {
+    getLogger().debug("Adding %s to config", filePath.c_str());
     ConfigValue value(rapidjson::kObjectType);
     value.AddMember("activated", active, allocator);
     std::string data(filePath);
@@ -64,6 +66,7 @@ void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active,
 // Edited ParseVector made by Darknight1050
 bool ParseSound(bool& active, std::string& filepath, ConfigValue& parent, std::string_view soundName)
 {
+    getLogger().debug("Parsing %s", filepath.c_str());
     if(!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) return false;
     ConfigValue value = parent[soundName.data()].GetObject();
     if(!(value.HasMember("activated") && value["activated"].IsBool() &&
@@ -86,6 +89,7 @@ void SaveConfig()
     AddChildSound(soundsValue, "MenuClick", Config.menuClick_Active, Config.menuClick_filepath, allocator);  
     AddChildSound(soundsValue, "Firework", Config.firework_Active, Config.firework_filepath, allocator);  
     AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, allocator); 
+    AddChildSound(soundsValue, "LobbyMusic", Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, allocator);
     getConfig().config.AddMember("Sounds", soundsValue, allocator); 
     getConfig().Write();
 }
@@ -103,7 +107,7 @@ bool LoadConfig()
         if(!ParseSound(Config.menuClick_Active, Config.menuClick_filepath, soundsValue, "MenuClick")) return false;
         if(!ParseSound(Config.firework_Active, Config.firework_filepath, soundsValue, "Firework")) return false;
         if(!ParseSound(Config.levelCleared_Active, Config.levelCleared_filepath, soundsValue, "LevelCleared")) return false;
-        if (!ParseSound(Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, soundsValue, "LobbyMusic")) return false;
+        if(!ParseSound(Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, soundsValue, "LobbyMusic")) return false;
     } else return false;
     
     return true;
@@ -136,7 +140,7 @@ void loadAudioClips()
     if(Config.menuClick_Active) menuClickLoader.load();
     if(Config.firework_Active) fireworkSoundLoader.load();
     if(Config.levelCleared_Active) levelClearedLoader.load();
-    if (Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
+    if(Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
 }
 
 Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
@@ -248,6 +252,9 @@ extern "C" void setup(ModInfo &info)
     info.id = "QuestSounds";
     info.version = VERSION;
     modInfo = info;
+
+    getConfig();
+    getLogger().info("Loading Config");
     getLogger().info("Completed setup!");
     getLogger().info("Modloader name: %s", Modloader::getInfo().name.c_str());
 }  
@@ -255,8 +262,6 @@ extern "C" void setup(ModInfo &info)
 extern "C" void load()
 {
     Logger& hkLog = getLogger();
-    getLogger().info("Loading Config");
-    getConfig();
     if(!LoadConfig()) SaveConfig();
     makeFolder();
     if (Modloader::getAllConstructed()) {
