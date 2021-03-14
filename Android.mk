@@ -54,6 +54,6 @@ LOCAL_SHARED_LIBRARIES += modloader
 LOCAL_SHARED_LIBRARIES += beatsaber-hook_1_1_6
 LOCAL_SHARED_LIBRARIES += custom-types
 LOCAL_LDLIBS += -llog
-LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp/' -DID='"QuestSounds"' -DVERSION='"0.3.0"' -isystem 'extern' -I'./shared' -I'./extern'
+LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp/' -DID='"QuestSounds"' -DVERSION='"0.3.0-Pre1"' -isystem 'extern' -I'./shared' -I'./extern'
 LOCAL_C_INCLUDES += ./include ./src
 include $(BUILD_SHARED_LIBRARY)
