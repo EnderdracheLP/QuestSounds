@@ -90,7 +90,7 @@ void SaveConfig()
     AddChildSound(soundsValue, "Firework", Config.firework_Active, Config.firework_filepath, allocator);  
     AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, allocator); 
     AddChildSound(soundsValue, "LobbyMusic", Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, allocator);
-    getConfig().config.AddMember("Sounds", soundsValue, allocator); 
+    getConfig().config.AddMember("SoundsConfig_v1", soundsValue, allocator); 
     getConfig().Write();
 }
 
@@ -98,7 +98,7 @@ bool LoadConfig()
 {
     getConfig().Load();
 
-    if(getConfig().config.HasMember("Sounds") && getConfig().config["Sounds"].IsObject())
+    if(getConfig().config.HasMember("SoundsConfig_v1") && getConfig().config["SoundsConfig_v1"].IsObject())
     {
         ConfigValue soundsValue = getConfig().config["Sounds"].GetObject();
         if(!ParseSound(Config.hitSound_Active, Config.hitSound_filepath, soundsValue, "HitSound")) return false;
@@ -249,7 +249,7 @@ MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActive
 
 extern "C" void setup(ModInfo &info)
 {
-    info.id = "QuestSounds";
+    info.id = ID;
     info.version = VERSION;
     modInfo = info;
 

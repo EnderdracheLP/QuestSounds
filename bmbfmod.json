@@ -8,17 +8,17 @@
         
     ],
     "category": "Gameplay",
-    "gameVersion": "1.13.4",
-    "version": "0.2.1",
+    "gameVersion": "1.13.5",
+    "version": "0.3.0",
     "platform": "Quest",
     "components": [
         {
             "type": "HookMod",
             "installAction": {
-                "installLibraryFile": "libquestsounds.so"
+                "installLibraryFile": "libQuestSounds.so"
             },
             "uninstallAction": {
-                "removeLibraryFile": "libquestsounds.so"
+                "removeLibraryFile": "libQuestSounds.so"
             }
         }
     ]
