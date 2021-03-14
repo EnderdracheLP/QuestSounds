@@ -12,14 +12,20 @@
     "version": "0.3.0-Pre1",
     "platform": "Quest",
     "components": [
-        {
-            "type": "HookMod",
-            "installAction": {
-                "installLibraryFile": "libQuestSounds.so"
-            },
-            "uninstallAction": {
-                "removeLibraryFile": "libQuestSounds.so"
-            }
+      {
+        "type": "HookMod",
+        "installAction": {
+          "installLibraryFile": "libQuestSounds.so"
+        },
+        "uninstallAction": {
+          "removeLibraryFile": "libQuestSounds.so"
         }
+      },
+      {
+        "type": "HookModLibrary",
+        "installAction": {
+          "installLibraryFile": "libbeatsaber-hook_1_1_6.so"
+        }
+      }
     ]
 }
