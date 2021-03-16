@@ -8,8 +8,8 @@
         
     ],
     "category": "Gameplay",
-    "gameVersion": "1.13.5",
-    "version": "0.3.0-Pre1",
+    "gameVersion": "1.13.6",
+    "version": "0.3.0",
     "platform": "Quest",
     "components": [
       {
