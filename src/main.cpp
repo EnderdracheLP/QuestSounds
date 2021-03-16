@@ -86,18 +86,11 @@ bool ParseSound(bool& active, std::string& filepath, ConfigValue& parent, std::s
 }
 
 bool ParseFNS(bool& active, ConfigValue& parent, std::string_view soundName) {
-    getLogger().debug("Parsing %s", soundName.data());
-    if (!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) {
-        getLogger().debug("HasMember or IsObject failed on Parent");
-        return false;
-    }
+    if (!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) return false;
     ConfigValue value = parent[soundName.data()].GetObject();
-    if (!(value.HasMember("activated") && value["activated"].IsBool())) {
-        getLogger().debug("HasMember activated or IsBool failed on Value");
-        return false;
-    }
+    if (!(value.HasMember("activated") && value["activated"].IsBool())) return false;
     active = value["activated"].GetBool();
-    getLogger().debug("Set succesfully");
+    getLogger().info("FNS Settings parsed succesfully");
     return true;
 }
 
@@ -134,10 +127,7 @@ bool LoadConfig()
         if(!ParseSound(Config.firework_Active, Config.firework_filepath, soundsValue, "Firework")) return false;
         if(!ParseSound(Config.levelCleared_Active, Config.levelCleared_filepath, soundsValue, "LevelCleared")) return false;
         if(!ParseSound(Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, soundsValue, "LobbyMusic")) return false;
-        if (!ParseFNS(Config.NeonSignFlicker_Active, soundsValue, "NeonSignFlicker")) {
-            getLogger().debug("Could not find NeonSignFlicker in Config");
-            return false;
-        }
+        if(!ParseFNS(Config.NeonSignFlicker_Active, soundsValue, "NeonSignFlicker")) return false;
     } else return false;
     
     return true;
