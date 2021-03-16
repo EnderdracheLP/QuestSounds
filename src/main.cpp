@@ -155,6 +155,7 @@ MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, Il2CppObject* self
 {
     if(levelClearedLoader.loaded && addedToHierarchy)
     {
+        getLogger().debug("Overwriting LevelCleared Audio");
         Il2CppObject* audioClip = levelClearedLoader.getClip();
         CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_levelClearedAudioClip", audioClip));
     } 
@@ -164,9 +165,10 @@ MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, Il2CppObject* self
 MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
 {
     
-    getLogger().info("is it true: %i", menuMusicLoader.loaded);
+    getLogger().info("MenuMusic is it true: %i", menuMusicLoader.loaded);
     if(menuMusicLoader.loaded)
     {
+        getLogger().debug("Overwriting Menu Audio");
         Il2CppObject* audioClip = menuMusicLoader.getClip();
         if(audioClip != nullptr)
             CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_defaultAudioClip", audioClip));
@@ -174,19 +176,77 @@ MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
     SongPreviewPlayer_OnEnable(self);
 
 }
-
+// /*
 MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
+    getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
 
-    getLogger().info("is it true: %i", lobbyAmbienceLoader.loaded);
+    getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
     if (lobbyAmbienceLoader.loaded && addedToHierarchy)
     {
+        getLogger().debug("Overwriting LobbyAmbience Audio");
         Il2CppObject* audioClip = lobbyAmbienceLoader.getClip();
-        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, " _ambienceAudioClip", audioClip));
+        getLogger().debug("LobbyAmbience getClip succesful, setting clip next");
+        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_ambienceAudioClip", audioClip));
+        getLogger().debug("LobbyAmbience SetFieldValue succesful");
+        // _ambienceAudioClip
     }
     GameServerLobbyFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
-
 }
+
+MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidDeactivate, void, Il2CppObject* self, bool removedFromHierarchy, bool screenSystemDisabling)
+{
+    getLogger().debug("GameServerLobbyFlowCoordinator_DidDeactivate");
+
+    getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
+    if (menuMusicLoader.loaded && removedFromHierarchy)
+    {
+        getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
+        Il2CppObject* audioClip = menuMusicLoader.getClip();
+        getLogger().debug("MenuMusic getClip succesful, setting clip next");
+        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_ambienceAudioClip", audioClip));
+        getLogger().debug("LobbyAmbience SetFieldValue succesful");
+        // _ambienceAudioClip
+    }
+    GameServerLobbyFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
+}
+// */
+
+// /*
+MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+{
+    getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidActivate");
+
+    getLogger().info("LobbyMusic is it true: %i", menuMusicLoader.loaded);
+    if (menuMusicLoader.loaded && addedToHierarchy)
+    {
+        getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
+        Il2CppObject* audioClip = menuMusicLoader.getClip();
+        getLogger().debug("MenuMusic getClip succesful, setting clip next");
+        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_ambienceAudioClip", audioClip));
+        getLogger().debug("LobbyAmbience SetFieldValue succesful");
+        // _ambienceAudioClip
+    }
+    MultiplayerModeSelectionFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling); // This has to be ran last, otherwise it will not work correctly
+}
+// /*
+MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, void, Il2CppObject* self, bool removedFromHierarchy, bool screenSystemDisabling)
+{
+    getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidDeactivate");
+
+    getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
+    if (menuMusicLoader.loaded && removedFromHierarchy)
+    {
+        getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
+        Il2CppObject* audioClip = menuMusicLoader.getClip();
+        getLogger().debug("MenuMusic getClip succesful, setting clip next");
+        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_ambienceAudioClip", audioClip));
+        getLogger().debug("LobbyAmbience SetFieldValue succesful");
+        // _ambienceAudioClip
+    }
+    MultiplayerModeSelectionFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);  
+}
+//*/
 
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, Il2CppObject* self)
 {
@@ -253,8 +313,8 @@ extern "C" void setup(ModInfo &info)
     info.version = VERSION;
     modInfo = info;
 
-    getConfig();
     getLogger().info("Loading Config");
+    getConfig();
     getLogger().info("Completed setup!");
     getLogger().info("Modloader name: %s", Modloader::getInfo().name.c_str());
 }  
@@ -275,7 +335,10 @@ extern "C" void load()
     auto* BUIAM_Start =             il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0);
     auto* NCSE_Awake =              il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0);
     auto* FIC_Awake =               il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0);
+    auto* MMSFC_DidActivate =       il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidActivate", 3);
+    auto* MMSFC_DidDeactivate =     il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidDeactivate", 2);
     auto* GSLFC_DidActivate =       il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidActivate", 3);
+    auto* GSLFC_DidDeactivate =     il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidDeactivate", 2);
     INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged);
     INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, SPP_OnEnable);
     INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_Start, NCSEM_Start);
@@ -283,6 +346,9 @@ extern "C" void load()
     INSTALL_HOOK_OFFSETLESS(hkLog, FireworkItemController_Awake, FIC_Awake);
     INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, BUIAM_Start);
     INSTALL_HOOK_OFFSETLESS(hkLog, ResultsViewController_DidActivate, RVC_DidActivate);
+    INSTALL_HOOK_OFFSETLESS(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, MMSFC_DidActivate);  // Added for switching out MP Lobby Music
+    INSTALL_HOOK_OFFSETLESS(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate, MMSFC_DidDeactivate);  // Added for switching out MP Lobby Music
     INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidActivate, GSLFC_DidActivate);  // Added for switching out MP Lobby Music
+    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate, GSLFC_DidDeactivate);  // Added for switching out MP Lobby Music
     getLogger().info("Installed QuestSounds!");
 }

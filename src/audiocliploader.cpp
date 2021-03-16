@@ -33,8 +33,13 @@ bool audioClipLoader::loader::load()
     //Stage 0 
     getLogger().info("Starting Stage 0");
     getLogger().info("FilePath to check is %s", filePath.c_str());
-    //bool fileError = doesfileexist(filePath);
+    // Checks if the given File in the config exists
     bool fileError = fileexists(filePath);
+    if (!fileError) { 
+    fileError = fileexists(filePath.replace(filePath.length()-3, 3, "mp3"));
+    filePath = filePath.replace(filePath.length()-3, 3, "mp3");
+    getLogger().warning("Could not find file set in Config, but found file with same name here: %s", filePath.c_str());
+    }
     getLogger().info("File error is %d", fileError);
     //bool fileError = true;
     bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
