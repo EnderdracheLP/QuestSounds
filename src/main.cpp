@@ -44,7 +44,6 @@ static struct Config_t
     bool firework_Active = true;
     bool levelCleared_Active = true;
     bool lobbyAmbience_Active = true;
-    bool NeonSignFlicker_Active = true;
     std::string hitSound_filepath = soundPath + "HitSound.ogg";
     std::string badHitSound_filepath = soundPath + "BadHitSound.ogg";
     std::string menuMusic_filepath = soundPath + "MenuMusic.ogg";
@@ -64,14 +63,6 @@ void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active,
     parent.AddMember((ConfigValue::StringRefType)soundName.data(), value, allocator);
 }
 
-void AddChildSoundFNS(ConfigValue& parent, std::string_view soundName, bool active, ConfigDocument::AllocatorType& allocator)
-{
-    getLogger().debug("Adding %s to config", soundName.data());
-    ConfigValue value(rapidjson::kObjectType);
-    value.AddMember("activated", active, allocator);
-    parent.AddMember((ConfigValue::StringRefType)soundName.data(), value, allocator);
-}
-
 // Edited ParseVector made by Darknight1050
 bool ParseSound(bool& active, std::string& filepath, ConfigValue& parent, std::string_view soundName)
 {
@@ -82,15 +73,6 @@ bool ParseSound(bool& active, std::string& filepath, ConfigValue& parent, std::s
          value.HasMember("filepath") && value["filepath"].IsString() )) return false;
     active = value["activated"].GetBool();
     filepath = value["filepath"].GetString();
-    return true;
-}
-
-bool ParseFNS(bool& active, ConfigValue& parent, std::string_view soundName) {
-    if (!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) return false;
-    ConfigValue value = parent[soundName.data()].GetObject();
-    if (!(value.HasMember("activated") && value["activated"].IsBool())) return false;
-    active = value["activated"].GetBool();
-    getLogger().info("FNS Settings parsed succesfully");
     return true;
 }
 
@@ -108,7 +90,6 @@ void SaveConfig()
     AddChildSound(soundsValue, "Firework", Config.firework_Active, Config.firework_filepath, allocator);  
     AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, allocator); 
     AddChildSound(soundsValue, "LobbyMusic", Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, allocator);
-    AddChildSoundFNS(soundsValue, "NeonSignFlicker", Config.NeonSignFlicker_Active, allocator);
     getConfig().config.AddMember("SoundsConfig_v1", soundsValue, allocator); 
     getConfig().Write();
 }
@@ -127,7 +108,6 @@ bool LoadConfig()
         if(!ParseSound(Config.firework_Active, Config.firework_filepath, soundsValue, "Firework")) return false;
         if(!ParseSound(Config.levelCleared_Active, Config.levelCleared_filepath, soundsValue, "LevelCleared")) return false;
         if(!ParseSound(Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, soundsValue, "LobbyMusic")) return false;
-        if(!ParseFNS(Config.NeonSignFlicker_Active, soundsValue, "NeonSignFlicker")) return false;
     } else return false;
     
     return true;
@@ -143,7 +123,7 @@ audioClipLoader::loader lobbyAmbienceLoader;    // Added for LobbyMusic
 Il2CppArray* hitSoundArr; // hitSoundArray
 Il2CppArray* badHitSoundArr; // badHitSoundArray
 Il2CppArray* menuClickArr;
-Il2CppArray* fireworkSoundArr; 
+Il2CppArray* fireworkSoundArr;
 
 void loadAudioClips()
 {
@@ -153,7 +133,7 @@ void loadAudioClips()
     menuClickLoader.filePath = Config.menuClick_filepath;
     fireworkSoundLoader.filePath = Config.firework_filepath;
     levelClearedLoader.filePath =  Config.levelCleared_filepath;
-    lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath;
+    lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
     if(Config.hitSound_Active) hitSoundLoader.load();
     if(Config.badHitSound_Active) badHitSoundLoader.load();
     if(Config.menuMusic_Active) menuMusicLoader.load();
@@ -196,15 +176,6 @@ MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
     SongPreviewPlayer_OnEnable(self);
 }
 
-MAKE_HOOK_OFFSETLESS(FlickeringNeonSign_OnEnable, void, Il2CppObject* self)
-{
-    if (!Config.NeonSignFlicker_Active) {
-        getLogger().info("Disabling FlickerSound");
-        CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_sparksVolume", 0.0f));
-    }
-    FlickeringNeonSign_OnEnable(self);
-}
-// /*
 MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
@@ -367,7 +338,6 @@ extern "C" void load()
     auto* MMSFC_DidDeactivate =     il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidDeactivate", 2);
     auto* GSLFC_DidActivate =       il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidActivate", 3);
     auto* GSLFC_DidDeactivate =     il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidDeactivate", 2);
-    auto* FNS_OnEnable =            il2cpp_utils::FindMethodUnsafe("", "FlickeringNeonSign", "OnEnable", 0);
     INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged);
     INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, SPP_OnEnable);
     INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_Start, NCSEM_Start);
@@ -375,10 +345,9 @@ extern "C" void load()
     INSTALL_HOOK_OFFSETLESS(hkLog, FireworkItemController_Awake, FIC_Awake);
     INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, BUIAM_Start);
     INSTALL_HOOK_OFFSETLESS(hkLog, ResultsViewController_DidActivate, RVC_DidActivate);
-    INSTALL_HOOK_OFFSETLESS(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, MMSFC_DidActivate);  // Added for switching out MP Lobby Music
+    INSTALL_HOOK_OFFSETLESS(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, MMSFC_DidActivate);     // Added for switching out MP Lobby Music
     INSTALL_HOOK_OFFSETLESS(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate, MMSFC_DidDeactivate);  // Added for switching out MP Lobby Music
-    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidActivate, GSLFC_DidActivate);  // Added for switching out MP Lobby Music
-    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate, GSLFC_DidDeactivate);  // Added for switching out MP Lobby Music
-    INSTALL_HOOK_OFFSETLESS(hkLog, FlickeringNeonSign_OnEnable, FNS_OnEnable);
+    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidActivate, GSLFC_DidActivate);              // Added for switching out MP Lobby Music
+    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate, GSLFC_DidDeactivate);          // Added for switching out MP Lobby Music
     getLogger().info("Installed QuestSounds!");
 }
