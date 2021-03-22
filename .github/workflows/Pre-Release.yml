@@ -1,13 +1,13 @@
 on:
   workflow_dispatch:
 
-name: Upload Pre-Release Asset
+name: Pre-Release Mod
 
 jobs:
   build:
     env:
      module_id: QuestSounds
-     version: v0.3.0
+     version: v0.3.0-Pre2
      BSVersion: 1.14.0
     runs-on: ubuntu-latest
     

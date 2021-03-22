@@ -73,10 +73,6 @@ jobs:
         pattern="lib${module_id}*.so"
         files=( $pattern )
         echo ::set-output name=NAME::"${files[0]}"
-    - name: Package QMOD
-      run: |
-        cd ${GITHUB_WORKSPACE}
-        pwsh -Command ./buildQP.ps1 --package
     - name: Package BMBFMod
       run: |
         cd ${GITHUB_WORKSPACE}
@@ -90,7 +86,7 @@ jobs:
         tag_name: ${{ env.version }}
         release_name: ${{ env.module_id }} ${{ env.version }} for Beat Saber ${{ env.BSVersion }}
         body_path: ./rl-notes
-        draft: true
+        draft: false
         prerelease: false
     - name: Upload BMBF Pre-Release Asset
       id: upload-prerelease-BMBFMod
@@ -102,13 +98,3 @@ jobs:
         asset_path: ./${{ env.module_id }}.zip
         asset_name: ${{ env.module_id }}.zip
         asset_content_type: application/zip
-    - name: Upload QMOD Pre-Release Asset
-      id: upload-prerelease-QMOD 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./${{ env.module_id }}.qmod
-        asset_name: ${{ env.module_id }}.qmod
-        asset_content_type: application/qmod
