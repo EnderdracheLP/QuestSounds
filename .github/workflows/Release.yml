@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
 
-name: Upload Pre-Release Asset
+name: Release Mod
 
 jobs:
   build:
