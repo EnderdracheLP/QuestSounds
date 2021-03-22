@@ -7,9 +7,9 @@ echo "Compiling Mod"
 $ModID = "QuestSounds"
 
 if ($args[0] -eq "--package") {
-echo "Actions: Packaging QMod with ModID: $ModID"
-    Compress-Archive -Path "./libs/arm64-v8a/lib${module_id}.so", ".\mod.json" -DestinationPath "./Temp${module_id}.zip" -Update
-    Rename-Item "./Temp${module_id}.zip" "./${module_id}.qmod"
+echo "Actions: Packaging QMod with ModID: $module_id"
+    Compress-Archive -Path "./libs/arm64-v8a/lib$module_id.so", ".\mod.json" -DestinationPath "./Temp$module_id.zip" -Update
+    Rename-Item "./Temp$module_id.zip" "./$module_id.qmod"
 }
 if ($?) {
 echo "Packaging QMod with ModID: $ModID"
