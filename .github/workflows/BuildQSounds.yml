@@ -74,15 +74,35 @@ jobs:
         pattern="lib${module_id}*.so"
         files=( $pattern )
         echo ::set-output name=NAME::"${files[0]}"
+    - name: Package QMOD
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        pwsh -Command ./buildQP.ps1 --package
+    - name: Package BMBFMod
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        pwsh -Command ./buildBMBF.ps1 --package
     - name: Upload non-debug artifact
       uses: actions/upload-artifact@v2
       with:
         name: ${{ steps.libname.outputs.NAME }}
-        path: ./libs/arm64-v8a/${{ steps.libname.outputs.NAME }}
+        path: ${GITHUB_WORKSPACE}/libs/arm64-v8a/${{ steps.libname.outputs.NAME }}
         if-no-files-found: error
     - name: Upload debug artifact
       uses: actions/upload-artifact@v2
       with:
         name: debug_${{ steps.libname.outputs.NAME }}
-        path: ./obj/local/arm64-v8a/${{ steps.libname.outputs.NAME }}
+        path: ${GITHUB_WORKSPACE}/obj/local/arm64-v8a/${{ steps.libname.outputs.NAME }}
+        if-no-files-found: error
+    - name: Upload QMOD
+      uses: actions/upload-artifact@v2
+      with:
+        name: debug_${{ steps.libname.outputs.NAME }}
+        path: ${GITHUB_WORKSPACE}/${module_id}.qmod
+        if-no-files-found: error
+    - name: Upload BMBFMod
+      uses: actions/upload-artifact@v2
+      with:
+        name: debug_${{ steps.libname.outputs.NAME }}
+        path: ${GITHUB_WORKSPACE}/${module_id}.zip
         if-no-files-found: error
