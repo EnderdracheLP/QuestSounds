@@ -71,7 +71,7 @@ jobs:
     - name: Get Library Name
       id: libname
       run: |
-        cd ./libs/arm64-v8a/
+        cd ${GITHUB_WORKSPACE}/libs/arm64-v8a/
         pattern="lib${module_id}*.so"
         files=( $pattern )
         echo ::set-output name=NAME::"${files[0]}"
