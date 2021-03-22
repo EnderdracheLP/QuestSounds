@@ -102,7 +102,7 @@ jobs:
         path: ./${{ env.module_id }}.qmod
         if-no-files-found: warn
     - name: Upload BMBFMod
-      uses: bradennapier/eslint-plus-action@v3.4.2
+      uses: actions/upload-artifact@v2
       with:
         name: ${{ env.module_id }}.zip
         path: ./${{ env.module_id }}.zip
