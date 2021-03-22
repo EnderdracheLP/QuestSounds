@@ -98,12 +98,12 @@ jobs:
     - name: Upload QMOD
       uses: actions/upload-artifact@v2
       with:
-        name: ${module_id}.qmod
-        path: ./${module_id}
+        name: ${{ module_id }}.qmod
+        path: ./${{ module_id }}.qmod
         if-no-files-found: warn
     - name: Upload BMBFMod
       uses: actions/upload-artifact@v2
       with:
-        name: ${module_id}.zip
-        path: ./${module_id}
+        name: ${{ module_id }}.zip
+        path: ./${{ module_id }}.zip
         if-no-files-found: warn
