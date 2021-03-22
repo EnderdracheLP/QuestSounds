@@ -80,7 +80,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         pwsh -Command ./buildBMBF.ps1 --package
     - name: Create Release
-      id: ${{ env.module_id }}
+      id: create_pre-release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
