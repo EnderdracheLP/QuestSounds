@@ -82,23 +82,23 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         pwsh -Command ./buildBMBF.ps1 --package
     - name: Create Release
-      id: create_pre-release
+      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ env.version }}
         release_name: ${{ env.module_id }} ${{ env.version }} for Beat Saber ${{ env.BSVersion }}
-        body_path: ./pre-rl-notes
-        draft: false
-        prerelease: true
+        body_path: ./rl-notes
+        draft: true
+        prerelease: false
     - name: Upload BMBF Pre-Release Asset
       id: upload-prerelease-BMBFMod
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_pre-release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_path: ./${{ env.module_id }}.zip
         asset_name: ${{ env.module_id }}.zip
         asset_content_type: application/zip
@@ -108,7 +108,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.create_pre-release.outputs.upload_url }}
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./${{ env.module_id }}.qmod
         asset_name: ${{ env.module_id }}.qmod
         asset_content_type: application/qmod
