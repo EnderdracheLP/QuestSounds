@@ -84,26 +84,29 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         pwsh -Command ./buildBMBF.ps1 --package
     - name: Upload non-debug artifact
-      uses: actions/upload-artifact@v2
+#      uses: actions/upload-artifact@v2
+      uses: bradennapier/eslint-plus-action@v3.4.2
       with:
-        name: ${{ steps.libname.outputs.NAME }}
+#        name: ${{ steps.libname.outputs.NAME }}
         path: ./libs/arm64-v8a/${{ steps.libname.outputs.NAME }}
         if-no-files-found: error
     - name: Upload debug artifact
-      uses: actions/upload-artifact@v2
+#      uses: actions/upload-artifact@v2
+      uses: bradennapier/eslint-plus-action@v3.4.2
       with:
-        name: debug_${{ steps.libname.outputs.NAME }}
+#        name: debug_${{ steps.libname.outputs.NAME }}
         path: ./obj/local/arm64-v8a/${{ steps.libname.outputs.NAME }}
         if-no-files-found: error
     - name: Upload QMOD
-      uses: actions/upload-artifact@v2
+#      uses: actions/upload-artifact@v2
+      uses: bradennapier/eslint-plus-action@v3.4.2
       with:
-        name: ${{ env.module_id }}.qmod
+#        name: ${{ env.module_id }}.qmod
         path: ./${{ env.module_id }}.qmod
         if-no-files-found: warn
     - name: Upload BMBFMod
-      uses: actions/upload-artifact@v2
+      uses: bradennapier/eslint-plus-action@v3.4.2
       with:
-        name: ${{ env.module_id }}.zip
+#        name: ${{ env.module_id }}.zip
         path: ./${{ env.module_id }}.zip
         if-no-files-found: warn
