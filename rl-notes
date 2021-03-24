@@ -9,7 +9,7 @@ __**Changelog:**__
 - Added option to change LobbyMusic
 - Added check for mp3 file, if the file specified in the config can't be found. 
 (This means it supports mp3s out of the box now, but it's still recommended to change config)
-- Updated to BS-Hook 1.2.3
+- Updated to BS-Hook 1.2.4
 
 Features:
   Support for OGG, MP3 and WAV file formats!

@@ -5,7 +5,7 @@ echo "Compiling Mod"
 }
 
 $ModID = "QuestSounds"
-$BSHook = "1_2_3"
+$BSHook = "1_2_4"
 
 if ($?) {
 echo "Packaging BMBFMod with ModID: $ModID and BSHook Version: $BSHook"

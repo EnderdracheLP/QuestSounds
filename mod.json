@@ -2,7 +2,7 @@
   "_QPVersion": "0.1.0",
   "id": "QuestSounds",
   "name": "Quest Sounds",
-  "version": "0.3.0-Pre2",
+  "version": "0.3.0-Pre3",
   "author": "Rugtveit, EnderdracheLP",
   "packageId": "com.beatgames.beatsaber",
   "packageVersion": "1.14.0",
@@ -11,11 +11,11 @@
   ],
   "libraryFiles": [],
   "dependencies": [
-        {
-            "id": "beatsaber-hook",
-            "version": "1.2.3",
-            "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/822610080234078278/libbeatsaber-hook_1_2_3.qmod"
-        }
+    {
+      "id": "beatsaber-hook",
+      "version": "1.2.4",
+      "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/824249037263470622/beatsaber-hook_1_2_4.qmod"
+    }
 	],
   "fileCopies": []
 }
