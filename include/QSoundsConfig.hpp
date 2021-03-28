@@ -2,7 +2,6 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 #include "main.hpp"
 #include "audiocliploader.hpp"
-#define RAPIDJSON_HAS_STDSTRING 1
 #define SOUND_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/"
 
 std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
@@ -10,24 +9,27 @@ std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicati
 //Config stuff
 struct Config_t
 {
-    bool hitSound_Active = true;
-    bool badHitSound_Active = true;
-    bool menuMusic_Active = true;
-    bool menuClick_Active = true;
-    bool firework_Active = true;
-    bool levelCleared_Active = true;
-    std::string hitSound_filepath = soundPath + "HitSound.ogg";
-    std::string badHitSound_filepath = soundPath + "BadHitSound.ogg";
-    std::string menuMusic_filepath = soundPath + "MenuMusic.ogg";
-    std::string menuClick_filepath = soundPath + "MenuClick.ogg";
-    std::string firework_filepath = soundPath + "Firework.ogg";
-    std::string levelCleared_filepath = soundPath + "LevelCleared.ogg";
-    float hitSound_Volume = 1;
-    float badHitSound_Volume = 1;
-    float menuClick_Volume = 1;
-    float menuMusic_Volume = 1;
-    float firework_Volume = 1;
-    float levelCleared_Volume = 1;
+    bool hitSound_Active        = true;
+    bool badHitSound_Active     = true;
+    bool menuMusic_Active       = true;
+    bool menuClick_Active       = true;
+    bool firework_Active        = true;
+    bool levelCleared_Active    = true;
+    bool lobbyAmbience_Active   = true;
+    std::string hitSound_filepath       = soundPath + "HitSound.ogg";
+    std::string badHitSound_filepath    = soundPath + "BadHitSound.ogg";
+    std::string menuMusic_filepath      = soundPath + "MenuMusic.ogg";
+    std::string menuClick_filepath      = soundPath + "MenuClick.ogg";
+    std::string firework_filepath       = soundPath + "Firework.ogg";
+    std::string levelCleared_filepath   = soundPath + "LevelCleared.ogg";
+    std::string lobbyAmbience_filepath  = soundPath + "LobbyMusic.ogg";
+    float hitSound_Volume       = 1;
+    float badHitSound_Volume    = 1;
+    float menuClick_Volume      = 1;
+    float menuMusic_Volume      = 1;
+    float firework_Volume       = 1;
+    float levelCleared_Volume   = 1;
+    float lobbyAmbience_Volume  = 1;
 }; 
 extern Config_t Config;
 
@@ -69,7 +71,8 @@ void SaveConfig()
     AddChildSound(soundsValue, "MenuClick", Config.menuClick_Active, Config.menuClick_filepath, Config.menuClick_Volume, allocator);
     AddChildSound(soundsValue, "Firework", Config.firework_Active, Config.firework_filepath, Config.firework_Volume, allocator);
     AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, Config.levelCleared_Volume, allocator);
-    getConfig().config.AddMember("Sounds v1", soundsValue, allocator);
+    AddChildSound(soundsValue, "LobbyMusic", Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, Config.lobbyAmbience_Volume, allocator);
+    getConfig().config.AddMember("Sounds v2", soundsValue, allocator);
     getConfig().Write();
 }
 
@@ -77,15 +80,16 @@ bool LoadConfig()
 {
     getConfig().Load();
 
-    if (getConfig().config.HasMember("Sounds v1") && getConfig().config["Sounds v1"].IsObject())
+    if (getConfig().config.HasMember("Sounds v2") && getConfig().config["Sounds v2"].IsObject())
     {
-        ConfigValue soundsValue = getConfig().config["Sounds v1"].GetObject();
+        ConfigValue soundsValue = getConfig().config["Sounds v2"].GetObject();
         if (!ParseSound(Config.hitSound_Active, Config.hitSound_filepath, Config.hitSound_Volume, soundsValue, "HitSound")) return false;
         if (!ParseSound(Config.badHitSound_Active, Config.badHitSound_filepath, Config.badHitSound_Volume, soundsValue, "BadHitSound")) return false;
         if (!ParseSound(Config.menuMusic_Active, Config.menuMusic_filepath, Config.menuMusic_Volume, soundsValue, "MenuMusic")) return false;
         if (!ParseSound(Config.menuClick_Active, Config.menuClick_filepath, Config.menuClick_Volume, soundsValue, "MenuClick")) return false;
         if (!ParseSound(Config.firework_Active, Config.firework_filepath, Config.firework_Volume, soundsValue, "Firework")) return false;
         if (!ParseSound(Config.levelCleared_Active, Config.levelCleared_filepath, Config.levelCleared_Volume, soundsValue, "LevelCleared")) return false;
+        if (!ParseSound(Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, Config.lobbyAmbience_Volume, soundsValue, "LobbyMusic")) return false;
     }
     else return false;
 

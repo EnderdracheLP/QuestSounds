@@ -9,6 +9,8 @@
 #include "GlobalNamespace/NoteCutSoundEffect.hpp"
 #include "GlobalNamespace/BasicUIAudioManager.hpp"
 #include "GlobalNamespace/FireworkItemController.hpp"
+#include "GlobalNamespace/GameServerLobbyFlowCoordinator.hpp"
+#include "GlobalNamespace/MultiplayerModeSelectionFlowCoordinator.hpp"
 using namespace GlobalNamespace;
 
 
@@ -92,87 +94,6 @@ void makeFolder()
     */
 }
 
-//Config stuff
-static struct Config_t
-{
-    bool hitSound_Active = true;
-    bool badHitSound_Active = true;
-    bool menuMusic_Active = true;
-    bool menuClick_Active = true;
-    bool firework_Active = true;
-    bool levelCleared_Active = true;
-    std::string hitSound_filepath = soundPath + "HitSound.ogg";
-    std::string badHitSound_filepath = soundPath + "BadHitSound.ogg";
-    std::string menuMusic_filepath = soundPath + "MenuMusic.ogg";
-    std::string menuClick_filepath = soundPath + "MenuClick.ogg";
-    std::string firework_filepath = soundPath + "Firework.ogg";
-    std::string levelCleared_filepath = soundPath + "LevelCleared.ogg";
-    float hitSound_Volume = 1;
-    float badHitSound_Volume = 1;
-    float menuClick_Volume = 1;
-    float menuMusic_Volume = 1;
-    float firework_Volume = 1;
-    float levelCleared_Volume = 1;
-} Config;
-
-void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, float Volume, ConfigDocument::AllocatorType& allocator)
-{
-    ConfigValue value(rapidjson::kObjectType);
-    value.AddMember("activated", active, allocator);
-    std::string data(filePath);
-    value.AddMember("filepath", data, allocator);
-    value.AddMember("Volume", Volume, allocator);
-    parent.AddMember((ConfigValue::StringRefType)soundName.data(), value, allocator);
-}
-
-// Edited ParseVector made by Darknight1050
-bool ParseSound(bool& active, std::string& filepath, float& Volume, ConfigValue& parent, std::string_view soundName)
-{
-    if(!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) return false;
-    ConfigValue value = parent[soundName.data()].GetObject();
-    if(!(value.HasMember("activated") && value["activated"].IsBool() &&
-         value.HasMember("filepath") && value["filepath"].IsString() &&
-         value.HasMember("Volume") && value["Volume"].IsFloat())) return false;
-    active = value["activated"].GetBool();
-    filepath = value["filepath"].GetString();
-    Volume = value["Volume"].GetFloat();
-    return true;
-}
-
-void SaveConfig()
-{
-    getConfig().config.RemoveAllMembers();
-    getConfig().config.SetObject();
-    auto& allocator = getConfig().config.GetAllocator();
-
-    ConfigValue soundsValue(rapidjson::kObjectType);
-    AddChildSound(soundsValue, "HitSound", Config.hitSound_Active, Config.hitSound_filepath, Config.hitSound_Volume, allocator);
-    AddChildSound(soundsValue, "BadHitSound", Config.badHitSound_Active, Config.badHitSound_filepath, Config.badHitSound_Volume, allocator);  
-    AddChildSound(soundsValue, "MenuMusic", Config.menuMusic_Active, Config.menuMusic_filepath, Config.menuMusic_Volume, allocator);
-    AddChildSound(soundsValue, "MenuClick", Config.menuClick_Active, Config.menuClick_filepath, Config.menuClick_Volume, allocator);
-    AddChildSound(soundsValue, "Firework", Config.firework_Active, Config.firework_filepath, Config.firework_Volume, allocator);
-    AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, Config.levelCleared_Volume, allocator);
-    getConfig().config.AddMember("Sounds 1.0.0", soundsValue, allocator); 
-    getConfig().Write();
-}
-
-bool LoadConfig()
-{
-    getConfig().Load();
-
-    if(getConfig().config.HasMember("Sounds 1.0.0") && getConfig().config["Sounds 1.0.0"].IsObject())
-    {
-        ConfigValue soundsValue = getConfig().config["Sounds 1.0.0"].GetObject();
-        if(!ParseSound(Config.hitSound_Active, Config.hitSound_filepath, Config.hitSound_Volume, soundsValue, "HitSound")) return false;
-        if(!ParseSound(Config.badHitSound_Active, Config.badHitSound_filepath, Config.badHitSound_Volume, soundsValue, "BadHitSound")) return false;
-        if(!ParseSound(Config.menuMusic_Active, Config.menuMusic_filepath, Config.menuMusic_Volume, soundsValue, "MenuMusic")) return false;
-        if(!ParseSound(Config.menuClick_Active, Config.menuClick_filepath, Config.menuClick_Volume, soundsValue, "MenuClick")) return false;
-        if(!ParseSound(Config.firework_Active, Config.firework_filepath, Config.firework_Volume, soundsValue, "Firework")) return false;
-        if(!ParseSound(Config.levelCleared_Active, Config.levelCleared_filepath, Config.levelCleared_Volume, soundsValue, "LevelCleared")) return false;
-    } else return false;
-    
-    return true;
-}
 
 audioClipLoader::loader hitSoundLoader; // hitSound
 audioClipLoader::loader badHitSoundLoader; // badHitSound
@@ -180,17 +101,11 @@ audioClipLoader::loader menuMusicLoader;    // menuMusic
 audioClipLoader::loader menuClickLoader;
 audioClipLoader::loader fireworkSoundLoader;
 audioClipLoader::loader levelClearedLoader;
+audioClipLoader::loader lobbyAmbienceLoader;    // Added for LobbyMusic
 Array<UnityEngine::AudioClip*>* hitSoundArr; // hitSoundArray
 Array<UnityEngine::AudioClip*>* badHitSoundArr; // badHitSoundArray
 Array<UnityEngine::AudioClip*>* menuClickArr;
 Array<UnityEngine::AudioClip*>* fireworkSoundArr;
-
-
-/*
-also lines 147 to 150 is not only bad practice
-(because holding pointers to C# objects like that may not consider the possibilities if the object is GC'd)
-but also bad because you set them to null
-*/
 
 void loadAudioClips()
 {
@@ -200,12 +115,14 @@ void loadAudioClips()
     menuClickLoader.filePath = Config.menuClick_filepath;
     fireworkSoundLoader.filePath = Config.firework_filepath;
     levelClearedLoader.filePath =  Config.levelCleared_filepath;
+    lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
     if(Config.hitSound_Active) hitSoundLoader.load();
     if(Config.badHitSound_Active) badHitSoundLoader.load();
     if(Config.menuMusic_Active) menuMusicLoader.load();
     if(Config.menuClick_Active) menuClickLoader.load();
     if(Config.firework_Active) fireworkSoundLoader.load();
     if(Config.levelCleared_Active) levelClearedLoader.load();
+    if(Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
 }
 
 // Creates an Array, of AudioClips
@@ -230,13 +147,71 @@ MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, SongPreviewPlayer* self) 
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
 
     if (menuMusicLoader.loaded)
-    {   
+    {
         UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
         if (audioClip != nullptr)
             self->defaultAudioClip = audioClip;
     }
     SongPreviewPlayer_OnEnable(self);
 }
+
+MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+{
+    getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
+
+    getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
+    if (lobbyAmbienceLoader.loaded && addedToHierarchy)
+    {
+        getLogger().debug("Overwriting LobbyAmbience Audio");
+        UnityEngine::AudioClip* audioClip = lobbyAmbienceLoader.getClip();
+        self->ambienceAudioClip = audioClip;
+    }
+    GameServerLobbyFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
+}
+
+MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
+{
+    getLogger().debug("GameServerLobbyFlowCoordinator_DidDeactivate");
+
+    getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
+    if (menuMusicLoader.loaded && removedFromHierarchy)
+    {
+        getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
+        UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
+        self->ambienceAudioClip = audioClip;
+    }
+    GameServerLobbyFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
+}
+// */
+
+// /*
+MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidActivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+{
+    getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidActivate");
+
+    getLogger().info("LobbyMusic is it true: %i", menuMusicLoader.loaded);
+    if (menuMusicLoader.loaded && addedToHierarchy)
+    {
+        getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
+        UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
+        self->ambienceAudioClip = audioClip;
+    }
+    MultiplayerModeSelectionFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling); // This has to be ran last, otherwise it will not work correctly
+}
+// /*
+MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
+{
+    getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidDeactivate");
+
+    getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
+    if (menuMusicLoader.loaded && removedFromHierarchy)
+    {
+        UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
+        self->ambienceAudioClip = audioClip;
+    }
+    MultiplayerModeSelectionFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
+}
+//*/
 
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, NoteCutSoundEffectManager* self) {
     if(hitSoundLoader.loaded)
@@ -316,5 +291,9 @@ extern "C" void load()
     INSTALL_HOOK_OFFSETLESS(hkLog, FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
     INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0));
     INSTALL_HOOK_OFFSETLESS(hkLog, ResultsViewController_DidActivate, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3));
+    INSTALL_HOOK_OFFSETLESS(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidActivate", 3));     // Added for switching out MP Lobby Music
+    INSTALL_HOOK_OFFSETLESS(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate, il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidDeactivate", 2));  // Added for switching out MP Lobby Music
+    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidActivate, il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidActivate", 3));              // Added for switching out MP Lobby Music
+    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate, il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidDeactivate", 2));          // Added for switching out MP Lobby Music
     getLogger().debug("Installed QuestSounds!");
 }
