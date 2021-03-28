@@ -16,58 +16,45 @@
     return 0;
     }
 
-    //bool doesfileexist(std::string_view filename) {
-    //    int accessStr = access(filename.data(), X_OK);
-    //    getLogger().debug("Root Access %d", accessStr);
-    //    if (access(filename.data(), X_OK) != -1) {
-    //        return true;
-    //    } else if (access(filename.data(), W_OK | R_OK) != -1) {
-    //        int accessStr = access(filename.data(), W_OK | R_OK);
-    //        getLogger().debug("Normal Read Write Access %d", accessStr);
-    //        return true;
-    //    } else return false;
-    //}
-
 bool audioClipLoader::loader::load()
 {
     //Stage 0 
     getLogger().info("Starting Stage 0");
     getLogger().info("FilePath to check is %s", filePath.c_str());
-    // Checks if the given File in the config exists
-    bool fileError = fileexists(filePath);
-    if (!fileError) { 
-    fileError = fileexists(filePath.replace(filePath.length()-3, 3, "mp3"));
-    filePath = filePath.replace(filePath.length()-3, 3, "mp3");
-    getLogger().warning("Could not find file set in Config, but found file with same name here: %s", filePath.c_str());
-    }
-    getLogger().info("File error is %d", fileError);
-    //bool fileError = true;
-    bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
-    getLogger().info("error is %d", error);
-    if(error)
-    {
-        if(!fileError) // If fileError is null or false?
-        {
-            getLogger().error("Found file but Web Request for file %s failed", filePath.c_str());
-            if (audioClipAsync == nullptr) {
-                getLogger().error("audioClipAsync is null");
-            }
-            if (audioSource == nullptr) {
-                getLogger().error("audioSource is null");
-            }
-        } else 
-        {
-            getLogger().error("fileError file %s not found", filePath.c_str());
+    Il2CppString* filePathStr;
+    if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
+        filePathStr = il2cpp_utils::createcsstr(filePath);
+    } else {
+        // Checks if the given File in the config exists
+        bool fileError = fileexists(filePath);
+        // If that file doesn't exist check if the same file with an .mp3 file extension exists
+        if (!fileError) {
+            fileError = fileexists(filePath.replace(filePath.length() - 3, 3, "mp3"));
+            filePath = filePath.replace(filePath.length() - 3, 3, "mp3");
+            getLogger().warning("Could not find file set in Config, but checking for file with mp3 extension: %s", filePath.c_str());
         }
-        getLogger().error("Stage 0 Failed");
-        return false;
+        getLogger().info("File error is %d", fileError);
+        //bool fileError = true;
+        bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
+        getLogger().info("error is %d", error);
+        if (error)
+        {
+            if (!fileError) // If fileError is null or false?
+            {
+                getLogger().error("Found file but Web Request for file %s failed", filePath.c_str());
+            }
+            else
+            {
+                getLogger().error("fileError file %s not found", filePath.c_str());
+            }
+            getLogger().error("Stage 0 Failed");
+            return false;
+        }
+        filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
     }
-    getLogger().info("Stage 0 Done");
+    getLogger().info("Stage 0 Done with %s", filePath.c_str());
 
     //Stage 1
-    Il2CppString* filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
-
-
     audioType = getAudioType(filePath);
     audioClipRequest = CRASH_UNLESS(il2cpp_utils::RunMethod("UnityEngine.Networking", "UnityWebRequestMultimedia", "GetAudioClip", filePathStr, audioType));
     audioClipAsync = CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipRequest, "SendWebRequest"));
