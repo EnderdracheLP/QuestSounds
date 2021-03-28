@@ -9,6 +9,7 @@ __**Changelog:**__
 - Added option to change LobbyMusic
 - Added check for mp3 file, if the file specified in the config can't be found. 
 (This means it supports mp3s out of the box now, but it's still recommended to change config)
+- Added Option to add an URL to the config pointing to a file online
 - Updated to BS-Hook 1.2.4
 
 Features:

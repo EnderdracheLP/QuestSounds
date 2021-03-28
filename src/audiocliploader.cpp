@@ -23,6 +23,7 @@ bool audioClipLoader::loader::load()
     getLogger().info("FilePath to check is %s", filePath.c_str());
     Il2CppString* filePathStr;
     if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
+        getLogger().info("File is URL, skipping file checks and try loading it");
         filePathStr = il2cpp_utils::createcsstr(filePath);
     } else {
         // Checks if the given File in the config exists
@@ -30,8 +31,10 @@ bool audioClipLoader::loader::load()
         // If that file doesn't exist check if the same file with an .mp3 file extension exists
         if (!fileError) {
             fileError = fileexists(filePath.replace(filePath.length() - 3, 3, "mp3"));
-            filePath = filePath.replace(filePath.length() - 3, 3, "mp3");
-            getLogger().warning("Could not find file set in Config, but checking for file with mp3 extension: %s", filePath.c_str());
+            if (fileError) {
+                filePath = filePath.replace(filePath.length() - 3, 3, "mp3");
+                getLogger().warning("Could not find file set in Config, but found file with mp3 extension: %s", filePath.c_str());
+            } else getLogger().error("Could not find file with mp3 extension");
         }
         getLogger().info("File error is %d", fileError);
         //bool fileError = true;

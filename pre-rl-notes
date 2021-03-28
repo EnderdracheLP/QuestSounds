@@ -6,13 +6,14 @@ QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sound
 just drop them into default path or your custom path!
 
 __**Changelog:**__ 
-__Pre1 New Features:__
+__Pre1 and Pre2 New Features:__
 - Added option to change LobbyMusic
 - Added check for mp3 file, if the file specified in the config can't be found. 
 (This means it supports mp3s out of the box now, but it's still recommended to change config)
 
 __Pre3 Update:__
 - Updated to BS-Hook 1.2.4
+- Added option to set an URL pointing to a file online in the Config
 
 Features:
   Support for OGG, MP3 and WAV file formats!
