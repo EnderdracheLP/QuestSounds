@@ -86,7 +86,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: ${{ github.ref }}}
-        release_name: ${{ env.module_id }} ${{ env.version }} for Beat Saber ${{ env.BSVersion }}
+        release_name: ${{ env.module_id }} ${{ env.GITHUB_REF }} for Beat Saber ${{ env.BSVersion }}
         body_path: ./pre-rl-notes
         draft: false
         prerelease: true
