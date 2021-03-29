@@ -6,7 +6,7 @@ env:
      module_id: QuestSounds
      BSVersion: 1.14.0
      ndkname: android-ndk-r22
-     version: v0.3.0-Pre3
+     version: 0.3.0-Pre3
 
 jobs:
   build:
