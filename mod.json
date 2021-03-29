@@ -1,8 +1,8 @@
 {
-  "_QPVersion": "0.1.0",
+  "_QPVersion": "0.1.1",
   "id": "QuestSounds",
   "name": "Quest Sounds",
-  "version": "0.3.0-Pre3",
+  "version": "0.3.0",
   "author": "Rugtveit, EnderdracheLP",
   "packageId": "com.beatgames.beatsaber",
   "packageVersion": "1.14.0",
