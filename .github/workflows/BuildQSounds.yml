@@ -6,11 +6,12 @@ on:
     branches: [ master, dev ]
   pull_request:
     branches: [ master, dev ]
+
+env:
+     module_id: QuestSounds
     
 jobs:
   build:
-    env:
-     module_id: QuestSounds
     runs-on: ubuntu-latest
     
     steps:
@@ -78,6 +79,7 @@ jobs:
     - name: Package QMOD
       run: |
         cd ${GITHUB_WORKSPACE}
+        sed -i 's/{VERSION_NUMBER_PLACEHOLDER}/${{ env.GITHUB_SHA }}/' mod.json
         pwsh -Command ./buildQP.ps1 --package
     - name: Upload non-debug artifact
       uses: actions/upload-artifact@v2

@@ -1,14 +1,16 @@
 on:
   workflow_dispatch:
 
+    env:
+     module_id: QuestSounds
+     version: 0.3.0
+     BSVersion: 1.14.0
+     ndkname: android-ndk-r22
+
 name: Release Mod
 
 jobs:
   build:
-    env:
-     module_id: QuestSounds
-     version: v0.3.0
-     BSVersion: 1.14.0
     runs-on: ubuntu-latest
     
     steps:
@@ -34,8 +36,6 @@ jobs:
     
     - name: Install Android NDK
       if: steps.cache-ndk.outputs.cache-hit != 'true'
-      env:
-        ndkname: android-ndk-r22
       run: |
         wget -q -O ndk.zip https://dl.google.com/android/repository/${ndkname}-linux-x86_64.zip
         unzip -q ndk.zip
@@ -76,6 +76,7 @@ jobs:
     - name: Package QMOD
       run: |
         cd ${GITHUB_WORKSPACE}
+        sed -i 's/{VERSION_NUMBER_PLACEHOLDER}/${{ env.version }}/' mod.json
         pwsh -Command ./buildQP.ps1 --package
     - name: Create Release
       id: create_release
