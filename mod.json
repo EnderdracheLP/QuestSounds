@@ -13,8 +13,8 @@
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "version": "1.2.4",
-      "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/824249037263470622/beatsaber-hook_1_2_4.qmod"
+      "version": "^1.2.4",
+      "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/826405432641060904/beatsaber-hook_1_2_4.qmod"
     }
 	],
   "fileCopies": []
