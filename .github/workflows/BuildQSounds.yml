@@ -10,6 +10,7 @@ on:
 env:
      module_id: QuestSounds
      version: 0.3.0
+     bs_hook: 1_2_6
      ndkname: android-ndk-r22
     
 jobs:
@@ -79,7 +80,7 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}
         sed -i 's/{VERSION_NUMBER_PLACEHOLDER}/${{ env.version }}-Dev/' mod.json
-        pwsh -Command ./buildQP.ps1 --package
+        pwsh -Command ./buildQMOD.ps1 --package
     - name: Upload non-debug artifact
       uses: actions/upload-artifact@v2
       with:

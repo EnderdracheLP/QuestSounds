@@ -9,13 +9,9 @@
   "modFiles": [
     "libQuestSounds.so"
   ],
-  "libraryFiles": [],
-  "dependencies": [
-    {
-      "id": "beatsaber-hook",
-      "version": "^1.2.4",
-      "downloadIfMissing": "https://cdn.discordapp.com/attachments/769457887415894036/826405432641060904/beatsaber-hook_1_2_4.qmod"
-    }
-	],
+  "libraryFiles": [
+    "libbeatsaber-hook_1_3_0.so"
+  ],
+  "dependencies": [],
   "fileCopies": []
 }
