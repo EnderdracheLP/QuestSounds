@@ -1,0 +1,17 @@
+{
+  "_QPVersion": "0.1.1",
+  "id": "QuestSounds",
+  "name": "Quest Sounds",
+  "version": "{VERSION_NUMBER_PLACEHOLDER}",
+  "author": "Rugtveit, EnderdracheLP",
+  "packageId": "com.beatgames.beatsaber",
+  "packageVersion": "1.14.0",
+  "modFiles": [
+    "libQuestSounds.so"
+  ],
+  "libraryFiles": [
+    "libbeatsaber-hook_{BS_Hook}.so"
+  ],
+  "dependencies": [],
+  "fileCopies": []
+}
