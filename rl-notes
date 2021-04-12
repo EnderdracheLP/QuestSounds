@@ -10,7 +10,7 @@ __**Changelog:**__
 - Added check for mp3 file, if the file specified in the config can't be found. 
 (This means it supports mp3s out of the box now, but it's still recommended to change config)
 - Added Option to add an URL to the config pointing to a file online
-- Updated to BS-Hook 1.3.0
+- Updated to BS-Hook 1.3.3
 
 Features:
   Support for OGG, MP3 and WAV file formats!

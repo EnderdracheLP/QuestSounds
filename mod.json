@@ -10,7 +10,7 @@
     "libQuestSounds.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_1_3_0.so"
+    "libbeatsaber-hook_{BS_Hook}.so"
   ],
   "dependencies": [],
   "fileCopies": []
