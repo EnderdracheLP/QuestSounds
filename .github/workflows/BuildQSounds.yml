@@ -9,7 +9,7 @@ on:
 
 env:
      module_id: QuestSounds
-     version: 0.3.0
+     version: 0.3.0-Dev
      bs_hook: 1_3_3
      ndkname: android-ndk-r22
     
@@ -68,7 +68,7 @@ jobs:
     - name: Build
       run: |
         cd ${GITHUB_WORKSPACE}
-        pwsh -Command ./build.ps1
+        pwsh -Command ./build.ps1 --actions
     - name: Get Library Name
       id: libname
       run: |

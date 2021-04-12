@@ -5,7 +5,7 @@ $BSHook = "1_3_3"
 $VERSION = "0.3.0"
 }
 
-if ($args[0] -eq "--package") {
+if ($args[0] -eq "--actions") {
     $ModID = $env:module_id
     $BSHook = $env:bs_hook
     $VERSION = $env:version
