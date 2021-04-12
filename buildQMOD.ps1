@@ -8,13 +8,12 @@ echo "Compiling Mod"
 }
 
     $modjson = "$PSScriptRoot/mod.json"
-
+    Copy-Item "./mod_Template.json" "./mod.json" -Force
 # TODO: Get the below working with Github Actions variables.
 if ($args[0] -eq "--package") {
     $ModID = $env:module_id
     $BSHook = $env:bs_hook
 echo "Actions: Packaging QMod with ModID: $ModID and BS-Hook version: $BSHook"
-    Copy-Item "./mod_Template.json" "./Android.mk" -Force
     (Get-Content "./mod.json").replace('{VERSION_NUMBER_PLACEHOLDER}', "$env:version") | Set-Content "./mod.json"
     (Get-Content "./mod.json").replace('{BS_Hook}', "$BSHook") | Set-Content "./mod.json"
     Compress-Archive -Path "./libs/arm64-v8a/lib$ModID.so", "./libs/arm64-v8a/libbeatsaber-hook_$BSHook.so", ".\mod.json" -DestinationPath "./Temp$ModID.zip" -Update

@@ -77,7 +77,6 @@ jobs:
     - name: Package QMOD
       run: |
         cd ${GITHUB_WORKSPACE}
-        sed -i 's/{VERSION_NUMBER_PLACEHOLDER}/${{ env.version }}/' mod.json
         pwsh -Command ./buildQMOD.ps1 --package
     - name: Create Release
       id: create_release
