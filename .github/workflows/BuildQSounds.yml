@@ -68,7 +68,7 @@ jobs:
     - name: Build
       run: |
         cd ${GITHUB_WORKSPACE}
-        pwsh -Command ./build.ps1
+        pwsh -Command ./build.ps1 --package
     - name: Get Library Name
       id: libname
       run: |
