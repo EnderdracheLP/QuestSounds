@@ -9,8 +9,8 @@ on:
 
 env:
      module_id: QuestSounds
-     version: 0.3.0
-     bs_hook: 1_3_3
+     version: 0.3.0-Dev1
+     bs_hook: 1_1_5
      ndkname: android-ndk-r22
     
 jobs:

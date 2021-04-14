@@ -4,14 +4,14 @@
   "info": {
     "name": "QuestSounds",
     "id": "QuestSounds",
-    "version": "0.3.0",
+    "version": "0.3.0-Dev1",
     "url": null,
     "additionalData": {}
   },
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "^1.1.6",
+      "versionRange": "<=1.1.5",
       "additionalData": {
         "extraFiles": [
           "src/inline-hook"
