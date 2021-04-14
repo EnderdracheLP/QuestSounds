@@ -133,14 +133,14 @@ void loadAudioClips()
     menuClickLoader.filePath = Config.menuClick_filepath;
     fireworkSoundLoader.filePath = Config.firework_filepath;
     levelClearedLoader.filePath =  Config.levelCleared_filepath;
-    lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
+    //lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
     if(Config.hitSound_Active) hitSoundLoader.load();
     if(Config.badHitSound_Active) badHitSoundLoader.load();
     if(Config.menuMusic_Active) menuMusicLoader.load();
     if(Config.menuClick_Active) menuClickLoader.load();
     if(Config.firework_Active) fireworkSoundLoader.load();
     if(Config.levelCleared_Active) levelClearedLoader.load();
-    if(Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
+    //if(Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
 }
 
 Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
