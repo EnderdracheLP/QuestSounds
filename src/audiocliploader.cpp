@@ -31,23 +31,36 @@ using namespace UnityEngine;
 bool audioClipLoader::loader::load()
 {
     //Stage 0 
-    bool fileError = fileexists(filePath.c_str());
-    bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
-    if(error)
-    {
-        if(!fileError)
+    getLogger().info("Starting Stage 0");
+    getLogger().info("FilePath to check is %s", filePath.c_str());
+    Il2CppString* filePathStr;
+    if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
+        getLogger().info("Filepath is URL, skipping file checks and try loading it");
+        filePathStr = il2cpp_utils::createcsstr(filePath);
+    }
+    else {
+        bool fileError = fileexists(filePath.c_str());
+        getLogger().info("File error is %d", fileError);
+        bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
+        getLogger().info("error is %d", error);
+        if (error)
         {
-            getLogger().error("!fileError");
-        } else 
-        {
-            getLogger().info("fileError");
+            if (!fileError) // If fileError is null or false?
+            {
+                getLogger().error("File %s not found", filePath.c_str());
+            }
+            else
+            {
+                getLogger().error("Something went wrong when trying to load", filePath.c_str());
+            }
+            getLogger().error("Stage 0 Failed");
+            return false;
         }
-        getLogger().info("Stage 0 Done");
-        return false;
+        else { getLogger().info("Stage 0 Done with %s", filePath.c_str()); }
+        filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
     }
 
     //Stage 1
-    Il2CppString* filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
 
     audioType = getAudioType(filePath);
     audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
