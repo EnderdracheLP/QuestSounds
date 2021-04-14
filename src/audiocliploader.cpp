@@ -103,10 +103,9 @@ bool audioClipLoader::loader::load()
             }
             getLogger().error("Stage 0 Failed");
             return false;
-        }
+        } else { getLogger().info("Stage 0 Done with %s", filePath.c_str()); }
         filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
     }
-    getLogger().info("Stage 0 Done with %s", filePath.c_str());
 
     //Stage 1
     audioType = getAudioType(filePath);
