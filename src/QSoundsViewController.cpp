@@ -14,7 +14,7 @@ using namespace UnityEngine::UI;
 using namespace UnityEngine;
 using namespace HMUI;
 
-DEFINE_CLASS(QuestSounds::QSoundsViewController);
+DEFINE_TYPE(QuestSounds::QSoundsViewController);
 
 std::list<UnityEngine::UI::Button*> AClipList = {};
 
