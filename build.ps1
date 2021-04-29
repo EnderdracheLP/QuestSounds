@@ -3,7 +3,7 @@ if ($args.Count -eq 0) {
 $ModID = "QuestSounds"
 $VERSION = "1.0.0"
 $BSHook = "1_3_3"
-$codegen_ver = "0_7_1"
+$codegen_ver = "0_7_2"
 }
 
 if ($args[0] -eq "--actions") {

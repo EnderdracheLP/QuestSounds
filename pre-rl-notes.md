@@ -1,4 +1,4 @@
-__**QuestSounds 0.3.0-Pre4 for Beat Saber 1.14.0**__
+__**QuestSounds 0.3.0-Pre4 for Beat Saber 1.15.0**__
 
 **READ ENTIRE POST BEFORE OPENING AN ISSUE**
 Description:
