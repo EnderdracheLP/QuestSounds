@@ -56,7 +56,7 @@ bool audioClipLoader::loader::load()
     std::string CheckPath = filePath;
     if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
         getLogger().info("Filepath is URL, skipping file checks and try loading it");
-        filePathStr = il2cpp_utils::createcsstr(filePath);
+        filePathStr = il2cpp_utils::newcsstr(filePath);
     } else {
         // Checks if the given File in the config exists
         bool fileError = fileexists(filePath);
@@ -104,7 +104,7 @@ bool audioClipLoader::loader::load()
             getLogger().error("Stage 0 Failed");
             return false;
         } else { getLogger().info("Stage 0 Done with %s", filePath.c_str()); }
-        filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
+        filePathStr = il2cpp_utils::newcsstr("file:///" + filePath);
     }
 
     //Stage 1
@@ -126,7 +126,7 @@ void audioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject* asyn
     Il2CppObject* temporaryClip = CRASH_UNLESS(il2cpp_utils::RunMethod("UnityEngine.Networking", "DownloadHandlerAudioClip", "GetContent", obj->audioClipRequest));
     if(temporaryClip != nullptr)
     {  
-        Il2CppString* goName = il2cpp_utils::createcsstr("AudioClipGO");
+        Il2CppString* goName = il2cpp_utils::newcsstr("AudioClipGO");
         Il2CppObject* audioClipGO = CRASH_UNLESS(il2cpp_utils::NewUnsafe(il2cpp_utils::GetClassFromName("UnityEngine", "GameObject"), goName));
         obj->audioSource = CRASH_UNLESS(il2cpp_utils::RunMethod(audioClipGO, "AddComponent", il2cpp_utils::GetSystemType("UnityEngine", "AudioSource")));
         CRASH_UNLESS(il2cpp_utils::SetPropertyValue(obj->audioSource, "playOnAwake", false));
