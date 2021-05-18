@@ -77,7 +77,7 @@ jobs:
         path: QPM_Temp
         key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm.json', '.github/BuildQSounds.yml') }}
         restore-keys: |
-          ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm.json', '.github/BuildQSounds.yml') }}
+          ${{ runner.os }}-${{ env.cache-name }}-
           ${{ runner.os }}-${{ env.cache-name }}
       
     - name: QPM Restore
