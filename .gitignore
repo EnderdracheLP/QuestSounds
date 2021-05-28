@@ -63,4 +63,4 @@ extern/
 
 .vscode/c_cpp_properties.json
 /QuestSounds.qmod
-logcat.log
+*.log

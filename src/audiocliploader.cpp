@@ -1,6 +1,8 @@
 #include "main.hpp"
 #include "audiocliploader.hpp"
 #include <unistd.h>
+#include <dirent.h> // Added for 
+#include <list>     // getting files in dir
 
     int getAudioType(std::string path) {
     if (path.ends_with(".ogg")) {
@@ -45,6 +47,32 @@
             }
             return PathToCheck
         } // */
+
+    //void FindSoundFiles(std::string expectedPath)
+    //{
+
+    //}
+    //std::list<UnityEngine::UI::Button*> bgList = {};
+
+    //void FindSoundFiles()
+    //{
+    //    bgList = {};
+    //    DIR* imgdir = opendir(SOUND_PATH_FORMAT);
+    //    dirent* fileent;
+    //    while ((fileent = readdir(imgdir)) != NULL)
+    //    {
+    //        std::string filename = fileent->d_name;
+    //        for (char& ch : filename) ch = tolower(ch);
+    //
+    //        if (filename.ends_with(".ogg") || filename.ends_with(".mp3") || filename.ends_with(".wav"))
+    //        {
+    //            UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(ListView->bglistscroll->get_transform());
+    //            UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, SelectImage);
+    //            button->get_gameObject()->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->set_fontStyle(2);
+    //            bgList.push_back(button);
+    //        }
+    //    }
+    //}
 
 bool audioClipLoader::loader::load()
 {

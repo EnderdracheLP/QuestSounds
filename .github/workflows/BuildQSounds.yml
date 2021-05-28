@@ -19,7 +19,7 @@ env:
      module_id: QuestSounds
      version: 0.3.0-Dev-${{ github.run_number }}
      bs_hook: 1_3_5
-     BS_Version: 1.15.0
+     BS_Version: 1.16.0
      ndkname: android-ndk-r22
     
 jobs:

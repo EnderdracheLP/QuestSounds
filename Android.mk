@@ -24,9 +24,9 @@ LOCAL_MODULE :=
 include $(CLEAR_VARS)
 # Creating prebuilt for dependency: beatsaber-hook - version: 1.3.3
 include $(CLEAR_VARS)
-LOCAL_MODULE := beatsaber-hook_1_3_3
+LOCAL_MODULE := beatsaber-hook_1_3_5
 LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
-LOCAL_SRC_FILES := extern/libbeatsaber-hook_1_3_3.so
+LOCAL_SRC_FILES := extern/libbeatsaber-hook_1_3_5.so
 LOCAL_EXPORT_C_FLAGS := -DNEED_UNSAFE_CSHARP
 include $(PREBUILT_SHARED_LIBRARY)
 # Creating prebuilt for dependency: modloader - version: 1.1.0
@@ -45,8 +45,8 @@ LOCAL_SRC_FILES += $(call rwildcard,src/,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
 LOCAL_SHARED_LIBRARIES += modloader
-LOCAL_SHARED_LIBRARIES += beatsaber-hook_1_3_3
+LOCAL_SHARED_LIBRARIES += beatsaber-hook_1_3_5
 LOCAL_LDLIBS += -llog
-LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp/' -DID='"QuestSounds"' -DVERSION='"0.3.0"' -isystem 'extern' -I'./shared' -I'./extern'
+LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp/' -DID='"QuestSounds"' -DVERSION='"0.3.0-InDev"' -isystem 'extern' -I'./shared' -I'./extern'
 LOCAL_C_INCLUDES += ./include ./src
 include $(BUILD_SHARED_LIBRARY)
