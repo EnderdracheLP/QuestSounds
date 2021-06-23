@@ -43,7 +43,6 @@ inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transfor
             getConfig().Write();
             ConfigValue parent = getConfig().config[CONFIG_VERSION].GetObject();
             UpdateBool(parent, "HitSound", value);
-            //getLogger().debug("Test get filePath: %s", getConfig().config["Soundsv2"].GetObject()["HitSound"].GetObject()["filepath"].GetString());
             //getLogger().debug("Test HitSoundValue filePath: %s", HitSoundValue["filepath"].GetString());
             getLogger().debug("Test HitSoundValue filePath: %s", HitSoundValue["filepath"].GetString());
 

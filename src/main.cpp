@@ -291,6 +291,19 @@ extern "C" void load()
 
     if(!LoadConfig()) SaveConfig();
     makeFolder();
+
+    ConfigValue ConfigObject = getConfig().config[CONFIG_VERSION].GetObject();
+    getLogger().debug("Check if [" CONFIG_VERSION"] is Object: %d", getConfig().config[CONFIG_VERSION].IsObject());
+    getLogger().debug("Check if [" CONFIG_VERSION"].HasMember(HitSound): % d", ConfigObject.HasMember("HitSound"));
+    //getLogger().debug("Check if [" CONFIG_VERSION"][HitSound] is Object: %d", getConfig().config[CONFIG_VERSION]["HitSound"].IsObject());
+    //getLogger().debug("Test get filePath: %s", std::string(getConfig().config[CONFIG_VERSION]["HitSound"]["filepath"].GetString()).c_str());
+    static const char* kTypeNames[] =
+    { "Null", "False", "True", "Object", "Array", "String", "Number" };
+    // TODO: Why does iterating through this return nothing
+    //ConfigDocument config = getConfig().config;
+    for (auto& m : getConfig().config[CONFIG_VERSION].GetObject())
+        getLogger().debug("Type of member %s is %s\n",
+            m.name.GetString(), kTypeNames[m.value.GetType()]);
     getLogger().debug("Installing QuestSounds!");
     INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_Internal_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
     INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0));
