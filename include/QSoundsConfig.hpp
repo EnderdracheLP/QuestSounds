@@ -2,13 +2,12 @@
 #include "main.hpp"
 #define RAPIDJSON_HAS_STDSTRING 1
 #define SOUND_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/"
-#define CONFIG_VERSION "Soundsv2"
+#define CONFIG_VERSION "SoundsConfig_v2"
 
 namespace QSoundsConfig {
     static std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());;
 
     //static const ConfigValue soundsConfigParent = getConfig().config[CONFIG_VERSION].GetObject();
-
     //Config stuff
     struct Config_t
     {
@@ -38,31 +37,6 @@ namespace QSoundsConfig {
 
     void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, ConfigDocument::AllocatorType& allocator);
     bool ParseSound(bool& active, std::string& filepath, ConfigValue& parent, std::string_view soundName);
-
-    inline void UpdateBool(ConfigValue& parent, std::string_view soundName, bool& active)
-    {
-        if (!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) {
-            getLogger().error("Object %s does not exist", std::string(soundName).c_str());
-            return;
-        }
-        ConfigValue value = parent[soundName.data()].GetObject();
-        getLogger().debug("Updating Bool: \"%s\":%s to %s", std::string(soundName).c_str(), value["activated"].GetBool(), active);
-        //if (!(value.HasMember("activated") && value["activated"].IsBool())) return;
-        value["activated"].SetBool(active);
-        getConfig().Write();
-    }
-
-    inline void UpdatePath(ConfigValue& parent, std::string_view soundName, std::string filepath)
-    {
-        //if (!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) return;
-        ConfigValue value = parent[soundName.data()].GetObject();
-        //std::string test = value["filepath"].GetString();
-        getLogger().debug("Updating FilePath: \"%s\":%s to %s", std::string(soundName).c_str(), std::string(value["filepath"].GetString()).c_str(), filepath.c_str());
-        //if (!(value.HasMember("filepath") && value["filepath"].IsString())) return;
-        value["filepath"].SetString((ConfigValue::StringRefType)filepath.c_str());
-        getConfig().Write();
-    }
-
 
     void SaveConfig();
     bool LoadConfig();

@@ -1,5 +1,5 @@
 #include "QSoundsConfig.hpp"
-#include "QSoundsViewController.hpp"
+#include "QSoundsConfigViewController.hpp"
 #include "main.hpp"
 
 #include "questui/shared/BeatSaberUI.hpp"
@@ -17,35 +17,24 @@ using namespace HMUI;
 using namespace QSoundsConfig;
 
 #if !defined(REGISTER_FUNCTION)
-DEFINE_TYPE(QuestSounds, QSoundsViewController);
+DEFINE_TYPE(QuestSounds, QSoundsConfigViewController);
 #elif defined(DEFINE_TYPE) && defined(REGISTER_FUNCTION)
-DEFINE_TYPE(QuestSounds::QSoundsViewController);
+DEFINE_TYPE(QuestSounds::QSoundsConfigViewController);
 #elif defined(DEFINE_CLASS)
-DEFINE_CLASS(QuestSounds::QSoundsViewController);
+DEFINE_CLASS(QuestSounds::QSoundsConfigViewController);
 #endif
 
 std::list<UnityEngine::UI::Button*> AClipList = {};
 
-ConfigValue SoundValue;
-ConfigValue HitSoundValue;
+//ConfigValue SoundValue;
+//ConfigValue HitSoundValue;
 //ConfigValue HitSoundString = HitSoundValue["filepath"];
 
 
-inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transform* parent, ConfigValue& configValue, std::string text, bool* config, std::string HoverHint = nullptr) {
-    auto object = ::QuestUI::BeatSaberUI::CreateToggle(parent, text, configValue.GetBool(),
-        [&configValue, config](bool value) /*mutable -> bool*/ {
-            getLogger().debug("Check if bool: %d", configValue.IsBool());
-            getLogger().debug("Config Value before change: in ModConfig: %d, in Config_t: %d", configValue.GetBool(), *config);
-            configValue.SetBool(value);
+inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transform* parent, /*ConfigValue& configValue,*/ std::string text, bool* config, std::string HoverHint = nullptr) {
+    auto object = ::QuestUI::BeatSaberUI::CreateToggle(parent, text, config,
+        [config](bool value) {
             *config = value;
-            getLogger().debug("Value set: %d", value);
-            getLogger().debug("Config Value after change: in ModConfig: %d, in Config_t: %d", configValue.GetBool(), *config);
-            getConfig().Write();
-            ConfigValue parent = getConfig().config[CONFIG_VERSION].GetObject();
-            UpdateBool(parent, "HitSound", value);
-            //getLogger().debug("Test HitSoundValue filePath: %s", HitSoundValue["filepath"].GetString());
-            getLogger().debug("Test HitSoundValue filePath: %s", HitSoundValue["filepath"].GetString());
-
         }
     );
     if (!HoverHint.empty())
@@ -53,23 +42,24 @@ inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transfor
     return object;
 }
 
-void HitSoundToggle(QuestSounds::QSoundsViewController* parent, bool newValue) {
-    HitSoundValue["activated"].SetBool(newValue);
+void HitSoundToggle(QuestSounds::QSoundsConfigViewController* parent, bool newValue) {
+    //HitSoundValue["activated"].SetBool(newValue);
+    Config.hitSound_Active = newValue;
     getConfig().Write();
 }
 //void HitSoundVolume(QuestSounds::QSoundsViewController* parent, float newValue) {
 //    HitSoundValue["Volume"].SetFloat(newValue);
 //    getConfig().Write();
 //}
-void QuestSounds::QSoundsViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+void QuestSounds::QSoundsConfigViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     if (firstActivation) {
-        SoundValue = getConfig().config[CONFIG_VERSION].GetObject();
-        HitSoundValue = SoundValue["HitSound"].GetObject();
+        //SoundValue = getConfig().config[CONFIG_VERSION].GetObject();
+        //HitSoundValue = SoundValue["HitSound"].GetObject();
         get_gameObject()->AddComponent<Touchable*>();
         GameObject* container = QuestUI::BeatSaberUI::CreateScrollableSettingsContainer(get_transform());
         // Enable or Disable HitSounds
         Transform* parent = container->get_transform();
-        QSAddConfigValueToggle(parent, HitSoundValue["activated"], "Custom HitSound", &Config.hitSound_Active, "Activates or deactives HitSound");
+        QSAddConfigValueToggle(parent, "Custom HitSound", &Config.hitSound_Active, "Activates or deactives HitSound");
         //auto onHitSoundSettingChange = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(
         //    classof(UnityEngine::Events::UnityAction_1<bool>*), this, HitSoundToggle
         //    );
@@ -83,7 +73,7 @@ void QuestSounds::QSoundsViewController::DidActivate(bool firstActivation, bool 
     }
 }
 // Write config
-void QuestSounds::QSoundsViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling) {
-    //SaveConfig();
-    getConfig().Write();
+void QuestSounds::QSoundsConfigViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling) {
+    SaveConfig();
+    //getConfig().Write();
 }

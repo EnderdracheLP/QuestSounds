@@ -1,3 +1,8 @@
+#if defined(BS__1_16)
+#elif defined(BS_1_13_2)
+#error Define BS Version
+#endif
+
 #include "main.hpp"
 #include "audiocliploader.hpp"
 #include "QSoundsConfig.hpp"
@@ -24,7 +29,8 @@ using namespace GlobalNamespace;
 using namespace QuestUI;
 
 //#include "NewAudioClipLoader.hpp"
-#include "QSoundsViewController.hpp"
+#include "QSoundsConfigViewController.hpp"
+#include "QSoundsFlowCoordinator.hpp"
 using namespace QuestSounds;
 
 #include "custom-types/shared/register.hpp"
@@ -52,7 +58,7 @@ Logger& getLogger() {
     return *logger;
 }
 
-Config_t QSoundsConfig::Config;
+//Config_t QSoundsConfig::Config;
 
 //std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
 /*
@@ -100,17 +106,17 @@ void makeFolder()
 }
 
 
-audioClipLoader::loader hitSoundLoader; // hitSound
-audioClipLoader::loader badHitSoundLoader; // badHitSound
-audioClipLoader::loader menuMusicLoader;    // menuMusic
-audioClipLoader::loader menuClickLoader;
-audioClipLoader::loader fireworkSoundLoader;
-audioClipLoader::loader levelClearedLoader;
-audioClipLoader::loader lobbyAmbienceLoader;    // Added for LobbyMusic
-Array<UnityEngine::AudioClip*>* hitSoundArr; // hitSoundArray
-Array<UnityEngine::AudioClip*>* badHitSoundArr; // badHitSoundArray
-Array<UnityEngine::AudioClip*>* menuClickArr;
-Array<UnityEngine::AudioClip*>* fireworkSoundArr;
+audioClipLoader::loader hitSoundLoader,     // hitSound
+                        badHitSoundLoader,  // badHitSound
+                        menuMusicLoader,    // menuMusic
+                        menuClickLoader,
+                        fireworkSoundLoader,
+                        levelClearedLoader,
+                        lobbyAmbienceLoader;    // Added for LobbyMusic
+Array<UnityEngine::AudioClip*> *hitSoundArr,    // hitSoundArray
+                               *badHitSoundArr, // badHitSoundArray
+                               *menuClickArr,
+                               *fireworkSoundArr;
 
 void loadAudioClips()
 {
@@ -286,24 +292,14 @@ extern "C" void load()
 
     Logger& hkLog = getLogger();
 
-    custom_types::Register::RegisterType<QuestSounds::QSoundsViewController>();
-    QuestUI::Register::RegisterModSettingsViewController<QuestSounds::QSoundsViewController*>(modInfo);
+    custom_types::Register::RegisterType<QuestSounds::QSoundsFlowCoordinator>();
+    QuestUI::Register::RegisterModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
+    //custom_types::Register::RegisterType<QuestSounds::QSoundsViewController>();
+    //QuestUI::Register::RegisterModSettingsViewController<QuestSounds::QSoundsViewController*>(modInfo);
 
     if(!LoadConfig()) SaveConfig();
     makeFolder();
 
-    ConfigValue ConfigObject = getConfig().config[CONFIG_VERSION].GetObject();
-    getLogger().debug("Check if [" CONFIG_VERSION"] is Object: %d", getConfig().config[CONFIG_VERSION].IsObject());
-    getLogger().debug("Check if [" CONFIG_VERSION"].HasMember(HitSound): % d", ConfigObject.HasMember("HitSound"));
-    //getLogger().debug("Check if [" CONFIG_VERSION"][HitSound] is Object: %d", getConfig().config[CONFIG_VERSION]["HitSound"].IsObject());
-    //getLogger().debug("Test get filePath: %s", std::string(getConfig().config[CONFIG_VERSION]["HitSound"]["filepath"].GetString()).c_str());
-    static const char* kTypeNames[] =
-    { "Null", "False", "True", "Object", "Array", "String", "Number" };
-    // TODO: Why does iterating through this return nothing
-    //ConfigDocument config = getConfig().config;
-    for (auto& m : getConfig().config[CONFIG_VERSION].GetObject())
-        getLogger().debug("Type of member %s is %s\n",
-            m.name.GetString(), kTypeNames[m.value.GetType()]);
     getLogger().debug("Installing QuestSounds!");
     INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_Internal_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
     INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0));

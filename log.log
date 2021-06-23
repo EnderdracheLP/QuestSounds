@@ -1,0 +1,29 @@
+06-23 20:35:06.629 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Parsing /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSound.ogg
+06-23 20:35:06.629 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Checking HitSound, value active 1, filepath, /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSound.ogg
+06-23 20:35:06.629 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Parsing /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSound.ogg
+06-23 20:35:06.629 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Checking BadHitSound, value active 1, filepath, /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSound.ogg
+06-23 20:35:06.629 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Parsing /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic.ogg
+06-23 20:35:06.629 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Checking MenuMusic, value active 1, filepath, /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic.ogg
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Parsing /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuClick.ogg
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Checking MenuClick, value active 1, filepath, /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuClick.ogg
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Parsing /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Firework.ogg
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Checking Firework, value active 1, filepath, /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Firework.ogg
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Parsing /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared.ogg
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Checking LevelCleared, value active 1, filepath, /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared.ogg
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Parsing /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic.ogg
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Checking LobbyMusic, value active 1, filepath, /sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic.ogg
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Config SoundsConfig_v1 Object check: 1
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Config HitSound Member check: 0
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: ConfigObject HitSound Member check: 0
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: HitSoundObject Check: 0
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: HitSoundObject Value Check: 0
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Checking HitSound
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: CheckSound Parent: HasMember 1, IsObject 1
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: CheckSound Activated: HasMember 0, IsBool 0
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: CheckSound Filepath: HasMember 0, IsString 0
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: CheckSound Failed
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: Checking HitSound
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: CheckSound Parent: HasMember 1, IsObject 1
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: CheckSound Activated: HasMember 0, IsBool 0
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: CheckSound Filepath: HasMember 0, IsString 0
+06-23 20:35:06.630 15561 15641 D QuestHook[QuestSounds|v0.3.0-InDev]: CheckSound: 0

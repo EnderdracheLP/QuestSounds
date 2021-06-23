@@ -1,7 +1,7 @@
 {
-    "Soundsv2": {
+    "SoundsConfig_v2": {
         "HitSound": {
-            "activated": true,
+            "activated": false,
             "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSound.ogg"
         },
         "BadHitSound": {
