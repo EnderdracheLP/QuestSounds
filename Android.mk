@@ -24,16 +24,16 @@ LOCAL_MODULE :=
 include $(CLEAR_VARS)
 # Creating prebuilt for dependency: beatsaber-hook - version: 1.3.3
 include $(CLEAR_VARS)
-LOCAL_MODULE := beatsaber-hook_{BS_Hook}
+LOCAL_MODULE := beatsaber-hook_1_3_5
 LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
-LOCAL_SRC_FILES := extern/libbeatsaber-hook_{BS_Hook}.so
+LOCAL_SRC_FILES := extern/libbeatsaber-hook_1_3_5.so
 LOCAL_CPP_FEATURES := exceptions
 include $(PREBUILT_SHARED_LIBRARY)
 # Creating prebuilt for dependency: codegen - version: 0.7.1
 include $(CLEAR_VARS)
-LOCAL_MODULE := codegen_{CG_VER}
+LOCAL_MODULE := codegen_0_9_0
 LOCAL_EXPORT_C_INCLUDES := extern/codegen
-LOCAL_SRC_FILES := extern/libcodegen_{CG_VER}.so
+LOCAL_SRC_FILES := extern/libcodegen_0_9_0.so
 include $(PREBUILT_SHARED_LIBRARY)
 # Creating prebuilt for dependency: custom-types - version: 0.8.2
 include $(CLEAR_VARS)
@@ -55,17 +55,17 @@ LOCAL_SRC_FILES := extern/libquestui.so
 include $(PREBUILT_SHARED_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_MODULE := clockmod
+LOCAL_MODULE := QuestSounds
 LOCAL_SRC_FILES += $(call rwildcard,src/,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
 LOCAL_SHARED_LIBRARIES += modloader
-LOCAL_SHARED_LIBRARIES += beatsaber-hook_{BS_Hook}
-LOCAL_SHARED_LIBRARIES += codegen_{CG_VER}
+LOCAL_SHARED_LIBRARIES += beatsaber-hook_1_3_5
+LOCAL_SHARED_LIBRARIES += codegen_0_9_0
 LOCAL_SHARED_LIBRARIES += custom-types
 LOCAL_SHARED_LIBRARIES += questui
 LOCAL_LDLIBS += -llog
-LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DID='"QuestSounds"' -DVERSION='"{VERSION}"' -I'./shared' -I'./extern' -isystem'extern/codegen/include'
+LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DID='"QuestSounds"' -DVERSION='"$(VERSION)"' -DBS__1_16=1 -I'./shared' -I'./extern' -isystem'extern/codegen/include'
 LOCAL_CPPFLAGS += -std=c++2a
 LOCAL_C_INCLUDES += ./include ./src
 include $(BUILD_SHARED_LIBRARY)

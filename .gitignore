@@ -38,6 +38,7 @@
 
 # VS Stuff
 .vs/
+!.vs/tasks.vs.json
 
 # NDK stuff
 out/

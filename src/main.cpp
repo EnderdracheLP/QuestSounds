@@ -1,6 +1,8 @@
 #include "main.hpp"
 #include "audiocliploader.hpp"
+#include "QSoundsConfig.hpp"
 #include <dlfcn.h>
+using namespace QSoundsConfig;
 //using namespace audioClipLoader;
 
 #include "GlobalNamespace/ResultsViewController.hpp"
@@ -29,7 +31,6 @@ using namespace QuestSounds;
 using namespace custom_types;
 
 #define RAPIDJSON_HAS_STDSTRING 1
-#define SOUND_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/"
 /*
 #define HITSOUNDS_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/HitSounds/"
 #define BADHITSOUNDS_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/BadHitSounds/"
@@ -41,15 +42,19 @@ ModInfo modInfo;
 
 Configuration& getConfig() {
     static Configuration config(modInfo);
+    //config.Load();
     return config;
 }
+
 
 Logger& getLogger() {
     static auto logger = new Logger(modInfo, LoggerOptions(false, true));
     return *logger;
 }
 
-std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
+Config_t QSoundsConfig::Config;
+
+//std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());
 /*
 std::string HitSoundsPath = string_format(HITSOUNDS_PATH_FORMAT, Modloader::getApplicationId().c_str());
 std::string BadHitSoundsPath = string_format(BADHITSOUNDS_PATH_FORMAT, Modloader::getApplicationId().c_str());
@@ -263,12 +268,15 @@ MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine
 
 extern "C" void setup(ModInfo &info)
 {
-    info.id = "QuestSounds";
+    info.id = ID;
     info.version = VERSION;
     modInfo = info;
+
+    getLogger().info("Modloader name: %s", Modloader::getInfo().name.c_str());
+    getLogger().debug("Config Path is: %s", getConfig().getConfigFilePath(modInfo).c_str());
+    getLogger().info("Loading Config");
     getConfig();
     getLogger().info("Completed setup!");
-    getLogger().info("Modloader name: %s", Modloader::getInfo().name.c_str());
 }  
 
 extern "C" void load()

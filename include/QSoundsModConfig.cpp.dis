@@ -2,18 +2,23 @@
 #include "config-utils/shared/config-utils.hpp"
 
 DECLARE_CONFIG(ModConfig,
+#if defined(BS__1_13_2)
+#define CONFIG_VALUE(...) DECLARE_VALUE(__VA_ARGS__)
+#define CONFIG_INIT_FUNCTION(...) INIT_FUNCTION(__VA_ARGS__)
+#define CONFIG_INIT_VALUE(...) INIT_VALUE(__VA_ARGS__)
+#endif
 
-    DECLARE_VALUE(ModBool, bool, "ModConfigBool", true);
-    DECLARE_VALUE(ModInt, int, "ModConfignt", 1337);
-    DECLARE_VALUE(ModFloat, float, "ModConfigFloat", 10.0f);
-    DECLARE_VALUE(ModString, std::string, "ModConfigString", "hi");
-    DECLARE_VALUE(ModColor, UnityEngine::Color, "ModConfigColor", UnityEngine::Color(0.0f, 0.0f, 0.0f, 0.0f));
+    CONFIG_VALUE(ModBool, bool, "ModConfigBool", true);
+    CONFIG_VALUE(ModInt, int, "ModConfignt", 1337);
+    CONFIG_VALUE(ModFloat, float, "ModConfigFloat", 10.0f);
+    CONFIG_VALUE(ModString, std::string, "ModConfigString", "hi");
+    CONFIG_VALUE(ModColor, UnityEngine::Color, "ModConfigColor", UnityEngine::Color(0.0f, 0.0f, 0.0f, 0.0f));
 
-INIT_FUNCTION(
-    INIT_VALUE(ModBool);
-    INIT_VALUE(ModInt);
-    INIT_VALUE(ModFloat);
-    INIT_VALUE(ModString);
-    INIT_VALUE(ModColor);
+CONFIG_INIT_FUNCTION(
+    CONFIG_INIT_VALUE(ModBool);
+    CONFIG_INIT_VALUE(ModInt);
+    CONFIG_INIT_VALUE(ModFloat);
+    CONFIG_INIT_VALUE(ModString);
+    CONFIG_INIT_VALUE(ModColor);
     )
 )

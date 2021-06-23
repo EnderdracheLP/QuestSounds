@@ -1,3 +1,4 @@
+#include "QSoundsConfig.hpp"
 #include "audiocliploader.hpp"
 #include "main.hpp"
 //using namespace audioClipLoader;
@@ -30,17 +31,48 @@ using namespace UnityEngine;
 
 bool audioClipLoader::loader::load()
 {
+    // C++ Shell example of the below filePath Checks https://onlinegdb.com/BJ5RfolI_
     //Stage 0 
     getLogger().info("Starting Stage 0");
-    getLogger().info("FilePath to check is %s", filePath.c_str());
+    getLogger().info("FilePath to check try 1 is %s", filePath.c_str());
     Il2CppString* filePathStr;
+    std::string CheckPath = filePath;
     if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
         getLogger().info("Filepath is URL, skipping file checks and try loading it");
-        filePathStr = il2cpp_utils::createcsstr(filePath);
+        filePathStr = il2cpp_utils::newcsstr(filePath);
     }
     else {
-        bool fileError = fileexists(filePath.c_str());
+        // Checks if the given File in the config exists
+        bool fileError = fileexists(filePath);
+        // If that file doesn't exist check if the same file with an .mp3 file extension exists
+        if (!fileError) {
+            fileError = fileexists(CheckPath.replace(CheckPath.length() - 3, 3, "mp3"));
+            getLogger().info("FilePath to check try 2 is %s", CheckPath.c_str());
+            if (fileError) {
+                filePath = CheckPath;
+                getLogger().warning("Could not find file set in Config, but found file with mp3 extension: %s", filePath.c_str());
+            }
+            else {
+                getLogger().error("Could not find file with mp3 extension, checking for (1) in filename");
+                fileError = fileexists(CheckPath.insert(CheckPath.length() - 4, " (1)"));
+                getLogger().info("FilePath to check try 3 is %s", CheckPath.c_str());
+                if (fileError) {
+                    filePath = CheckPath;
+                    getLogger().warning("Found mp3 file with (1) in name: %s", filePath.c_str());
+                }
+                else {
+                    fileError = fileexists(CheckPath.replace(CheckPath.length() - 3, 3, "ogg"));
+                    getLogger().info("FilePath to check try 4 is %s", CheckPath.c_str());
+                    if (fileError) {
+                        filePath = CheckPath;
+                        getLogger().warning("Found file with (1) in name: %s", filePath.c_str());
+                    }
+                    else { getLogger().error("All checks failed, no soundfile found"); }
+                }
+            }
+        }
         getLogger().info("File error is %d", fileError);
+        //bool fileError = true;
         bool error = (audioClipAsync != nullptr || audioSource != nullptr || !fileError);
         getLogger().info("error is %d", error);
         if (error)
@@ -57,7 +89,7 @@ bool audioClipLoader::loader::load()
             return false;
         }
         else { getLogger().info("Stage 0 Done with %s", filePath.c_str()); }
-        filePathStr = il2cpp_utils::createcsstr("file:///" + filePath);
+        filePathStr = il2cpp_utils::newcsstr("file:///" + filePath);
     }
 
     //Stage 1
