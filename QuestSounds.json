@@ -1,5 +1,5 @@
 {
-    "SoundsConfig_v1": {
+    "Soundsv2": {
         "HitSound": {
             "activated": true,
             "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSound.ogg"
@@ -10,7 +10,7 @@
         },
         "MenuMusic": {
             "activated": true,
-            "filepath": "https://cdn.discordapp.com/attachments/648949990273843221/825030666659954779/Pog_DubstepFuture_Bass_V2.mp3"
+            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic.ogg"
         },
         "MenuClick": {
             "activated": true,

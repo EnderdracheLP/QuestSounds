@@ -64,3 +64,4 @@ extern/
 
 .vscode/c_cpp_properties.json
 /logcat.log
+/crash.txt

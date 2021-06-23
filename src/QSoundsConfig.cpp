@@ -27,31 +27,14 @@ namespace QSoundsConfig {
         if (!(value.HasMember("activated") && value["activated"].IsBool() &&
             value.HasMember("filepath") && value["filepath"].IsString() /*&&
             value.HasMember("Volume") && value["Volume"].IsFloat()*/)) {
-            getLogger().error("Error Parsing, %s, bool activated is: %d, string filepath is: %s", soundName.data(), active, value["activated"].GetBool(), value["filepath"].GetString());
+            std::string test(value["filepath"].GetString());
+            getLogger().error("Error Parsing, %s, bool activated is: %d, string filepath is: %s", std::string(soundName).c_str(), active, value["activated"].GetBool(), test.c_str());
             return false;
         }
         active = value["activated"].GetBool();
         filepath = value["filepath"].GetString();
         //Volume = value["Volume"].GetFloat();
         return true;
-    }
-
-    inline void UpdateBool(ConfigValue& parent, std::string_view soundName, bool& active)
-    {
-        //if (!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) return;
-        ConfigValue value = parent[soundName.data()].GetObject();
-        //if (!(value.HasMember("activated") && value["activated"].IsBool())) return;
-        value["activated"].SetBool(active);
-        getConfig().Write();
-    }
-
-    inline void UpdatePath(ConfigValue& parent, std::string_view soundName, std::string filepath)
-    {
-        //if (!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) return;
-        ConfigValue value = parent[soundName.data()].GetObject();
-        //if (!(value.HasMember("filepath") && value["filepath"].IsString())) return;
-        value["filepath"].SetString((ConfigValue::StringRefType)filepath.c_str());
-        getConfig().Write();
     }
 
     void SaveConfig()
