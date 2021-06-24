@@ -24,8 +24,6 @@ DEFINE_TYPE(QuestSounds::QSoundsConfigViewController);
 DEFINE_CLASS(QuestSounds::QSoundsConfigViewController);
 #endif
 
-std::list<UnityEngine::UI::Button*> AClipList = {};
-
 //ConfigValue SoundValue;
 //ConfigValue HitSoundValue;
 //ConfigValue HitSoundString = HitSoundValue["filepath"];
@@ -42,11 +40,11 @@ inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transfor
     return object;
 }
 
-void HitSoundToggle(QuestSounds::QSoundsConfigViewController* parent, bool newValue) {
-    //HitSoundValue["activated"].SetBool(newValue);
-    Config.hitSound_Active = newValue;
-    getConfig().Write();
-}
+//void HitSoundToggle(QuestSounds::QSoundsConfigViewController* parent, bool newValue) {
+//    //HitSoundValue["activated"].SetBool(newValue);
+//    Config.hitSound_Active = newValue;
+//    getConfig().Write();
+//}
 //void HitSoundVolume(QuestSounds::QSoundsViewController* parent, float newValue) {
 //    HitSoundValue["Volume"].SetFloat(newValue);
 //    getConfig().Write();
@@ -56,10 +54,20 @@ void QuestSounds::QSoundsConfigViewController::DidActivate(bool firstActivation,
         //SoundValue = getConfig().config[CONFIG_VERSION].GetObject();
         //HitSoundValue = SoundValue["HitSound"].GetObject();
         get_gameObject()->AddComponent<Touchable*>();
-        GameObject* container = QuestUI::BeatSaberUI::CreateScrollableSettingsContainer(get_transform());
+        //GameObject* container = QuestUI::BeatSaberUI::CreateScrollableSettingsContainer(get_transform());
+        UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
+        container->set_spacing(0.2f);
+        container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(25.0);
+
+        // Bool settings
+        UnityEngine::UI::VerticalLayoutGroup* configcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
+        configcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperLeft);
+        configcontainer->set_childForceExpandHeight(false);
+        configcontainer->set_childControlHeight(true);
+
         // Enable or Disable HitSounds
-        Transform* parent = container->get_transform();
-        QSAddConfigValueToggle(parent, "Custom HitSound", &Config.hitSound_Active, "Activates or deactives HitSound");
+        //Transform* parent = container->get_transform();
+        QSAddConfigValueToggle(configcontainer->get_rectTransform(), "Custom HitSound", &Config.hitSound_Active, "Activates or deactivates HitSound");
         //auto onHitSoundSettingChange = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(
         //    classof(UnityEngine::Events::UnityAction_1<bool>*), this, HitSoundToggle
         //    );

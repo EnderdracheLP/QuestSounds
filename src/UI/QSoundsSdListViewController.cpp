@@ -1,6 +1,8 @@
 #include "main.hpp"
 #include "QSoundsConfig.hpp"
 #include "QSoundsSdListViewController.hpp"
+#include "AudioClips.hpp"
+#include "ObjectInstances.hpp"
 
 #include <dirent.h>
 #include <regex>
@@ -18,13 +20,25 @@
 #include "UnityEngine/UI/LayoutElement.hpp"
 #include "UnityEngine/UI/VerticalLayoutGroup.hpp"
 #include "UnityEngine/UI/HorizontalLayoutGroup.hpp"
+//#include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/Events/UnityAction.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 
-using namespace QuestSounds;
-DEFINE_TYPE(QSoundsSdListViewController);
+#include "GlobalNamespace/SongPreviewPlayer.hpp"
 
-QSoundsSdListViewController* ListView;
+#include "System/Action.hpp"
+#include "System/Threading/Tasks/Task_1.hpp"
+#include "System/Threading/ThreadStart.hpp"
+
+
+#include "GlobalNamespace/HMTask.hpp"
+
+using namespace QuestSounds;
+DEFINE_TYPE(QSoundsMenuSdListViewController);
+
+GlobalNamespace::SongPreviewPlayer* SPP;
+
+QSoundsMenuSdListViewController* ListView;
 std::list<UnityEngine::UI::Button*> QSlist = {};
 
 //void OnChangeEnabled(bool newval)
@@ -45,10 +59,48 @@ void SelectSound()
         {
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
             QSoundsConfig::Config.menuMusic_filepath = QSoundsConfig::soundPath + filename;
+            QuestSounds::AudioClips::menuMusicLoader.filePath = QSoundsConfig::Config.menuMusic_filepath;
+            //if (AudioClips::menuMusicLoader.load() && AudioClips::menuMusicLoader.loaded) ObjectInstances::SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
+            //GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*),
+            //    (std::function<void()>)[=] {
+            AudioClips::menuMusicLoader.loaded = false;
+                    if (AudioClips::menuMusicLoader.load() && AudioClips::menuMusicLoader.loaded) {
+                        UnityEngine::AudioClip* tempClicp = AudioClips::menuMusicLoader.getClip();
+                        SPP->CrossfadeToNewDefault(tempClicp);
+                        //SPP->defaultAudioClip = tempClicp;
+                        //SPP->defaultAudioClip = tempClicp;
+                        //SPP->CrossFadeToDefault();
+                    }
+            //    }
+            //), nullptr)->Run();
+
+            //System::Threading::Thread::Thread::New_ctor(System::Threading::ThreadStart::ThreadStart::New_ctor(&SetSound())).Start();
+            //System::Threading::Tasks::TaskFactory::StartNew(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*),
+            //        (std::function<void()>)[=] {
+            //            if (AudioClips::menuMusicLoader.load() && AudioClips::menuMusicLoader.loaded) {
+            //                UnityEngine::AudioClip* tempClicp = AudioClips::menuMusicLoader.getClip();
+            //                SPP->CrossfadeToNewDefault(tempClicp);
+            //                //SPP->defaultAudioClip = tempClicp;
+            //                //SPP->defaultAudioClip = tempClicp;
+            //                //SPP->CrossFadeToDefault();
+            //            }
+            //        }
+            //))->Start();
+
+
+            //System::Threading::Tasks::Task setSound = System::Threading::Tasks::Task::Run(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*),
+            //    (std::function<void()>)[=] {
+            //        if (AudioClips::menuMusicLoader.load() && AudioClips::menuMusicLoader.loaded) {
+            //            UnityEngine::AudioClip* tempClicp = AudioClips::menuMusicLoader.getClip();
+            //            SPP->CrossfadeToNewDefault(tempClicp);
+            //            //SPP->defaultAudioClip = tempClicp;
+            //            //SPP->defaultAudioClip = tempClicp;
+            //            //SPP->CrossFadeToDefault();
+            //        }
+            //    }
+            //), nullptr);
+
             getLogger().debug("SelectedSound Path %s", QSoundsConfig::Config.menuMusic_filepath.c_str());
-            //getConfig().config["selectedFile"].SetString(filename, getConfig().config.GetAllocator());
-            //getConfig().Write();
-            //LoadBackground(bgDirectoryPath + filename);
         }
     }
 }
@@ -81,26 +133,28 @@ void RefreshList()
     (void)closedir(sounddir);
 }
 
-void QSoundsSdListViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+void QSoundsMenuSdListViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     ListView = this;
     if (firstActivation && addedToHierarchy)
     {
+        SPP = UnityEngine::GameObject::FindObjectOfType<GlobalNamespace::SongPreviewPlayer*>();
         UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
         container->set_spacing(0.4f);
-        //container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(25.0);
-        container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(25.0);
+        container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(125.0);
         //container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_flexibleWidth(50.0);
 
 
         // Bool settings
-        this->QSconfigcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
-        QSconfigcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
+        //this->QSconfigcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
+        //QSconfigcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
         //QSconfigcontainer->set_childForceExpandHeight(false);
         //QSconfigcontainer->set_childControlHeight(true);
 
         //QSconfigcontainer->set_childForceExpandHeight(false);
         //QSconfigcontainer->set_childControlHeight(true);
+
+        //UnityEngine::UI::Button::Button();
 
         //bool enabled_initval = getConfig().config["enabled"].GetBool();
         //this->masterEnabled = QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Enable Quest Sounds", enabled_initval, UnityEngine::Vector2(0, 0), OnChangeEnabled);
@@ -110,8 +164,8 @@ void QSoundsSdListViewController::DidActivate(bool firstActivation, bool addedTo
         SDlistscroll->GetComponent<QuestUI::ExternalComponents*>()->Get<UnityEngine::UI::LayoutElement*>()->set_minHeight(56.0);
         auto* SDlistcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(SDlistscroll->get_transform());
         SDlistcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
-        //SDlistcontainer->set_childForceExpandHeight(false);
-        //SDlistcontainer->set_childControlHeight(true);
+        SDlistcontainer->set_childForceExpandHeight(false);
+        SDlistcontainer->set_childControlHeight(true);
 
         //this->SDlistscroll->get_gameObject()->SetActive(enabled_initval);
         this->SDlistscroll->get_gameObject()->SetActive(true);
@@ -119,7 +173,7 @@ void QSoundsSdListViewController::DidActivate(bool firstActivation, bool addedTo
     RefreshList();
 }
 
-void QSoundsSdListViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling)
+void QSoundsMenuSdListViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling)
 {
     QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : QSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());

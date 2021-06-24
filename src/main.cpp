@@ -9,6 +9,9 @@
 #include <dlfcn.h>
 using namespace QSoundsConfig;
 //using namespace audioClipLoader;
+#include "AudioClips.hpp"
+using namespace QuestSounds::AudioClips;
+#include "ObjectInstances.hpp"
 
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
@@ -18,8 +21,12 @@ using namespace QSoundsConfig;
 #include "GlobalNamespace/FireworkItemController.hpp"
 #include "GlobalNamespace/GameServerLobbyFlowCoordinator.hpp"
 #include "GlobalNamespace/MultiplayerModeSelectionFlowCoordinator.hpp"
+
+#include "GlobalNamespace/HMTask.hpp"
+
 using namespace GlobalNamespace;
 
+#include "System/Action.hpp"
 
 #include "UnityEngine/SceneManagement/Scene.hpp"
 //using namespace UnityEngine::SceneManagement;
@@ -30,7 +37,7 @@ using namespace QuestUI;
 
 //#include "NewAudioClipLoader.hpp"
 #include "QSoundsSdListViewController.hpp"
-//#include "QSoundsConfigViewController.hpp"
+#include "QSoundsConfigViewController.hpp"
 #include "QSoundsFlowCoordinator.hpp"
 using namespace QuestSounds;
 
@@ -43,7 +50,6 @@ using namespace custom_types;
 #define BADHITSOUNDS_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/BadHitSounds/"
 #define MENUMUSIC_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/MenuMusicTracks/"
 */
-
 
 ModInfo modInfo;
 
@@ -107,6 +113,9 @@ void makeFolder()
 }
 
 
+
+namespace QuestSounds::AudioClips {
+
 audioClipLoader::loader hitSoundLoader,     // hitSound
                         badHitSoundLoader,  // badHitSound
                         menuMusicLoader,    // menuMusic
@@ -119,22 +128,44 @@ Array<UnityEngine::AudioClip*> *hitSoundArr,    // hitSoundArray
                                *menuClickArr,
                                *fireworkSoundArr;
 
-void loadAudioClips()
-{
-    hitSoundLoader.filePath = Config.hitSound_filepath;
-    badHitSoundLoader.filePath = Config.badHitSound_filepath;
-    menuMusicLoader.filePath = Config.menuMusic_filepath;
-    menuClickLoader.filePath = Config.menuClick_filepath;
-    fireworkSoundLoader.filePath = Config.firework_filepath;
-    levelClearedLoader.filePath =  Config.levelCleared_filepath;
-    lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
-    if(Config.hitSound_Active) hitSoundLoader.load();
-    if(Config.badHitSound_Active) badHitSoundLoader.load();
-    if(Config.menuMusic_Active) menuMusicLoader.load();
-    if(Config.menuClick_Active) menuClickLoader.load();
-    if(Config.firework_Active) fireworkSoundLoader.load();
-    if(Config.levelCleared_Active) levelClearedLoader.load();
-    if(Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
+    void loadAudioClips()
+    {
+        hitSoundLoader.filePath = Config.hitSound_filepath;
+        badHitSoundLoader.filePath = Config.badHitSound_filepath;
+        menuMusicLoader.filePath = Config.menuMusic_filepath;
+        menuClickLoader.filePath = Config.menuClick_filepath;
+        fireworkSoundLoader.filePath = Config.firework_filepath;
+        levelClearedLoader.filePath = Config.levelCleared_filepath;
+        lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
+
+        if (Config.hitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[=] { hitSoundLoader.load(); }), nullptr)->Run();
+        if (Config.badHitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[=] { badHitSoundLoader.load(); }), nullptr)->Run();
+        if (Config.menuMusic_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[=] { menuMusicLoader.load(); }), nullptr)->Run();
+        if (Config.menuClick_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[=] { menuClickLoader.load(); }), nullptr)->Run();
+        if (Config.firework_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[=] { fireworkSoundLoader.load(); }), nullptr)->Run();
+        if (Config.levelCleared_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[=] { levelClearedLoader.load(); }), nullptr)->Run();
+        if (Config.lobbyAmbience_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[=] { lobbyAmbienceLoader.load(); }), nullptr)->Run();    // Added for LobbyMusic
+
+        //if (Config.hitSound_Active) {
+        //    std::thread hitSoundThread(hitSoundLoader.load());
+        //    hitSoundThread.detach();
+        //}
+        //if (Config.badHitSound_Active) std::thread(badHitSoundLoader.load()).detach();
+        //if (Config.menuMusic_Active) std::thread(menuMusicLoader.load()).detach();
+        //if (Config.menuClick_Active) std::thread(menuClickLoader.load()).detach();
+        //if (Config.firework_Active) std::thread(fireworkSoundLoader.load()).detach();
+        //if (Config.levelCleared_Active) std::thread(levelClearedLoader.load()).detach();
+        //if (Config.lobbyAmbience_Active) std::thread(lobbyAmbienceLoader.load()).detach();    // Added for LobbyMusic
+
+
+        //if (Config.hitSound_Active) hitSoundLoader.load();
+        //if (Config.badHitSound_Active) badHitSoundLoader.load();
+        //if (Config.menuMusic_Active) menuMusicLoader.load();
+        //if (Config.menuClick_Active) menuClickLoader.load();
+        //if (Config.firework_Active) fireworkSoundLoader.load();
+        //if (Config.levelCleared_Active) levelClearedLoader.load();
+        //if (Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
+    }
 }
 
 // Creates an Array, of AudioClips
@@ -157,6 +188,8 @@ MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, ResultsViewControl
 
 MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, SongPreviewPlayer* self) {
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
+
+    //QuestSounds::ObjectInstances::SPP = self;
 
     if (menuMusicLoader.loaded)
     {
@@ -268,7 +301,7 @@ MAKE_HOOK_OFFSETLESS(SceneManager_Internal_ActiveSceneChanged, void, UnityEngine
         getLogger().info("Scene found: %s", sceneName.data());
 
         std::string shaderWarmup = "ShaderWarmup";
-            if(sceneName == shaderWarmup) loadAudioClips();
+            if(sceneName == shaderWarmup) QuestSounds::AudioClips::loadAudioClips();
     }
     SceneManager_Internal_ActiveSceneChanged(prevScene, nextScene);
 }
@@ -294,7 +327,7 @@ extern "C" void load()
     Logger& hkLog = getLogger();
 
     //custom_types::Register::RegisterType<QuestSounds::QSoundsFlowCoordinator>();
-    custom_types::Register::RegisterTypes<QuestSounds::QSoundsFlowCoordinator, /*QuestSounds::QSoundsConfigViewController,*/ QuestSounds::QSoundsSdListViewController>();
+    custom_types::Register::RegisterTypes<QuestSounds::QSoundsFlowCoordinator, QuestSounds::QSoundsConfigViewController, QuestSounds::QSoundsMenuSdListViewController>();
     QuestUI::Register::RegisterModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
     //custom_types::Register::RegisterType<QuestSounds::QSoundsViewController>();
     //QuestUI::Register::RegisterModSettingsViewController<QuestSounds::QSoundsViewController*>(modInfo);
