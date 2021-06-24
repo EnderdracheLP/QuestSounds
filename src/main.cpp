@@ -29,7 +29,8 @@ using namespace GlobalNamespace;
 using namespace QuestUI;
 
 //#include "NewAudioClipLoader.hpp"
-#include "QSoundsConfigViewController.hpp"
+#include "QSoundsSdListViewController.hpp"
+//#include "QSoundsConfigViewController.hpp"
 #include "QSoundsFlowCoordinator.hpp"
 using namespace QuestSounds;
 
@@ -292,7 +293,8 @@ extern "C" void load()
 
     Logger& hkLog = getLogger();
 
-    custom_types::Register::RegisterType<QuestSounds::QSoundsFlowCoordinator>();
+    //custom_types::Register::RegisterType<QuestSounds::QSoundsFlowCoordinator>();
+    custom_types::Register::RegisterTypes<QuestSounds::QSoundsFlowCoordinator, /*QuestSounds::QSoundsConfigViewController,*/ QuestSounds::QSoundsSdListViewController>();
     QuestUI::Register::RegisterModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
     //custom_types::Register::RegisterType<QuestSounds::QSoundsViewController>();
     //QuestUI::Register::RegisterModSettingsViewController<QuestSounds::QSoundsViewController*>(modInfo);

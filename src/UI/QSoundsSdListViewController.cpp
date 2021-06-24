@@ -22,9 +22,9 @@
 #include "TMPro/TextMeshProUGUI.hpp"
 
 using namespace QuestSounds;
-DEFINE_TYPE(SoundsListViewController);
+DEFINE_TYPE(QSoundsSdListViewController);
 
-SoundsListViewController* ListView;
+QSoundsSdListViewController* ListView;
 std::list<UnityEngine::UI::Button*> QSlist = {};
 
 //void OnChangeEnabled(bool newval)
@@ -81,36 +81,37 @@ void RefreshList()
     (void)closedir(sounddir);
 }
 
-void SoundsListViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+void QSoundsSdListViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     ListView = this;
     if (firstActivation && addedToHierarchy)
     {
         UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
         container->set_spacing(0.4f);
+        //container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(25.0);
         container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(25.0);
+        //container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_flexibleWidth(50.0);
+
 
         // Bool settings
         this->QSconfigcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
-        // QSconfigcontainer->get_gameObject()->AddComponent<QuestUI::Backgroundable*>()->ApplyBackground(il2cpp_utils::createcsstr("round-rect-panel"));
         QSconfigcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
-        QSconfigcontainer->set_childForceExpandHeight(false);
-        QSconfigcontainer->set_childControlHeight(true);
+        //QSconfigcontainer->set_childForceExpandHeight(false);
+        //QSconfigcontainer->set_childControlHeight(true);
 
-        QSconfigcontainer->set_childForceExpandHeight(false);
-        QSconfigcontainer->set_childControlHeight(true);
+        //QSconfigcontainer->set_childForceExpandHeight(false);
+        //QSconfigcontainer->set_childControlHeight(true);
 
         //bool enabled_initval = getConfig().config["enabled"].GetBool();
         //this->masterEnabled = QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Enable Quest Sounds", enabled_initval, UnityEngine::Vector2(0, 0), OnChangeEnabled);
 
-        // Image List (recursively adds buttons as ListView isn't an easy type to deal with)
+        // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)
         this->SDlistscroll = QuestUI::BeatSaberUI::CreateScrollView(container->get_rectTransform());
         SDlistscroll->GetComponent<QuestUI::ExternalComponents*>()->Get<UnityEngine::UI::LayoutElement*>()->set_minHeight(56.0);
         auto* SDlistcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(SDlistscroll->get_transform());
-        // SDlistcontainer->get_gameObject()->AddComponent<QuestUI::Backgroundable*>()->ApplyBackground(il2cpp_utils::createcsstr("round-rect-panel"));
         SDlistcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
-        SDlistcontainer->set_childForceExpandHeight(false);
-        SDlistcontainer->set_childControlHeight(true);
+        //SDlistcontainer->set_childForceExpandHeight(false);
+        //SDlistcontainer->set_childControlHeight(true);
 
         //this->SDlistscroll->get_gameObject()->SetActive(enabled_initval);
         this->SDlistscroll->get_gameObject()->SetActive(true);
@@ -118,7 +119,7 @@ void SoundsListViewController::DidActivate(bool firstActivation, bool addedToHie
     RefreshList();
 }
 
-void SoundsListViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling)
+void QSoundsSdListViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling)
 {
     QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : QSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());

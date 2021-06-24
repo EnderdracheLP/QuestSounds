@@ -73,7 +73,7 @@ void QuestSounds::QSoundsConfigViewController::DidActivate(bool firstActivation,
     }
 }
 // Write config
-void QuestSounds::QSoundsConfigViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling) {
-    SaveConfig();
-    //getConfig().Write();
-}
+//void QuestSounds::QSoundsConfigViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling) {
+//    SaveConfig();
+//    //getConfig().Write();
+//}

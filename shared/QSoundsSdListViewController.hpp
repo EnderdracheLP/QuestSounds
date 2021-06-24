@@ -2,7 +2,7 @@
 #include "custom-types/shared/macros.hpp"
 #include "HMUI/ViewController.hpp"
 
-DECLARE_CLASS_CODEGEN(QuestSounds, SoundsListViewController, HMUI::ViewController,
+DECLARE_CLASS_CODEGEN(QuestSounds, QSoundsSdListViewController, HMUI::ViewController,
     DECLARE_INSTANCE_FIELD(UnityEngine::UI::Toggle*, masterEnabled);
     DECLARE_INSTANCE_FIELD(UnityEngine::UI::VerticalLayoutGroup*, QSconfigcontainer);
     DECLARE_INSTANCE_FIELD(UnityEngine::UI::HorizontalLayoutGroup*, listtxtgroup);
