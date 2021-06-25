@@ -1,8 +1,8 @@
 #include "main.hpp"
 #include "QSoundsConfig.hpp"
-#include "QSoundsSdListViewController.hpp"
+#include "QSoundsMenuSdListViewController.hpp"
 #include "AudioClips.hpp"
-#include "ObjectInstances.hpp"
+//#include "ObjectInstances.hpp"
 
 #include <dirent.h>
 #include <regex>
@@ -64,43 +64,19 @@ void SelectSound()
             //GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*),
             //    (std::function<void()>)[=] {
             AudioClips::menuMusicLoader.loaded = false;
-                    if (AudioClips::menuMusicLoader.load() && AudioClips::menuMusicLoader.loaded) {
-                        UnityEngine::AudioClip* tempClicp = AudioClips::menuMusicLoader.getClip();
-                        SPP->CrossfadeToNewDefault(tempClicp);
-                        //SPP->defaultAudioClip = tempClicp;
-                        //SPP->defaultAudioClip = tempClicp;
-                        //SPP->CrossFadeToDefault();
-                    }
+            AudioClips::menuMusicLoader.load();
+                    //if (AudioClips::menuMusicLoader.load(true) && AudioClips::menuMusicLoader.loaded) {
+                        //UnityEngine::AudioClip* tempClicp = AudioClips::menuMusicLoader.getClip();
+                        //ObjectInstances::SPP->CrossfadeToNewDefault(tempClicp);
+                    //    //SPP->defaultAudioClip = tempClicp;
+                    //    //SPP->defaultAudioClip = tempClicp;
+                    //    //SPP->CrossFadeToDefault();
+                    //}
+                    //else getLogger().error("Sound with Path %s not loaded", QSoundsConfig::Config.menuMusic_filepath.c_str());
             //    }
             //), nullptr)->Run();
-
-            //System::Threading::Thread::Thread::New_ctor(System::Threading::ThreadStart::ThreadStart::New_ctor(&SetSound())).Start();
-            //System::Threading::Tasks::TaskFactory::StartNew(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*),
-            //        (std::function<void()>)[=] {
-            //            if (AudioClips::menuMusicLoader.load() && AudioClips::menuMusicLoader.loaded) {
-            //                UnityEngine::AudioClip* tempClicp = AudioClips::menuMusicLoader.getClip();
-            //                SPP->CrossfadeToNewDefault(tempClicp);
-            //                //SPP->defaultAudioClip = tempClicp;
-            //                //SPP->defaultAudioClip = tempClicp;
-            //                //SPP->CrossFadeToDefault();
-            //            }
-            //        }
-            //))->Start();
-
-
-            //System::Threading::Tasks::Task setSound = System::Threading::Tasks::Task::Run(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*),
-            //    (std::function<void()>)[=] {
-            //        if (AudioClips::menuMusicLoader.load() && AudioClips::menuMusicLoader.loaded) {
-            //            UnityEngine::AudioClip* tempClicp = AudioClips::menuMusicLoader.getClip();
-            //            SPP->CrossfadeToNewDefault(tempClicp);
-            //            //SPP->defaultAudioClip = tempClicp;
-            //            //SPP->defaultAudioClip = tempClicp;
-            //            //SPP->CrossFadeToDefault();
-            //        }
-            //    }
-            //), nullptr);
-
             getLogger().debug("SelectedSound Path %s", QSoundsConfig::Config.menuMusic_filepath.c_str());
+
         }
     }
 }
@@ -178,4 +154,5 @@ void QSoundsMenuSdListViewController::DidDeactivate(bool removedFromHierarchy, b
     QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : QSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     QSlist = {};
+    SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
 }

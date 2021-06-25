@@ -10,7 +10,7 @@
         },
         "MenuMusic": {
             "activated": true,
-            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic.ogg"
+            "filepath": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic.mp3"
         },
         "MenuClick": {
             "activated": true,

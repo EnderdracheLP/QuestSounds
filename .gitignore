@@ -63,5 +63,6 @@ extern/
 .vscode/settings.json
 
 .vscode/c_cpp_properties.json
-/logcat.log
-/crash.txt
+*.log
+crash.txt
+/log_timestamp

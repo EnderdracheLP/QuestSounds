@@ -4,14 +4,15 @@
 #endif
 
 #include "main.hpp"
-#include "audiocliploader.hpp"
+//#include "audiocliploader.hpp"
+#include "AsyncAudiocliploader.hpp"
 #include "QSoundsConfig.hpp"
 #include <dlfcn.h>
 using namespace QSoundsConfig;
 //using namespace audioClipLoader;
 #include "AudioClips.hpp"
 using namespace QuestSounds::AudioClips;
-#include "ObjectInstances.hpp"
+//#include "ObjectInstances.hpp"
 
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
@@ -36,7 +37,7 @@ using namespace GlobalNamespace;
 using namespace QuestUI;
 
 //#include "NewAudioClipLoader.hpp"
-#include "QSoundsSdListViewController.hpp"
+#include "QSoundsMenuSdListViewController.hpp"
 #include "QSoundsConfigViewController.hpp"
 #include "QSoundsFlowCoordinator.hpp"
 using namespace QuestSounds;
@@ -64,6 +65,8 @@ Logger& getLogger() {
     static auto logger = new Logger(modInfo, LoggerOptions(false, true));
     return *logger;
 }
+
+//GlobalNamespace::SongPreviewPlayer* QuestSounds::ObjectInstances::SPP;
 
 //Config_t QSoundsConfig::Config;
 
@@ -115,14 +118,14 @@ void makeFolder()
 
 
 namespace QuestSounds::AudioClips {
-
-audioClipLoader::loader hitSoundLoader,     // hitSound
-                        badHitSoundLoader,  // badHitSound
-                        menuMusicLoader,    // menuMusic
-                        menuClickLoader,
-                        fireworkSoundLoader,
-                        levelClearedLoader,
-                        lobbyAmbienceLoader;    // Added for LobbyMusic
+/*audioClipLoader::loader*/
+AsyncAudioClipLoader::loader    hitSoundLoader,     // hitSound
+                                badHitSoundLoader,  // badHitSound
+                                menuMusicLoader,    // menuMusic
+                                menuClickLoader,
+                                fireworkSoundLoader,
+                                levelClearedLoader,
+                                lobbyAmbienceLoader;    // Added for LobbyMusic
 Array<UnityEngine::AudioClip*> *hitSoundArr,    // hitSoundArray
                                *badHitSoundArr, // badHitSoundArray
                                *menuClickArr,
@@ -169,7 +172,8 @@ Array<UnityEngine::AudioClip*> *hitSoundArr,    // hitSoundArray
 }
 
 // Creates an Array, of AudioClips
-Array<UnityEngine::AudioClip*>* createAudioClipArray(audioClipLoader::loader clipLoader)
+//Array<UnityEngine::AudioClip*>* createAudioClipArray(audioClipLoader::loader clipLoader)
+Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader)
 {
     UnityEngine::AudioClip* tempClip = clipLoader.getClip();
     auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(tempClip);
