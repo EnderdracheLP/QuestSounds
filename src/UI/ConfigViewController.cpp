@@ -1,11 +1,14 @@
 #include "QSoundsConfig.hpp"
-#include "QSoundsConfigViewController.hpp"
+#include "QSoundsFlowCoordinator.hpp"
+#include "ViewControllers/ConfigViewController.hpp"
 #include "main.hpp"
 
 #include "questui/shared/BeatSaberUI.hpp"
 #include "questui/shared/QuestUI.hpp"
 
+#include "UnityEngine/Object.hpp"
 #include "UnityEngine/UI/VerticalLayoutGroup.hpp"
+#include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/Events/UnityAction_1.hpp"
 #include "UnityEngine/GameObject.hpp"
 #include "HMUI/Touchable.hpp"
@@ -16,29 +19,17 @@ using namespace UnityEngine;
 using namespace HMUI;
 using namespace QSoundsConfig;
 
-#if !defined(REGISTER_FUNCTION)
-DEFINE_TYPE(QuestSounds, QSoundsConfigViewController);
-#elif defined(DEFINE_TYPE) && defined(REGISTER_FUNCTION)
-DEFINE_TYPE(QuestSounds::QSoundsConfigViewController);
+#ifndef REGISTER_FUNCTION
+DEFINE_TYPE(QuestSounds, ConfigViewController);
+#elif defined(DEFINE_TYPE)
+DEFINE_TYPE(QuestSounds::ConfigViewController);
 #elif defined(DEFINE_CLASS)
-DEFINE_CLASS(QuestSounds::QSoundsConfigViewController);
+DEFINE_CLASS(QuestSounds::ConfigViewController);
 #endif
 
 //ConfigValue SoundValue;
 //ConfigValue HitSoundValue;
 //ConfigValue HitSoundString = HitSoundValue["filepath"];
-
-
-inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transform* parent, /*ConfigValue& configValue,*/ std::string text, bool* config, std::string HoverHint = nullptr) {
-    auto object = ::QuestUI::BeatSaberUI::CreateToggle(parent, text, config,
-        [config](bool value) {
-            *config = value;
-        }
-    );
-    if (!HoverHint.empty())
-        ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), HoverHint);
-    return object;
-}
 
 //void HitSoundToggle(QuestSounds::QSoundsConfigViewController* parent, bool newValue) {
 //    //HitSoundValue["activated"].SetBool(newValue);
@@ -49,12 +40,9 @@ inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transfor
 //    HitSoundValue["Volume"].SetFloat(newValue);
 //    getConfig().Write();
 //}
-void QuestSounds::QSoundsConfigViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+void QuestSounds::ConfigViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     if (firstActivation) {
-        //SoundValue = getConfig().config[CONFIG_VERSION].GetObject();
-        //HitSoundValue = SoundValue["HitSound"].GetObject();
         get_gameObject()->AddComponent<Touchable*>();
-        //GameObject* container = QuestUI::BeatSaberUI::CreateScrollableSettingsContainer(get_transform());
         UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
         container->set_spacing(0.2f);
         container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(25.0);
@@ -64,10 +52,54 @@ void QuestSounds::QSoundsConfigViewController::DidActivate(bool firstActivation,
         configcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperLeft);
         configcontainer->set_childForceExpandHeight(false);
         configcontainer->set_childControlHeight(true);
+        configcontainer->set_childForceExpandWidth(false);
+        configcontainer->set_childControlWidth(true);
 
-        // Enable or Disable HitSounds
-        //Transform* parent = container->get_transform();
-        QSAddConfigValueToggle(configcontainer->get_rectTransform(), "Custom HitSound", &Config.hitSound_Active, "Activates or deactivates HitSound");
+
+        UnityEngine::UI::Button* MenuMusic = BeatSaberUI::CreateUIButton(configcontainer->get_rectTransform(), "MenuMusic",
+            [&]() {
+                getLogger().debug("MenuMusic Button pressed!");
+                this->callback(1);
+            });
+
+        UnityEngine::UI::Button* MenuClicks = BeatSaberUI::CreateUIButton(configcontainer->get_rectTransform(), "MenuClickSounds",
+            [&]() {
+                getLogger().debug("MenuClickSounds Button pressed!");
+                this->callback(3);
+            });
+
+
+        UnityEngine::UI::Button* HitSounds = BeatSaberUI::CreateUIButton(configcontainer->get_rectTransform(), "HitSounds",
+            [&]() {
+                getLogger().debug("HitSounds Button pressed!");
+                this->callback(2);
+            });
+
+        UnityEngine::UI::Button* BadHitSounds = BeatSaberUI::CreateUIButton(configcontainer->get_rectTransform(), "BadHitSounds",
+            [&]() {
+                getLogger().debug("BadHitSounds Button pressed!");
+                this->callback(4);
+            });
+
+        UnityEngine::UI::Button* FireworkSounds = BeatSaberUI::CreateUIButton(configcontainer->get_rectTransform(), "FireworkSounds",
+            [&]() {
+                getLogger().debug("FireworkSounds Button pressed!");
+                this->callback(5);
+            });
+
+        UnityEngine::UI::Button* LevelClearedSounds = BeatSaberUI::CreateUIButton(configcontainer->get_rectTransform(), "LevelClearedSounds",
+            [&]() {
+                getLogger().debug("LevelClearedSounds Button pressed!");
+                this->callback(6);
+            });
+
+#ifndef BS__1_13_2
+        UnityEngine::UI::Button* LobbyMusic = BeatSaberUI::CreateUIButton(configcontainer->get_rectTransform(), "LobbyMusic",
+            [&]() {
+                getLogger().debug("LobbyMusic Button pressed!");
+                this->callback(7);
+            });
+#endif
         //auto onHitSoundSettingChange = il2cpp_utils::MakeDelegate<UnityEngine::Events::UnityAction_1<bool>*>(
         //    classof(UnityEngine::Events::UnityAction_1<bool>*), this, HitSoundToggle
         //    );
@@ -80,8 +112,14 @@ void QuestSounds::QSoundsConfigViewController::DidActivate(bool firstActivation,
         //QuestUI::BeatSaberUI::AddHoverHint(HitSoundVolIncrementObject->get_gameObject(), "Volume for the HitSound default (1)");
     }
 }
+
+void QuestSounds::ConfigViewController::set_selectCallback(std::function<void(int)> callback)
+{
+    this->callback = callback;
+}
+
 // Write config
-//void QuestSounds::QSoundsConfigViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling) {
+//void QuestSounds::ConfigViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling) {
 //    SaveConfig();
 //    //getConfig().Write();
 //}

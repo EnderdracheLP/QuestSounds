@@ -1,6 +1,6 @@
 #include "main.hpp"
 #include "QSoundsConfig.hpp"
-#include "QSoundsMenuSdListViewController.hpp"
+#include "ViewControllers/MenuSdListViewController.hpp"
 #include "AudioClips.hpp"
 //#include "ObjectInstances.hpp"
 
@@ -34,26 +34,22 @@
 #include "GlobalNamespace/HMTask.hpp"
 
 using namespace QuestSounds;
-DEFINE_TYPE(QSoundsMenuSdListViewController);
+DEFINE_TYPE(MenuSdListViewController);
 
 GlobalNamespace::SongPreviewPlayer* SPP;
 
-QSoundsMenuSdListViewController* ListView;
-std::list<UnityEngine::UI::Button*> QSlist = {};
+MenuSdListViewController* MenuListView;
+std::list<UnityEngine::UI::Button*> MenuQSlist = {};
 
 //void OnChangeEnabled(bool newval)
 //{
 //    auto& modcfg = getConfig().config;
-//    modcfg["enabled"].SetBool(newval);
-//    ListView->SDlistscroll->SetActive(newval);
-//    if (backgroundObject) backgroundObject->SetActive(newval);
-//    else LoadBackground(bgDirectoryPath + modcfg["selectedFile"].GetString());
-//    HideMenuEnv();
+//    MenuListView->SDlistscroll->SetActive(newval);
 //}
 
-void SelectSound()
+void MenuSelectSound()
 {
-    for (UnityEngine::UI::Button* button : QSlist)
+    for (UnityEngine::UI::Button* button : MenuQSlist)
     {
         if (button->hasSelection)
         {
@@ -75,57 +71,60 @@ void SelectSound()
                     //else getLogger().error("Sound with Path %s not loaded", QSoundsConfig::Config.menuMusic_filepath.c_str());
             //    }
             //), nullptr)->Run();
-            getLogger().debug("SelectedSound Path %s", QSoundsConfig::Config.menuMusic_filepath.c_str());
+            getLogger().debug("Selected Sound Path %s", QSoundsConfig::Config.menuMusic_filepath.c_str());
 
         }
     }
 }
 
-void RefreshList()
+void MenuRefreshList()
 {
-    if (ListView->listtxtgroup && ListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(ListView->listtxtgroup->get_gameObject());
-    for (UnityEngine::UI::Button* button : QSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
-    QSlist = {};
-    DIR* sounddir = opendir(QSoundsConfig::soundPath.c_str());
+    if (MenuListView->listtxtgroup && MenuListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(MenuListView->listtxtgroup->get_gameObject());
+    for (UnityEngine::UI::Button* button : MenuQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
+    MenuQSlist = {};
+    DIR* sounddir = opendir(QSoundsConfig::MenuMusicPath.c_str());
     dirent* fileent;
     while ((fileent = readdir(sounddir)) != NULL)
     {
         std::string filename = fileent->d_name;
         for (char& ch : filename) ch = tolower(ch);
 
-        if (std::regex_search(filename, std::regex(".ogg|.mp3|.wav")))
+        if (std::regex_search(filename, std::regex(".ogg|.mp3|.wav|.aiff|.aif")))
         {
-            UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(ListView->SDlistscroll->get_transform());
-            UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, SelectSound);
+            UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(MenuListView->SDlistscroll->get_transform());
+            UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, MenuSelectSound);
             button->get_gameObject()->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->set_fontStyle(2);
-            QSlist.push_back(button);
+            MenuQSlist.push_back(button);
         }
     }
-    if (QSlist.size() < 1)
+    if (MenuQSlist.size() < 1)
     {
-        ListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(ListView->SDlistscroll->get_transform());
-        QuestUI::BeatSaberUI::CreateText(ListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease install a sound file to continue.", false);
+        MenuListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(MenuListView->SDlistscroll->get_transform());
+        QuestUI::BeatSaberUI::CreateText(MenuListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound into\n"+ QSoundsConfig::MenuMusicPath +"\nfile to continue.", false);
     }
     (void)closedir(sounddir);
 }
 
-void QSoundsMenuSdListViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+void MenuSdListViewController::DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
-    ListView = this;
+    MenuListView = this;
     if (firstActivation && addedToHierarchy)
     {
         SPP = UnityEngine::GameObject::FindObjectOfType<GlobalNamespace::SongPreviewPlayer*>();
         UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
         container->set_spacing(0.4f);
         container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(125.0);
-        //container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_flexibleWidth(50.0);
 
 
-        // Bool settings
-        //this->QSconfigcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
-        //QSconfigcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
-        //QSconfigcontainer->set_childForceExpandHeight(false);
-        //QSconfigcontainer->set_childControlHeight(true);
+         //Bool settings
+        this->QSconfigcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
+        QSconfigcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
+        QSconfigcontainer->set_childForceExpandHeight(false);
+        QSconfigcontainer->set_childControlHeight(true);
+
+        // Enable or Disable BadHitSounds
+        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu Music", &QSoundsConfig::Config.menuMusic_Active, SDlistscroll, "Activates or deactivates Custom Menu Music");
+
 
         //QSconfigcontainer->set_childForceExpandHeight(false);
         //QSconfigcontainer->set_childControlHeight(true);
@@ -135,7 +134,7 @@ void QSoundsMenuSdListViewController::DidActivate(bool firstActivation, bool add
         //bool enabled_initval = getConfig().config["enabled"].GetBool();
         //this->masterEnabled = QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Enable Quest Sounds", enabled_initval, UnityEngine::Vector2(0, 0), OnChangeEnabled);
 
-        // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)
+        // Sound List (recursively adds buttons as MenuListView isn't an easy type to deal with)
         this->SDlistscroll = QuestUI::BeatSaberUI::CreateScrollView(container->get_rectTransform());
         SDlistscroll->GetComponent<QuestUI::ExternalComponents*>()->Get<UnityEngine::UI::LayoutElement*>()->set_minHeight(56.0);
         auto* SDlistcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(SDlistscroll->get_transform());
@@ -144,15 +143,14 @@ void QSoundsMenuSdListViewController::DidActivate(bool firstActivation, bool add
         SDlistcontainer->set_childControlHeight(true);
 
         //this->SDlistscroll->get_gameObject()->SetActive(enabled_initval);
-        this->SDlistscroll->get_gameObject()->SetActive(true);
+        this->SDlistscroll->get_gameObject()->SetActive(QSoundsConfig::Config.menuMusic_Active);
     }
-    RefreshList();
+    MenuRefreshList();
 }
 
-void QSoundsMenuSdListViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling)
+void MenuSdListViewController::DidDeactivate(bool removedFromHierarchy, bool systemScreenDisabling)
 {
-    QSoundsConfig::SaveConfig();
-    for (UnityEngine::UI::Button* button : QSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
-    QSlist = {};
+    for (UnityEngine::UI::Button* button : MenuQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
+    MenuQSlist = {};
     SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
 }

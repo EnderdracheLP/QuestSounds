@@ -33,6 +33,7 @@
 *.app
 
 # VSCode config stuff
+.vscode/
 !.vscode/c_cpp_properties.json
 !.vscode/tasks.json
 
@@ -51,18 +52,11 @@ ndkpath.txt
 
 # Other files
 extern/
-AAndroid.mk.backup
 
 qpm.shared.json
 extern/
 *.backup
 
-
-
-
-.vscode/settings.json
-
-.vscode/c_cpp_properties.json
 *.log
 crash.txt
 /log_timestamp

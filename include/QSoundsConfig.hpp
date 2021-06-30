@@ -3,9 +3,23 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 #define SOUND_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/"
 #define CONFIG_VERSION "SoundsConfig_v2"
+#include "UnityEngine/UI/Toggle.hpp"
+#include "questui/shared/BeatSaberUI.hpp"
 
 namespace QSoundsConfig {
     static std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());;
+
+    static std::string MenuMusicPath = soundPath + "MenuMusic/";
+    static std::string HitSoundPath = soundPath + "HitSounds/";
+    static std::string BadHitSoundPath = soundPath + "BadHitSounds/";
+    static std::string MenuClickPath = soundPath + "MenuClicks/";
+    static std::string FireworkSoundPath = soundPath + "Firework/";
+    static std::string LevelClearPath = soundPath + "LevelCleared/";
+#ifndef BS__1_13_2
+    static std::string LobbyMusicPath = soundPath + "LobbyMusic/";
+#endif
+
+    extern bool LegacyConfig;
 
     //static const ConfigValue soundsConfigParent = getConfig().config[CONFIG_VERSION].GetObject();
     //Config stuff
@@ -25,13 +39,6 @@ namespace QSoundsConfig {
         std::string firework_filepath = soundPath + "Firework.ogg";
         std::string levelCleared_filepath = soundPath + "LevelCleared.ogg";
         std::string lobbyAmbience_filepath = soundPath + "LobbyMusic.ogg";
-        //float hitSound_Volume       = 1;
-        //float badHitSound_Volume    = 1;
-        //float menuClick_Volume      = 1;
-        //float menuMusic_Volume      = 1;
-        //float firework_Volume       = 1;
-        //float levelCleared_Volume   = 1;
-        //float lobbyAmbience_Volume  = 1;
     };
     extern Config_t Config;
 
@@ -40,4 +47,17 @@ namespace QSoundsConfig {
 
     void SaveConfig();
     bool LoadConfig();
+
+    inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transform* parent, std::string text, bool* config, UnityEngine::GameObject* SDListScroll, std::string HoverHint = nullptr) {
+        auto object = ::QuestUI::BeatSaberUI::CreateToggle(parent, text, config,
+            [&](bool value) {
+                *config = value;
+                SDListScroll->get_gameObject()->SetActive(value);
+            }
+        );
+        if (!HoverHint.empty())
+            ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), HoverHint);
+        return object;
+    }
+
 }

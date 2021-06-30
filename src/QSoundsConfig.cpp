@@ -8,6 +8,8 @@ namespace QSoundsConfig {
 
     Config_t Config;
 
+    bool LegacyConfig = false;
+
     void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, ConfigDocument::AllocatorType& allocator)
     {
         ConfigValue value(rapidjson::kObjectType);
@@ -27,8 +29,7 @@ namespace QSoundsConfig {
         ConfigValue value = parent[soundName.data()].GetObject();
         if (!(value.HasMember("activated") && value["activated"].IsBool() &&
             value.HasMember("filepath") && value["filepath"].IsString())) {
-            //std::string test(value["filepath"].GetString());
-            getLogger().error("Error Parsing, %s, bool activated is: %d, string filepath is: %s", std::string(soundName).c_str(), active, value["activated"].GetBool(), /*test*/std::string(value["filepath"].GetString()).c_str());
+            getLogger().error("Error Parsing, %s, bool activated is: %d, string filepath is: %s", soundName.data(), active, value["activated"].GetBool(), std::string(value["filepath"].GetString()).c_str());
             return false;
         }
         active = value["activated"].GetBool();
@@ -69,6 +70,16 @@ namespace QSoundsConfig {
             if (!ParseSound(Config.firework_Active, Config.firework_filepath, soundsValue, "Firework")) return false;
             if (!ParseSound(Config.levelCleared_Active, Config.levelCleared_filepath, soundsValue, "LevelCleared")) return false;
             if (!ParseSound(Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, soundsValue, "LobbyMusic")) return false;
+        }
+        else if (getConfig().config.HasMember("SoundsConfig_v1") && getConfig().config["SoundsConfig_v1"].IsObject()) {
+            ConfigValue soundsValue = getConfig().config["SoundsConfig_v1"].GetObject();
+            if (!ParseSound(Config.hitSound_Active, Config.hitSound_filepath, soundsValue, "HitSound")) return false;
+            if (!ParseSound(Config.badHitSound_Active, Config.badHitSound_filepath, soundsValue, "BadHitSound")) return false;
+            if (!ParseSound(Config.menuMusic_Active, Config.menuMusic_filepath, soundsValue, "MenuMusic")) return false;
+            if (!ParseSound(Config.menuClick_Active, Config.menuClick_filepath, soundsValue, "MenuClick")) return false;
+            if (!ParseSound(Config.firework_Active, Config.firework_filepath, soundsValue, "Firework")) return false;
+            if (!ParseSound(Config.levelCleared_Active, Config.levelCleared_filepath, soundsValue, "LevelCleared")) return false;
+            LegacyConfig = true;
         }
         else {
             getLogger().debug("Config Mismatch");

@@ -52,7 +52,7 @@ int getAudioType(std::string path) {
         getLogger().debug("File is mp3");
         return 0xD;
     }
-    else if (path.ends_with(".aiff")) {
+    else if (path.ends_with(".aiff") || path.ends_with(".aif")) {
         getLogger().debug("File is aiff");
         return 2;
     }
@@ -155,10 +155,12 @@ bool AsyncAudioClipLoader::loader::load()
         getLogger().debug("Running UnityWebRequestMultimedia");
         audioType = getAudioType(filePath);
         auto end_audioType = std::chrono::high_resolution_clock::now();
-        System::Threading::Tasks::Task_1<UnityEngine::AudioClip*> audioClipAsynTask = System::Threading::Tasks::Task_1<UnityEngine::AudioClip*>::New_ctor()
+        System::Threading::Tasks::Task_1<UnityEngine::AudioClip*>* audioClipAsynTask = System::Threading::Tasks::Task_1<UnityEngine::AudioClip*>::New_ctor();
         audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
         auto end_Request = std::chrono::high_resolution_clock::now();
         audioClipAsync = audioClipRequest->SendWebRequest();
+        //                                 ^ 
+        // TODO: Figure out why it crashes here sometimes: 161:44
         auto end_audioClipAsync = std::chrono::high_resolution_clock::now();
 
         //Stage 2

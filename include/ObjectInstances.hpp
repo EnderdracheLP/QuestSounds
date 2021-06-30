@@ -1,5 +1,6 @@
 #pragma once
 #include "main.hpp"
+#include "QSoundsFlowCoordinator.hpp"
 
 #include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
