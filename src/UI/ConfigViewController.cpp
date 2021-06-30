@@ -46,15 +46,22 @@ void QuestSounds::ConfigViewController::DidActivate(bool firstActivation, bool a
         UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
         container->set_spacing(0.2f);
         container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(25.0);
+        container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(40.0);
 
         // Bool settings
         UnityEngine::UI::VerticalLayoutGroup* configcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
-        configcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperLeft);
+        configcontainer->set_childAlignment(UnityEngine::TextAnchor::MiddleRight);
         configcontainer->set_childForceExpandHeight(false);
         configcontainer->set_childControlHeight(true);
         configcontainer->set_childForceExpandWidth(false);
         configcontainer->set_childControlWidth(true);
+        configcontainer->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(80.0);
+        configcontainer->GetComponent<UnityEngine::RectTransform*>()->set_sizeDelta(UnityEngine::Vector2(6.0f, 6.0f));
+        UnityEngine::UI::LayoutElement* ccle = configcontainer->GetComponent<UnityEngine::UI::LayoutElement*>();
 
+        getLogger().debug("Width is minWidth: %d, preferredWidth %d, flexibleWidth %d", ccle->get_minWidth(), ccle->get_preferredWidth(), ccle->get_flexibleWidth());
+        //configcontainer->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(100.0);
+        //configcontainer->GetComponent<UnityEngine::RectTransform*>()->
 
         UnityEngine::UI::Button* MenuMusic = BeatSaberUI::CreateUIButton(configcontainer->get_rectTransform(), "MenuMusic",
             [&]() {

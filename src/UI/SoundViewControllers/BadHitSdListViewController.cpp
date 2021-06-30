@@ -106,7 +106,7 @@ void BadHitSdListViewController::DidActivate(bool firstActivation, bool addedToH
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable BadHitSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom BadHitSounds", &QSoundsConfig::Config.badHitSound_Active, SDlistscroll, "Activates or deactivates Custom BadHitSounds");
+        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom BadHitSounds", QSoundsConfig::Config.badHitSound_Active, SDlistscroll, "Activates or deactivates Custom BadHitSounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

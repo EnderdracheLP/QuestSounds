@@ -123,9 +123,9 @@ void makeFolder()
         }
     }
 
-    if (!direxists(LevelClearPath.data()))
+    if (!direxists(LevelClearedPath.data()))
     {
-        int makePath = mkpath(LevelClearPath.data());
+        int makePath = mkpath(LevelClearedPath.data());
         if (makePath == -1)
         {
             getLogger().debug("Failed to make LevelCleared Folder path!");

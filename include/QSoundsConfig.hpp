@@ -13,8 +13,8 @@ namespace QSoundsConfig {
     static std::string HitSoundPath = soundPath + "HitSounds/";
     static std::string BadHitSoundPath = soundPath + "BadHitSounds/";
     static std::string MenuClickPath = soundPath + "MenuClicks/";
-    static std::string FireworkSoundPath = soundPath + "Firework/";
-    static std::string LevelClearPath = soundPath + "LevelCleared/";
+    static std::string FireworkSoundPath = soundPath + "FireworkSounds/";
+    static std::string LevelClearedPath = soundPath + "LevelCleared/";
 #ifndef BS__1_13_2
     static std::string LobbyMusicPath = soundPath + "LobbyMusic/";
 #endif
@@ -48,11 +48,13 @@ namespace QSoundsConfig {
     void SaveConfig();
     bool LoadConfig();
 
-    inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transform* parent, std::string text, bool* config, UnityEngine::GameObject* SDListScroll, std::string HoverHint = nullptr) {
+    inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transform* parent, std::string text, bool& config, ::UnityEngine::GameObject* SDls, std::string HoverHint = nullptr) {
         auto object = ::QuestUI::BeatSaberUI::CreateToggle(parent, text, config,
-            [&](bool value) {
-                *config = value;
-                SDListScroll->get_gameObject()->SetActive(value);
+            [&](bool value) mutable {
+                config = value;
+                SDls->get_gameObject()->SetActive(value);
+                //    ^
+                // TODO: Figure this crash out
             }
         );
         if (!HoverHint.empty())

@@ -106,7 +106,7 @@ void LobbyMusicSdListViewController::DidActivate(bool firstActivation, bool adde
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable LobbyMusicSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LobbyMusicSounds", &QSoundsConfig::Config.lobbyAmbience_Active, SDlistscroll, "Activates or deactivates Custom LobbyMusicSounds");
+        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LobbyMusicSounds", QSoundsConfig::Config.lobbyAmbience_Active, SDlistscroll, "Activates or deactivates Custom LobbyMusicSounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

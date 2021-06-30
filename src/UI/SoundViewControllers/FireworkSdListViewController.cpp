@@ -106,7 +106,7 @@ void FireworkSdListViewController::DidActivate(bool firstActivation, bool addedT
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable FireworkSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom FireworkSounds", &QSoundsConfig::Config.firework_Active, SDlistscroll, "Activates or deactivates Custom FireworkSounds");
+        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom FireworkSounds", QSoundsConfig::Config.firework_Active, SDlistscroll, "Activates or deactivates Custom FireworkSounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

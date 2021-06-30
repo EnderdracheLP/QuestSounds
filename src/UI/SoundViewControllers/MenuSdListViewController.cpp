@@ -123,7 +123,7 @@ void MenuSdListViewController::DidActivate(bool firstActivation, bool addedToHie
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable BadHitSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu Music", &QSoundsConfig::Config.menuMusic_Active, SDlistscroll, "Activates or deactivates Custom Menu Music");
+        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu Music", QSoundsConfig::Config.menuMusic_Active, SDlistscroll, "Activates or deactivates Custom Menu Music");
 
 
         //QSconfigcontainer->set_childForceExpandHeight(false);

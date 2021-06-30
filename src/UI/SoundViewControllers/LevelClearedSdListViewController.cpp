@@ -53,7 +53,7 @@ void LevelClearedSelectSound()
         if (button->hasSelection)
         {
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
-            QSoundsConfig::Config.levelCleared_filepath = QSoundsConfig::LevelClearPath + filename;
+            QSoundsConfig::Config.levelCleared_filepath = QSoundsConfig::LevelClearedPath + filename;
             QuestSounds::AudioClips::levelClearedLoader.filePath = QSoundsConfig::Config.levelCleared_filepath;
             AudioClips::levelClearedLoader.loaded = false;
             AudioClips::levelClearedLoader.load();
@@ -67,7 +67,7 @@ void LevelClearedRefreshList()
     if (LevelClearedListView->listtxtgroup && LevelClearedListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(LevelClearedListView->listtxtgroup->get_gameObject());
     for (UnityEngine::UI::Button* button : LevelClearedQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     LevelClearedQSlist = {};
-    DIR* sounddir = opendir(QSoundsConfig::LevelClearPath.c_str());
+    DIR* sounddir = opendir(QSoundsConfig::LevelClearedPath.c_str());
     dirent* fileent;
     while ((fileent = readdir(sounddir)) != NULL)
     {
@@ -85,7 +85,7 @@ void LevelClearedRefreshList()
     if (LevelClearedQSlist.size() < 1)
     {
         LevelClearedListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(LevelClearedListView->SDlistscroll->get_transform());
-        QuestUI::BeatSaberUI::CreateText(LevelClearedListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n"+ QSoundsConfig::LevelClearPath +"\nto continue.", false);
+        QuestUI::BeatSaberUI::CreateText(LevelClearedListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n"+ QSoundsConfig::LevelClearedPath +"\nto continue.", false);
     }
     (void)closedir(sounddir);
 }
@@ -106,7 +106,7 @@ void LevelClearedSdListViewController::DidActivate(bool firstActivation, bool ad
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable LevelClearedSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelClearedSounds", &QSoundsConfig::Config.levelCleared_Active, SDlistscroll, "Activates or deactivates Custom LevelClearedSounds");
+        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelClearedSounds", QSoundsConfig::Config.levelCleared_Active, SDlistscroll, "Activates or deactivates Custom LevelClearedSounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)
