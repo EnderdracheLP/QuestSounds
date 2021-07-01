@@ -106,7 +106,13 @@ void BadHitSdListViewController::DidActivate(bool firstActivation, bool addedToH
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable BadHitSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom BadHitSounds", &QSoundsConfig::Config.badHitSound_Active, SDlistscroll, "Activates or deactivates Custom BadHitSounds");
+        //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom BadHitSounds", &QSoundsConfig::Config.badHitSound_Active, this, "Activates or deactivates Custom BadHitSounds");
+        auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Bad Hit Sounds", QSoundsConfig::Config.badHitSound_Active,
+            [&](bool value) {
+                QSoundsConfig::Config.badHitSound_Active = value;
+                this->SDlistscroll->get_gameObject()->SetActive(value);
+            });
+        ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Bad Hit Sounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

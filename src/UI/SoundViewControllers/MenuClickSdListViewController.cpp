@@ -95,7 +95,13 @@ void MenuClickSdListViewController::DidActivate(bool firstActivation, bool added
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable MenuClickSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom MenuClickSounds", &QSoundsConfig::Config.menuClick_Active, SDlistscroll, "Activates or deactivates Custom MenuClickSounds");
+        //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom MenuClickSounds", &QSoundsConfig::Config.menuClick_Active, SDlistscroll, "Activates or deactivates Custom MenuClickSounds");
+        auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu ClickSounds", QSoundsConfig::Config.menuClick_Active,
+            [&](bool value) {
+                QSoundsConfig::Config.menuClick_Active = value;
+                this->SDlistscroll->get_gameObject()->SetActive(value);
+            });
+        ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Menu ClickSounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

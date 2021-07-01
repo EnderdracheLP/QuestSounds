@@ -106,7 +106,13 @@ void FireworkSdListViewController::DidActivate(bool firstActivation, bool addedT
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable FireworkSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom FireworkSounds", &QSoundsConfig::Config.firework_Active, SDlistscroll, "Activates or deactivates Custom FireworkSounds");
+        //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom FireworkSounds", &QSoundsConfig::Config.firework_Active, this, "Activates or deactivates Custom FireworkSounds");
+        auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Firework Sounds", QSoundsConfig::Config.firework_Active,
+            [&](bool value) {
+                QSoundsConfig::Config.firework_Active = value;
+                this->SDlistscroll->get_gameObject()->SetActive(value);
+            });
+        ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Firework Sounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

@@ -106,7 +106,13 @@ void LobbyMusicSdListViewController::DidActivate(bool firstActivation, bool adde
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable LobbyMusic
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom Lobby Music", &QSoundsConfig::Config.lobbyAmbience_Active, SDlistscroll, "Activates or deactivates Custom Lobby Music");
+        //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom Lobby Music", &QSoundsConfig::Config.lobbyAmbience_Active, this, "Activates or deactivates Custom Lobby Music");
+        auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Lobby Music", QSoundsConfig::Config.lobbyAmbience_Active,
+            [&](bool value) {
+                QSoundsConfig::Config.lobbyAmbience_Active = value;
+                this->SDlistscroll->get_gameObject()->SetActive(value);
+            });
+        ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Lobby Music");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

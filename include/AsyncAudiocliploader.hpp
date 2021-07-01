@@ -25,10 +25,10 @@ namespace AsyncAudioClipLoader
         std::string filePath;
         int audioType = 14;
         UnityEngine::AudioSource* audioSource;
-        UnityEngine::AudioClip* audioClip;
         UnityEngine::AudioClip* getClip(); //Audioclip
         bool loaded = false;
         bool load();
+        UnityEngine::AudioClip* OriginalAudioClip = nullptr;
     private:
         static void audioClipCompleted(loader* obj, Il2CppObject* asyncOp);
         Il2CppString* path;
@@ -37,6 +37,7 @@ namespace AsyncAudioClipLoader
 
         UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipAsync;
         UnityEngine::Networking::UnityWebRequest* audioClipRequest;
-        custom_types::Helpers::Coroutine GetAudioClip(System::Action_1<UnityEngine::AsyncOperation*>* actionUWRM, AsyncAudioClipLoader::loader* self, int audioType, Il2CppString* filePathStr);
+        //custom_types::Helpers::Coroutine GetAudioClip(System::Action_1<UnityEngine::AsyncOperation*>* actionUWRM, AsyncAudioClipLoader::loader* self, int audioType, Il2CppString* filePathStr);
+        custom_types::Helpers::Coroutine GetAudioClip(AsyncAudioClipLoader::loader* self, int audioType, Il2CppString* filePathStr/*, Logger& logger*/);
     };
 }

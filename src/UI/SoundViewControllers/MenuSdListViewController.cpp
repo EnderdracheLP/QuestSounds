@@ -122,8 +122,16 @@ void MenuSdListViewController::DidActivate(bool firstActivation, bool addedToHie
         QSconfigcontainer->set_childForceExpandHeight(false);
         QSconfigcontainer->set_childControlHeight(true);
 
-        // Enable or Disable BadHitSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu Music", &QSoundsConfig::Config.menuMusic_Active, SDlistscroll, "Activates or deactivates Custom Menu Music");
+        // Enable or Disable Custom Menu Music
+        //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu Music", &QSoundsConfig::Config.menuMusic_Active, SDlistscroll, "Activates or deactivates Custom Menu Music");
+        auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu Music", QSoundsConfig::Config.menuMusic_Active,
+            [&](bool value) {
+                QSoundsConfig::Config.menuMusic_Active = value;
+                this->SDlistscroll->get_gameObject()->SetActive(value);
+                if (!AudioClips::menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active) AudioClips::menuMusicLoader.load();
+            });
+        ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Menu Music");
+
 
 
         //QSconfigcontainer->set_childForceExpandHeight(false);
@@ -152,5 +160,9 @@ void MenuSdListViewController::DidDeactivate(bool removedFromHierarchy, bool sys
 {
     for (UnityEngine::UI::Button* button : MenuQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     MenuQSlist = {};
-    SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
+    if (AudioClips::menuMusicLoader.loaded) {
+        SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
+    }
+    else if (!QSoundsConfig::Config.menuMusic_Active) SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.OriginalAudioClip);
+    ;
 }

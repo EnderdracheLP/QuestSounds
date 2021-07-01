@@ -213,11 +213,19 @@ Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loade
     return temporaryArray;
 }
 
+// TODO: Add LevelFailed sound as option
 MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+    if (firstActivation && addedToHierarchy) {
+        levelClearedLoader.OriginalAudioClip = self->levelClearedAudioClip;
+    }
+
     if (levelClearedLoader.loaded && addedToHierarchy)
     {   
         UnityEngine::AudioClip* audioClip = levelClearedLoader.getClip();
         self->levelClearedAudioClip = audioClip;
+    }
+    else {
+        self->levelClearedAudioClip = levelClearedLoader.OriginalAudioClip;
     }
     ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
@@ -225,11 +233,18 @@ MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, ResultsViewControl
 MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, SongPreviewPlayer* self) {
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
 
+    if (menuMusicLoader.OriginalAudioClip == nullptr) {
+        menuMusicLoader.OriginalAudioClip = self->defaultAudioClip;
+    }
+
     if (menuMusicLoader.loaded)
     {
         UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
         if (audioClip != nullptr)
             self->defaultAudioClip = audioClip;
+    }
+    else if (!QSoundsConfig::Config.menuMusic_Active) {
+        self->defaultAudioClip = menuMusicLoader.OriginalAudioClip;
     }
     SongPreviewPlayer_OnEnable(self);
 }
@@ -237,10 +252,8 @@ MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, SongPreviewPlayer* self) 
 #ifndef BS__1_13_2
 MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
-    getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
-
     getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
-    if (lobbyAmbienceLoader.loaded && addedToHierarchy)
+    if (lobbyAmbienceLoader.loaded && QSoundsConfig::Config.lobbyAmbience_Active && addedToHierarchy)
     {
         getLogger().debug("Overwriting LobbyAmbience Audio");
         UnityEngine::AudioClip* audioClip = lobbyAmbienceLoader.getClip();
@@ -251,10 +264,8 @@ MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidActivate, void, GameServe
 
 MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
 {
-    getLogger().debug("GameServerLobbyFlowCoordinator_DidDeactivate");
-
     getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
-    if (menuMusicLoader.loaded && removedFromHierarchy)
+    if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
         UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
@@ -270,7 +281,7 @@ MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidActivate, void, 
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidActivate");
 
     getLogger().info("LobbyMusic is it true: %i", menuMusicLoader.loaded);
-    if (menuMusicLoader.loaded && addedToHierarchy)
+    if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && addedToHierarchy)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
         UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
@@ -284,7 +295,7 @@ MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, void
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidDeactivate");
 
     getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
-    if (menuMusicLoader.loaded && removedFromHierarchy)
+    if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
     {
         UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
         self->ambienceAudioClip = audioClip;
@@ -295,7 +306,7 @@ MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, void
 //*/
 
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, NoteCutSoundEffectManager* self) {
-    if(hitSoundLoader.loaded)
+    if(hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active)
     {
         hitSoundArr = createAudioClipArray(hitSoundLoader);
         self->longCutEffectsAudioClips = hitSoundArr;
@@ -305,7 +316,7 @@ MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, NoteCutSoundEffectMa
 }
 
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, NoteCutSoundEffect* self) {
-    if(badHitSoundLoader.loaded)
+    if(badHitSoundLoader.loaded && QSoundsConfig::Config.badHitSound_Active)
     {
         badHitSoundArr = createAudioClipArray(badHitSoundLoader);
         self->badCutSoundEffectAudioClips = badHitSoundArr;
@@ -314,7 +325,7 @@ MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, NoteCutSoundEffect* self) {
 }
 
 MAKE_HOOK_OFFSETLESS(BasicUIAudioManager_Start, void, BasicUIAudioManager* self) {
-    if(menuClickLoader.loaded)
+    if(menuClickLoader.loaded && QSoundsConfig::Config.menuClick_Active)
     {
         menuClickArr = createAudioClipArray(menuClickLoader);
         self->clickSounds = menuClickArr;
@@ -323,7 +334,7 @@ MAKE_HOOK_OFFSETLESS(BasicUIAudioManager_Start, void, BasicUIAudioManager* self)
 }
 
 MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, FireworkItemController* self) {
-    if(fireworkSoundLoader.loaded)
+    if(fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active)
     {
         fireworkSoundArr = createAudioClipArray(fireworkSoundLoader);
         self->explosionClips = fireworkSoundArr;

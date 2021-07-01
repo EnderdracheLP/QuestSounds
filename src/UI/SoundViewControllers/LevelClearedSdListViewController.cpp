@@ -106,7 +106,13 @@ void LevelClearedSdListViewController::DidActivate(bool firstActivation, bool ad
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable LevelClearedSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelClearedSounds", &QSoundsConfig::Config.levelCleared_Active, SDlistscroll, "Activates or deactivates Custom LevelClearedSounds");
+        //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelClearedSounds", &QSoundsConfig::Config.levelCleared_Active, this, "Activates or deactivates Custom LevelClearedSounds");
+        auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelCleared Sounds", QSoundsConfig::Config.levelCleared_Active,
+            [&](bool value) {
+                QSoundsConfig::Config.levelCleared_Active = value;
+                this->SDlistscroll->get_gameObject()->SetActive(value);
+            });
+        ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom LevelCleared Sounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

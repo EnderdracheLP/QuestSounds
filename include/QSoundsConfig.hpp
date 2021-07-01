@@ -47,19 +47,4 @@ namespace QSoundsConfig {
 
     void SaveConfig();
     bool LoadConfig();
-
-    inline ::UnityEngine::UI::Toggle* QSAddConfigValueToggle(::UnityEngine::Transform* parent, std::string text, bool* config, ::UnityEngine::GameObject* SDls, std::string HoverHint = nullptr) {
-        auto object = ::QuestUI::BeatSaberUI::CreateToggle(parent, text, config,
-            [config, &SDls](bool value) {
-                *config = value;
-                SDls->get_gameObject()->SetActive(value);
-                //    ^
-                // TODO: Figure this crash out
-            }
-        );
-        if (!HoverHint.empty())
-            ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), HoverHint);
-        return object;
-    }
-
 }
