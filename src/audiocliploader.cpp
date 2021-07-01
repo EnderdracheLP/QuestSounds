@@ -14,71 +14,20 @@
     } else if (path.ends_with(".mp3")) {
         getLogger().debug("File is mp3");
         return 0xD;
+    } else if (path.ends_with(".aiff") || path.ends_with(".aif")) {
+        getLogger().debug("File is aiff");
+        return 2;
     }
     return 0;
     }
-     /*
-    std::string CheckFilePath(std::string PathToCheck) {
-        std::string result;
-            // Checks if the given File in the config exists
-            bool fileError = fileexists(PathToCheck);
-            // If that file doesn't exist check if the same file with an .mp3 file extension exists
-            if (!fileError) {
-                fileError = fileexists(PathToCheck.replace(PathToCheck.length() - 3, 3, "mp3"));
-                if (fileError) {
-                    result = PathToCheck.replace(PathToCheck.length() - 3, 3, "mp3");
-                    getLogger().warning("Could not find file set in Config, but found file with mp3 extension: %s", result.c_str());
-                    return result;
-                }
-                else {
-                    getLogger().error("Could not find file with mp3 extension, checking for (1), (2) in filename");
-                    fileError = fileexists(PathToCheck.insert(PathToCheck.length() - 4, " (1)"));
-                    if (fileError) {
-                        result = PathToCheck.insert(PathToCheck.length() - 4, " (1)");
-                        return result;
-                    }
-                    else {
-                        PathToCheck = PathToCheck.replace(PathToCheck.length() - 3, 3, "mp3");
-                        if (fileError) {
-                            result = PathToCheck.insert(PathToCheck.length() - 4, " (1)")
-                        }
-                    }
-                }
-            }
-            return PathToCheck
-        } // */
-
-    //void FindSoundFiles(std::string expectedPath)
-    //{
-
-    //}
-    //std::list<UnityEngine::UI::Button*> bgList = {};
-
-    //void FindSoundFiles()
-    //{
-    //    bgList = {};
-    //    DIR* imgdir = opendir(SOUND_PATH_FORMAT);
-    //    dirent* fileent;
-    //    while ((fileent = readdir(imgdir)) != NULL)
-    //    {
-    //        std::string filename = fileent->d_name;
-    //        for (char& ch : filename) ch = tolower(ch);
-    //
-    //        if (filename.ends_with(".ogg") || filename.ends_with(".mp3") || filename.ends_with(".wav"))
-    //        {
-    //            UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(ListView->bglistscroll->get_transform());
-    //            UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, SelectImage);
-    //            button->get_gameObject()->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->set_fontStyle(2);
-    //            bgList.push_back(button);
-    //        }
-    //    }
-    //}
 
 bool audioClipLoader::loader::load()
 {
     // C++ Shell example of the below filePath Checks https://onlinegdb.com/BJ5RfolI_
     //Stage 0 
     getLogger().info("Starting Stage 0");
+    static const char* FileExtensions[] =
+    { "ogg","mp3","wav","aiff","aif"};
     getLogger().info("FilePath to check try 1 is %s", filePath.c_str());
     Il2CppString* filePathStr;
     std::string CheckPath = filePath;
@@ -90,30 +39,14 @@ bool audioClipLoader::loader::load()
         bool fileError = fileexists(filePath);
         // If that file doesn't exist check if the same file with an .mp3 file extension exists
         if (!fileError) {
-            fileError = fileexists(CheckPath.replace(CheckPath.length() - 3, 3, "mp3"));
-            getLogger().info("FilePath to check try 2 is %s", CheckPath.c_str());
-            if (fileError) {
-                filePath = CheckPath;
-                getLogger().warning("Could not find file set in Config, but found file with mp3 extension: %s", filePath.c_str());
-            }
-            else {
-                getLogger().error("Could not find file with mp3 extension, checking for (1) in filename");
-                fileError = fileexists(CheckPath.insert(CheckPath.length() - 4, " (1)"));
-                getLogger().info("FilePath to check try 3 is %s", CheckPath.c_str());
-                if (fileError) {
-                    filePath = CheckPath;
-                    getLogger().warning("Found mp3 file with (1) in name: %s", filePath.c_str());
-                }
-                else {
-                    fileError = fileexists(CheckPath.replace(CheckPath.length() - 3, 3, "ogg"));
-                    getLogger().info("FilePath to check try 4 is %s", CheckPath.c_str());
+                for (int i = 0; i < sizeof(FileExtensions)/sizeof(char*); ++i) {
+                    fileError = fileexists(CheckPath.replace(CheckPath.length() - 3, 3, FileExtensions[i]));
+                    getLogger().info("FilePath to check try %d is %s", i+2, CheckPath.c_str());
                     if (fileError) {
                         filePath = CheckPath;
-                        getLogger().warning("Found file with (1) in name: %s", filePath.c_str());
+                        break;
                     }
-                    else { getLogger().error("All checks failed, no soundfile found"); }
                 }
-            }
         }
         getLogger().info("File error is %d", fileError);
         //bool fileError = true;
