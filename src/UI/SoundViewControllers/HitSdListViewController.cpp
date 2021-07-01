@@ -106,7 +106,7 @@ void HitSdListViewController::DidActivate(bool firstActivation, bool addedToHier
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable HitSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom HitSounds", QSoundsConfig::Config.hitSound_Active, SDlistscroll, "Activates or deactivates Custom HitSounds");
+        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom HitSounds", &QSoundsConfig::Config.hitSound_Active, SDlistscroll, "Activates or deactivates Custom HitSounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

@@ -13,10 +13,7 @@
 #include "UnityEngine\Networking\UnityWebRequestMultimedia.hpp"
 #include "UnityEngine\Networking\UnityWebRequest.hpp"
 
-#include "custom-types/shared/coroutine.hpp"
-
-
-namespace AsyncAudioClipLoader
+namespace AsyncAudioClipLoader2
 {
     class loader : public Il2CppObject
     {
@@ -37,6 +34,44 @@ namespace AsyncAudioClipLoader
 
         UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipAsync;
         UnityEngine::Networking::UnityWebRequest* audioClipRequest;
-        custom_types::Helpers::Coroutine GetAudioClip(System::Action_1<UnityEngine::AsyncOperation*>* actionUWRM, AsyncAudioClipLoader::loader* self, int audioType, Il2CppString* filePathStr);
+
     };
 }
+
+#pragma once
+#include "custom-types/shared/macros.hpp"
+#include "HMUI/FlowCoordinator.hpp"
+#include "HMUI/ViewController.hpp"
+
+DECLARE_CLASS_CODEGEN(AudioClipLoader, loader, UnityEngine::MonoBehaviour,
+
+    DECLARE_METHOD(void, Start);
+
+    public:
+        std::string filePath;
+        int audioType = 14;
+        UnityEngine::AudioSource* audioSource;
+        UnityEngine::AudioClip* audioClip;
+        UnityEngine::AudioClip* getClip(); //Audioclip
+        bool loaded = false;
+        bool load();
+    private:
+        static void audioClipCompleted(loader* obj, Il2CppObject* asyncOp);
+        Il2CppString* path;
+        bool isOGG = false;
+        System::Threading::Tasks::Task_1<UnityEngine::AudioClip*>* audioClipTask;
+
+        UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipAsync;
+        UnityEngine::Networking::UnityWebRequest* audioClipRequest;
+
+
+#ifndef#if defined(BS__1_16) && defined(REGISTER_FUNCTION)
+    REGISTER_FUNCTION(
+#elif defined(BS__1_13_2)
+    REGISTER_FUNCTION(loader,
+#endif
+#if defined(REGISTER_METHOD)
+        REGISTER_METHOD(Start);
+    )
+#endif
+)

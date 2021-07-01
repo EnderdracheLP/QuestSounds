@@ -36,7 +36,7 @@
 using namespace QuestSounds;
 
 #ifndef REGISTER_FUNCTION
-DEFINE_TYPE(QuestSounds, QSoundsLevelClearedSdListViewController);
+DEFINE_TYPE(QuestSounds, LevelClearedSdListViewController);
 #elif defined(DEFINE_TYPE)
 DEFINE_TYPE(QuestSounds::LevelClearedSdListViewController);
 #elif defined(DEFINE_CLASS)
@@ -106,7 +106,7 @@ void LevelClearedSdListViewController::DidActivate(bool firstActivation, bool ad
         QSconfigcontainer->set_childControlHeight(true);
 
         // Enable or Disable LevelClearedSounds
-        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelClearedSounds", QSoundsConfig::Config.levelCleared_Active, SDlistscroll, "Activates or deactivates Custom LevelClearedSounds");
+        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelClearedSounds", &QSoundsConfig::Config.levelCleared_Active, SDlistscroll, "Activates or deactivates Custom LevelClearedSounds");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

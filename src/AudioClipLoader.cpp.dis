@@ -27,26 +27,19 @@ using namespace System;
 #include "UnityEngine/MonoBehaviour.hpp" // Added incase it's somehow needed
 using namespace UnityEngine;
 
-#include "GlobalNamespace/SharedCoroutineStarter.hpp"
-
-custom_types::Helpers::Coroutine AsyncAudioClipLoader::loader::GetAudioClip(System::Action_1<UnityEngine::AsyncOperation*>* actionUWRM, AsyncAudioClipLoader::loader* self, int audioType, Il2CppString* filePathStr) {
-    //getLogger().debug("Coroutine start");
-    self->audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
+custom_types::Helpers::Coroutine GetAudioClip(System::Action_1<UnityEngine::AsyncOperation*>* actionUWRM, UnityEngine::Networking::UnityWebRequest* audioClipRequest, UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipAsync, int audioType, Il2CppString* filePathStr) {
+    audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
     {
-        //getLogger().debug("audioClipRequest set");
+        co_yield reinterpret_cast<System::Collections::IEnumerator*>(audioClipAsync = audioClipRequest->SendWebRequest());
 
-        co_yield reinterpret_cast<System::Collections::IEnumerator*>(self->audioClipAsync = self->audioClipRequest->SendWebRequest());
+        if (audioClipRequest->get_isHttpError() || audioClipRequest->get_isNetworkError()) {
 
-        if (self->audioClipRequest->get_isHttpError() || self->audioClipRequest->get_isNetworkError()) {
-
-            //getLogger().error("Web Request Error: %s", to_utf8(csstrtostr(self->audioClipRequest->get_error())).c_str());
-            
+            getLogger().error("Web Request Error: %s", to_utf8(csstrtostr(audioClipRequest->get_error())).c_str());
             co_return;
         }
         else {
             //Stage 2
-            //getLogger().info("Coroutine add_completed method");
-            self->audioClipAsync->add_completed(actionUWRM);
+            audioClipAsync->add_completed(actionUWRM);
             co_return;
         }
         //co_return;
@@ -55,19 +48,19 @@ custom_types::Helpers::Coroutine AsyncAudioClipLoader::loader::GetAudioClip(Syst
 }
 
 
-    //int getAudioType(std::string path) {
-    //if (path.ends_with(".ogg")) {
-    //    getLogger().debug("File is ogg");
-    //    return 0xE;
-    //} else if (path.ends_with(".wav")) {
-    //    getLogger().debug("File is wav");
-    //    return 0x14;
-    //} else if (path.ends_with(".mp3")) {
-    //    getLogger().debug("File is mp3");
-    //    return 0xD;
-    //}
-    //return 0;
-    //}
+//int getAudioType(std::string path) {
+//if (path.ends_with(".ogg")) {
+//    getLogger().debug("File is ogg");
+//    return 0xE;
+//} else if (path.ends_with(".wav")) {
+//    getLogger().debug("File is wav");
+//    return 0x14;
+//} else if (path.ends_with(".mp3")) {
+//    getLogger().debug("File is mp3");
+//    return 0xD;
+//}
+//return 0;
+//}
 
 int getAudioType(std::string path) {
     //if (path.ends_with(".ogg")) {
@@ -97,7 +90,7 @@ bool AsyncAudioClipLoader::loader::load()
     // C++ Shell example of the below filePath Checks https://onlinegdb.com/BJ5RfolI_
     //Stage 0 
     static const char* FileExtensions[] =
-    { "mp3","wav","aiff"};
+    { "mp3","wav","aiff" };
     bool fileError;
     getLogger().info("Starting Stage 0");
     getLogger().info("FilePath to check try 1 is %s", filePath.c_str());
@@ -114,14 +107,14 @@ bool AsyncAudioClipLoader::loader::load()
         if (!fileexists(filePath)) {
             //if (std::regex_search(filePath, std::regex(".mp3|.wav|.aiff")))
             //{
-                for (int i = 0; i < sizeof(FileExtensions)/sizeof(char*); ++i) {
-                    fileError = fileexists(CheckPath.replace(CheckPath.length() - 3, 3, FileExtensions[i]));
-                    getLogger().info("FilePath to check try %d is %s", i+2, CheckPath.c_str());
-                    if (fileError) {
-                        filePath = CheckPath;
-                        break;
-                    }
+            for (int i = 0; i < sizeof(FileExtensions) / sizeof(char*); ++i) {
+                fileError = fileexists(CheckPath.replace(CheckPath.length() - 3, 3, FileExtensions[i]));
+                getLogger().info("FilePath to check try %d is %s", i + 2, CheckPath.c_str());
+                if (fileError) {
+                    filePath = CheckPath;
+                    break;
                 }
+            }
             //}
             //fileError = fileexists(CheckPath.replace(CheckPath.length() - 3, 3, "mp3"));
             //getLogger().info("FilePath to check try 2 is %s", CheckPath.c_str());
@@ -179,12 +172,7 @@ bool AsyncAudioClipLoader::loader::load()
         isOGG = true;
     }
     else {
-        if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
-            filePathStr = il2cpp_utils::newcsstr(filePath);
-        }
-        else {
-            filePathStr = il2cpp_utils::newcsstr("file:///" + filePath);
-        }
+        filePathStr = il2cpp_utils::newcsstr("file:///" + filePath);
         isOGG = false;
     }
 
@@ -198,13 +186,14 @@ bool AsyncAudioClipLoader::loader::load()
         audioType = getAudioType(filePath);
 
         auto actionUWRM = il2cpp_utils::MakeDelegate<System::Action_1<UnityEngine::AsyncOperation*>*>(classof(System::Action_1<UnityEngine::AsyncOperation*>*), this, audioClipCompleted);
+        UnityEngine::MonoBehaviour* monoBehaviour = UnityEngine::MonoBehaviour::New_ctor();
 
-        GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(AsyncAudioClipLoader::loader::GetAudioClip(actionUWRM, this, audioType, filePathStr))));
+        monoBehaviour->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(GetAudioClip(actionUWRM, audioClipRequest, audioClipAsync, audioType, filePathStr))));
     }
     else {
         getLogger().debug("Running MediaAsyncLoader");
         audioClipTask = GlobalNamespace::MediaAsyncLoader::LoadAudioClipAsync(filePathStr, System::Threading::CancellationToken::get_None());
-        
+
         ////Stage 2
         auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), this, audioClipCompleted);
         reinterpret_cast<System::Threading::Tasks::Task*>(audioClipTask)->ContinueWith(actionMAL);
@@ -223,8 +212,8 @@ void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject*
     if (obj->isOGG) temporaryClip = obj->audioClipTask->get_ResultOnSuccess();
     else temporaryClip = UnityEngine::Networking::DownloadHandlerAudioClip::GetContent(obj->audioClipRequest); // TODO: This method takes too long
 
-    if(temporaryClip != nullptr)
-    {  
+    if (temporaryClip != nullptr)
+    {
         static auto goName = il2cpp_utils::createcsstr("AudioClipGO", il2cpp_utils::StringType::Manual);
         GameObject* audioClipGO = GameObject::New_ctor(goName);
         obj->audioSource = audioClipGO->AddComponent<AudioSource*>();
@@ -245,11 +234,12 @@ void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject*
 
 UnityEngine::AudioClip* AsyncAudioClipLoader::loader::getClip()
 {
-    if(audioSource != nullptr && loaded)
+    if (audioSource != nullptr && loaded)
     {
         getLogger().debug("AudioClip returned");
         return audioSource->get_clip();
-    } else
+    }
+    else
     {
         getLogger().debug("nullptr returned: is AudioSource null: %d, is loaded: %d", audioSource, loaded);
         return nullptr;

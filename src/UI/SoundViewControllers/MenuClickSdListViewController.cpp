@@ -88,6 +88,16 @@ void MenuClickSdListViewController::DidActivate(bool firstActivation, bool added
         container->set_spacing(0.4f);
         container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(125.0);
 
+        // Bool settings
+        this->QSconfigcontainer = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(container->get_rectTransform());
+        QSconfigcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
+        QSconfigcontainer->set_childForceExpandHeight(false);
+        QSconfigcontainer->set_childControlHeight(true);
+
+        // Enable or Disable MenuClickSounds
+        QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom MenuClickSounds", &QSoundsConfig::Config.menuClick_Active, SDlistscroll, "Activates or deactivates Custom MenuClickSounds");
+
+
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)
         this->SDlistscroll = QuestUI::BeatSaberUI::CreateScrollView(container->get_rectTransform());
         SDlistscroll->GetComponent<QuestUI::ExternalComponents*>()->Get<UnityEngine::UI::LayoutElement*>()->set_minHeight(56.0);
