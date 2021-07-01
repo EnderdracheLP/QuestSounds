@@ -24,6 +24,9 @@
 #include "TMPro/TextMeshProUGUI.hpp"
 using namespace QuestSounds;
 
+#include "GlobalNamespace/BasicUIAudioManager.hpp"
+
+
 #ifndef REGISTER_FUNCTION
 DEFINE_TYPE(QuestSounds, MenuClickSdListViewController);
 #elif defined(DEFINE_TYPE)
@@ -31,6 +34,8 @@ DEFINE_TYPE(QuestSounds::MenuClickSdListViewController);
 #elif defined(DEFINE_CLASS)
 DEFINE_CLASS(QuestSounds::MenuClickSdListViewController);
 #endif
+
+GlobalNamespace::BasicUIAudioManager* BUIAM;
 
 MenuClickSdListViewController* MenuClickListView;
 std::list<UnityEngine::UI::Button*> MenuClickQSlist = {};
@@ -42,7 +47,7 @@ void MenuClickSelectSound()
         if (button->hasSelection)
         {
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
-            QSoundsConfig::Config.menuClick_filepath = QSoundsConfig::soundPath + filename;
+            QSoundsConfig::Config.menuClick_filepath = QSoundsConfig::MenuClickPath + filename;
             AudioClips::menuClickLoader.filePath = QSoundsConfig::Config.menuClick_filepath;
             AudioClips::menuClickLoader.loaded = false;
             AudioClips::menuClickLoader.load();
@@ -84,6 +89,7 @@ void MenuClickSdListViewController::DidActivate(bool firstActivation, bool added
     MenuClickListView = this;
     if (firstActivation && addedToHierarchy)
     {
+        BUIAM = UnityEngine::GameObject::FindObjectOfType<GlobalNamespace::BasicUIAudioManager*>();
         UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
         container->set_spacing(0.4f);
         container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(125.0);
@@ -94,12 +100,15 @@ void MenuClickSdListViewController::DidActivate(bool firstActivation, bool added
         QSconfigcontainer->set_childForceExpandHeight(false);
         QSconfigcontainer->set_childControlHeight(true);
 
+        QuestUI::BeatSaberUI::CreateText(QSconfigcontainer->get_rectTransform(), "CHANGES REQUIRE GAME RESTART", false);
+
         // Enable or Disable MenuClickSounds
         //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom MenuClickSounds", &QSoundsConfig::Config.menuClick_Active, SDlistscroll, "Activates or deactivates Custom MenuClickSounds");
         auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu ClickSounds", QSoundsConfig::Config.menuClick_Active,
             [&](bool value) {
                 QSoundsConfig::Config.menuClick_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
+                AudioClips::menuClickLoader.load();
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Menu ClickSounds");
 
@@ -112,7 +121,7 @@ void MenuClickSdListViewController::DidActivate(bool firstActivation, bool added
         SDlistcontainer->set_childForceExpandHeight(false);
         SDlistcontainer->set_childControlHeight(true);
 
-        this->SDlistscroll->get_gameObject()->SetActive(true);
+        this->SDlistscroll->get_gameObject()->SetActive(QSoundsConfig::Config.menuClick_Active);
     }
     MenuClickRefreshList();
 }
@@ -122,4 +131,13 @@ void MenuClickSdListViewController::DidDeactivate(bool removedFromHierarchy, boo
     //QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : MenuClickQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     MenuClickQSlist = {};
+    if (QSoundsConfig::Config.menuClick_Active && AudioClips::menuClickLoader.loaded) {
+        //BUIAM->audioSource = AudioClips::menuClickLoader.audioSource;
+        AudioClips::menuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader);
+        BUIAM->clickSounds = AudioClips::menuClickArr;
+        BUIAM->audioSource->set_clip(AudioClips::menuClickLoader.getClip());
+    }
+    else {
+        //BUIAM->audioSource = AudioClips::menuClickLoader.OriginalAudioSource;
+    }
 }

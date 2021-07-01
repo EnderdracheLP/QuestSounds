@@ -55,7 +55,6 @@ void HitSelectSound()
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
             QSoundsConfig::Config.hitSound_filepath = QSoundsConfig::HitSoundPath + filename;
             AudioClips::hitSoundLoader.filePath = QSoundsConfig::Config.hitSound_filepath;
-            AudioClips::hitSoundLoader.loaded = false;
             AudioClips::hitSoundLoader.load();
             getLogger().debug("Selected filename %s, Sound Path %s", filename.c_str(), QSoundsConfig::Config.hitSound_filepath.c_str());
         }

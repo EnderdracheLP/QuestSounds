@@ -54,7 +54,7 @@ void MenuSelectSound()
         if (button->hasSelection)
         {
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
-            QSoundsConfig::Config.menuMusic_filepath = QSoundsConfig::soundPath + filename;
+            QSoundsConfig::Config.menuMusic_filepath = QSoundsConfig::MenuMusicPath + filename;
             QuestSounds::AudioClips::menuMusicLoader.filePath = QSoundsConfig::Config.menuMusic_filepath;
             //if (AudioClips::menuMusicLoader.load() && AudioClips::menuMusicLoader.loaded) ObjectInstances::SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
             //GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*),
@@ -128,7 +128,7 @@ void MenuSdListViewController::DidActivate(bool firstActivation, bool addedToHie
             [&](bool value) {
                 QSoundsConfig::Config.menuMusic_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
-                if (!AudioClips::menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active) AudioClips::menuMusicLoader.load();
+                if (!AudioClips::menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && value) AudioClips::menuMusicLoader.load();
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Menu Music");
 
@@ -160,9 +160,12 @@ void MenuSdListViewController::DidDeactivate(bool removedFromHierarchy, bool sys
 {
     for (UnityEngine::UI::Button* button : MenuQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     MenuQSlist = {};
-    if (AudioClips::menuMusicLoader.loaded) {
+    if (AudioClips::menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active) {
+        getLogger().debug("Returning custom audioClip");
         SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
     }
-    else if (!QSoundsConfig::Config.menuMusic_Active) SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.OriginalAudioClip);
-    ;
+    else {
+        getLogger().debug("Returning default audioClip");
+        SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.get_OriginalClip());
+    }
 }

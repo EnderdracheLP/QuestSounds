@@ -28,7 +28,9 @@ namespace AsyncAudioClipLoader
         UnityEngine::AudioClip* getClip(); //Audioclip
         bool loaded = false;
         bool load();
-        UnityEngine::AudioClip* OriginalAudioClip = nullptr;
+        void set_OriginalClip(UnityEngine::AudioClip* OriginalAudioClip); //Audioclip
+        UnityEngine::AudioClip* get_OriginalClip(); //Audioclip
+        UnityEngine::AudioSource* OriginalAudioSource = nullptr;
     private:
         static void audioClipCompleted(loader* obj, Il2CppObject* asyncOp);
         Il2CppString* path;

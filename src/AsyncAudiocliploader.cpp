@@ -112,7 +112,7 @@ bool AsyncAudioClipLoader::loader::load()
     { "mp3","wav","aiff","aif"};
     bool fileError;
     getLogger().info("Starting Stage 0");
-    getLogger().info("FilePath to check try 1 is %s", filePath.c_str());
+    getLogger().info("FilePath to check is %s", filePath.c_str());
     Il2CppString* filePathStr;
     if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
         getLogger().info("Filepath is URL, skipping file checks and try loading it");
@@ -160,7 +160,8 @@ bool AsyncAudioClipLoader::loader::load()
         getLogger().debug("Running MediaAsyncLoader");
         filePathStr = il2cpp_utils::newcsstr(filePath);
         audioClipTask = GlobalNamespace::MediaAsyncLoader::LoadAudioClipAsync(filePathStr, System::Threading::CancellationToken::get_None());
-        
+        //              ^
+        // Why is that sometimes a nullptr when first loading
         ////Stage 2
         auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), this, audioClipCompleted);
         reinterpret_cast<System::Threading::Tasks::Task*>(audioClipTask)->ContinueWith(actionMAL);
@@ -212,4 +213,32 @@ UnityEngine::AudioClip* AsyncAudioClipLoader::loader::getClip()
     }
 }
 
+void AsyncAudioClipLoader::loader::set_OriginalClip(AudioClip* OriginalAudioClip)
+{
+    // Stage 1
+    if (OriginalAudioClip != nullptr)
+    {
+        static auto goName = il2cpp_utils::createcsstr("OrigAudioClipGO", il2cpp_utils::StringType::Manual);
+        GameObject* audioClipGO = GameObject::New_ctor(goName);
+        OriginalAudioSource = audioClipGO->AddComponent<AudioSource*>();
+        OriginalAudioSource->set_playOnAwake(false);
+        OriginalAudioSource->set_clip(OriginalAudioClip);
+        UnityEngine::Object::DontDestroyOnLoad(audioClipGO);
+        getLogger().debug("Saved Original AudioClip");
+    }
+    // Finished
+}
 
+UnityEngine::AudioClip* AsyncAudioClipLoader::loader::get_OriginalClip()
+{
+    if (OriginalAudioSource != nullptr)
+    {
+        getLogger().debug("OrignalAudioClip returned");
+        return OriginalAudioSource->get_clip();
+    }
+    else
+    {
+        getLogger().debug("nullptr returned: is OriginalAudioSource null: %d", OriginalAudioSource);
+        return nullptr;
+    }
+}
