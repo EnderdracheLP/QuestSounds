@@ -8,7 +8,6 @@
 //#include "audiocliploader.hpp"
 #include "AsyncAudiocliploader.hpp"
 #include "QSoundsConfig.hpp"
-#include <dlfcn.h>
 using namespace QSoundsConfig;
 //using namespace audioClipLoader;
 #include "AudioClips.hpp"
@@ -161,6 +160,7 @@ Array<UnityEngine::AudioClip*> *hitSoundArr,    // hitSoundArray
                                *menuClickArr,
                                *fireworkSoundArr;
 
+
 Array<UnityEngine::AudioClip*> *origBadHitSoundArr, // badHitSoundArray
                                *origMenuClickArr,
                                *origFireworkSoundArr;
@@ -212,12 +212,10 @@ Array<UnityEngine::AudioClip*> *origBadHitSoundArr, // badHitSoundArray
     {
         UnityEngine::AudioClip* tempClip = clipLoader.getClip();
         auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(tempClip);
-        temporaryArray->values[0] = tempClip;
+        //temporaryArray->values[0] = tempClip;
         return temporaryArray;
     }
 }
-
-
 
 // TODO: Add LevelFailed sound as option
 MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
@@ -313,18 +311,110 @@ MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, void
 //*/
 
 // TODO: Figure out why HitSounds here broke
+//#ifdef HAS_CODEGEN
+//#undef HAS_CODEGEN
+//#define NO_CODEGEN_USE
+//#include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
+//#include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
+
+Il2CppArray* hitSoundArrIl2Cpp;
+
+Il2CppArray* createAudioClipIl2CppArray(AsyncAudioClipLoader::loader clipLoader)
+{
+    Il2CppObject* tempClip = (Il2CppObject*)clipLoader.getClip();
+    Il2CppArray* temporaryArray = (il2cpp_functions::array_new(il2cpp_utils::GetClassFromName("UnityEngine", "AudioClip"), 1));
+    il2cpp_array_set(temporaryArray, Il2CppObject*, 0, tempClip);
+    return temporaryArray;
+}
+
+#include "GlobalNamespace/RandomObjectPicker_1.hpp"
+
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, NoteCutSoundEffectManager* self) {
     if(hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active)
     {
+
+        //SafePtr<Array<UnityEngine::AudioClip*>*> hitSoundPtr = hitSoundPtr.emplace(createAudioClipArray(hitSoundLoader));
+        SafePtr<Array<UnityEngine::AudioClip*>*> HSPtr(hitSoundArr);
         hitSoundArr = createAudioClipArray(hitSoundLoader);
         self->longCutEffectsAudioClips = hitSoundArr;
         self->shortCutEffectsAudioClips = hitSoundArr;
         getLogger().debug("NoteCutSoundEffectManager_Start: Loaded hitSoundArray");
+
+        for (int i = 0; i < self->longCutEffectsAudioClips->Length(); i++) {
+            getLogger().debug("Pre-Fix Checking Ptr longCutEffectsAudioClips->values[%d]: %p", i, self->longCutEffectsAudioClips->values[i]);
+        }
+        for (int i = 0; i < self->shortCutEffectsAudioClips->Length(); i++) {
+            getLogger().debug("Pre-Fix Checking Ptr shortCutEffectsAudioClips->values[%d]: %p", i, self->shortCutEffectsAudioClips->values[i]);
+        }
+
+
+
+        //Array<UnityEngine::AudioClip*>* tempArraylongCut;
+        //Array<UnityEngine::AudioClip*>* tempArrayshortCut;
+
+        //tempArraylongCut = self->longCutEffectsAudioClips;
+        //getLogger().debug("longCutEffectsAudioClips Length: %d", self->longCutEffectsAudioClips->Length());
+        //for (int i = 0; i < self->longCutEffectsAudioClips->Length(); i++) {
+        //    self->longCutEffectsAudioClips->values[i] = hitSoundLoader.getClip();
+        //    getLogger().debug("Replacing longCutEffectsAudioClips->values[%d]", i);
+        //}
+        //self->longCutEffectsAudioClips = tempArraylongCut;
+
+        //tempArrayshortCut = self->shortCutEffectsAudioClips;
+        //getLogger().debug("shortCutEffectsAudioClips Length: %d", self->shortCutEffectsAudioClips->Length());
+        //for (int i = 0; i < self->shortCutEffectsAudioClips->Length(); i++) {
+        //    self->shortCutEffectsAudioClips->values[i] = hitSoundLoader.getClip();
+        //    getLogger().debug("Replacing shortCutEffectsAudioClips->values[%d]", i);
+        //}
+        //self->shortCutEffectsAudioClips = tempArrayshortCut;
+        //hitSoundArrIl2Cpp = createAudioClipIl2CppArray(hitSoundLoader);
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_shortCutEffectsAudioClips", hitSoundArrIl2Cpp));
+        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_longCutEffectsAudioClips", hitSoundArrIl2Cpp));
     }
     else {
         getLogger().debug("NoteCutSoundEffectManager_Start: Loading normally");
     }
+    getLogger().debug("NoteCutSoundEffectManager_Start Pre-Fix end");
     NoteCutSoundEffectManager_Start(self);
+    getLogger().debug("NoteCutSoundEffectManager_Start Post-Fix start");
+    //getLogger().debug("randomLongCutSoundPicker minimumPickInterval: %lf", self->randomLongCutSoundPicker->minimumPickInterval);
+    //getLogger().debug("randomLongCutSoundPicker objects->get_Length(): %d", self->randomLongCutSoundPicker->objects->get_Length());
+
+    //getLogger().debug("randomShortCutSoundPicker minimumPickInterval: %lf", self->randomShortCutSoundPicker->minimumPickInterval);
+    //getLogger().debug("randomShortCutSoundPicker objects->get_Length(): %d", self->randomShortCutSoundPicker->objects->get_Length());
+    
+    //hitSoundArr = createAudioClipArray(hitSoundLoader);
+
+    //self->randomShortCutSoundPicker->objects = hitSoundArr;
+    //self->randomLongCutSoundPicker->objects = hitSoundArr;
+        //for (int i = 0; i < self->randomShortCutSoundPicker->objects->get_Length(); i++) {
+        //    self->randomShortCutSoundPicker->objects = hitSoundLoader.getClip();
+        //    getLogger().debug("Replacing longCutEffectsAudioClips->values[%d]", i);
+        //}
+    for (int i = 0; i < self->longCutEffectsAudioClips->Length(); i++) {
+        getLogger().debug("Post-Fix Checking Ptr longCutEffectsAudioClips->values[%d]: %p", i, self->longCutEffectsAudioClips->values[i]);
+    }
+    for (int i = 0; i < self->shortCutEffectsAudioClips->Length(); i++) {
+        getLogger().debug("Post-Fix Checking Ptr shortCutEffectsAudioClips->values[%d]: %p", i, self->shortCutEffectsAudioClips->values[i]);
+    }
+    getLogger().debug("NoteCutSoundEffectManager_Start Finished");
+
+}
+//#undef NO_CODEGEN_USE
+//#define HAS_CODEGEN
+//#endif
+
+MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_HandleNoteWasCut, void, NoteCutSoundEffectManager* self, GlobalNamespace::NoteController* noteController, GlobalNamespace::NoteCutInfo& noteCutInfo) {
+    
+    NoteCutSoundEffectManager_HandleNoteWasCut(self, noteController, noteCutInfo);
+    getLogger().debug("NoteCutSoundEffectManager_HandleNoteWasCut");
+    for (int i = 0; i < self->longCutEffectsAudioClips->Length(); i++) {
+        getLogger().debug("Post-Fix Checking Ptr longCutEffectsAudioClips->values[%d]: %p", i, self->longCutEffectsAudioClips->values[i]);
+    }
+    for (int i = 0; i < self->shortCutEffectsAudioClips->Length(); i++) {
+        getLogger().debug("Post-Fix Checking Ptr shortCutEffectsAudioClips->values[%d]: %p", i, self->shortCutEffectsAudioClips->values[i]);
+    }
+
 }
 
 MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, NoteCutSoundEffect* self) {
@@ -417,7 +507,15 @@ extern "C" void load()
     getLogger().debug("Installing QuestSounds!");
     INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_Internal_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
     INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0));
+//#ifdef HAS_CODEGEN
+//#undef HAS_CODEGEN
+//#define NO_CODEGEN_USE
     INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_Start, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0));
+//#define HAS_CODEGEN
+//#undef NO_CODEGEN_USE
+//#endif
+    INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_HandleNoteWasCut, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "HandleNoteWasCut", 2));
+
     INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffect_Awake, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0));
     INSTALL_HOOK_OFFSETLESS(hkLog, FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
     INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0));
