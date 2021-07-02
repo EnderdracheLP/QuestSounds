@@ -131,9 +131,9 @@ bool AsyncAudioClipLoader::loader::load()
         else { getLogger().info("Stage 0 Done with %s", filePath.c_str()); }
     }
 
-    ////Stage 1
-    if (!filePath.ends_with(".ogg")) {
-        getLogger().debug("Running UnityWebRequestMultimedia");
+    //Stage 1
+    //if (filePath.starts_with(QSoundsConfig::HitSoundPath) || filePath.starts_with(QSoundsConfig::BadHitSoundPath) || !filePath.ends_with(".ogg")) {
+        getLogger().debug("Running UnityWebRequestMultimedia for FilePath %s", filePath.c_str());
         if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
             filePathStr = il2cpp_utils::newcsstr(filePath);
         }
@@ -155,17 +155,17 @@ bool AsyncAudioClipLoader::loader::load()
         time_taken *= 1e-9;
         getLogger().debug("UnityWebRequestMultimedia: Time taken %ld", time_taken);
 
-    }
-    else {
-        getLogger().debug("Running MediaAsyncLoader");
-        filePathStr = il2cpp_utils::newcsstr(filePath);
-        audioClipTask = GlobalNamespace::MediaAsyncLoader::LoadAudioClipAsync(filePathStr, System::Threading::CancellationToken::get_None());
-        //              ^
-        // Why is that sometimes a nullptr when first loading
-        ////Stage 2
-        auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), this, audioClipCompleted);
-        reinterpret_cast<System::Threading::Tasks::Task*>(audioClipTask)->ContinueWith(actionMAL);
-    }
+    //}
+    //else {
+    //    getLogger().debug("Running MediaAsyncLoader for FilePath");
+    //    filePathStr = il2cpp_utils::newcsstr(filePath);
+    //    audioClipTask = GlobalNamespace::MediaAsyncLoader::LoadAudioClipAsync(filePathStr, System::Threading::CancellationToken::get_None());
+    //    //              ^
+    //    // Why is that sometimes a nullptr when first loading
+    //    ////Stage 2
+    //    auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), this, audioClipCompleted);
+    //    reinterpret_cast<System::Threading::Tasks::Task*>(audioClipTask)->ContinueWith(actionMAL);
+    //}
     getLogger().debug("Stage 2 done with filepath %s", filePath.c_str());
     return true;
 }
