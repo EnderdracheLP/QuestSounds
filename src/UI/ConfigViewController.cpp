@@ -59,7 +59,7 @@ void QuestSounds::ConfigViewController::DidActivate(bool firstActivation, bool a
         configcontainer->GetComponent<UnityEngine::RectTransform*>()->set_sizeDelta(UnityEngine::Vector2(6.0f, 6.0f));
         UnityEngine::UI::LayoutElement* ccle = configcontainer->GetComponent<UnityEngine::UI::LayoutElement*>();
 
-        getLogger().debug("Width is minWidth: %d, preferredWidth %d, flexibleWidth %d", ccle->get_minWidth(), ccle->get_preferredWidth(), ccle->get_flexibleWidth());
+        //getLogger().debug("Width is minWidth: %d, preferredWidth %d, flexibleWidth %d", ccle->get_minWidth(), ccle->get_preferredWidth(), ccle->get_flexibleWidth());
         //configcontainer->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(100.0);
         //configcontainer->GetComponent<UnityEngine::RectTransform*>()->
 

@@ -7,6 +7,7 @@
 #include <dirent.h>
 #include <regex>
 #include <list>
+#include <unistd.h>
 
 #include "questui/shared/BeatSaberUI.hpp"
 #include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
@@ -61,6 +62,17 @@ void MenuSelectSound()
             //    (std::function<void()>)[=] {
             AudioClips::menuMusicLoader.loaded = false;
             AudioClips::menuMusicLoader.load();
+            //std::thread replaceAudio([&]() { while (!AudioClips::menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active) { getLogger().debug("Somehow I need this here so it works"); } if (!QSoundsConfig::Config.menuMusic_Active) { return; } return SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip()); });
+            std::thread replaceAudio([&]() { 
+                while (!AudioClips::menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active) {
+                    usleep(100);
+                }
+                if (!QSoundsConfig::Config.menuMusic_Active) { 
+                    return; 
+                } 
+                return SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip()); 
+                });
+            replaceAudio.detach();
                     //if (AudioClips::menuMusicLoader.load(true) && AudioClips::menuMusicLoader.loaded) {
                         //UnityEngine::AudioClip* tempClicp = AudioClips::menuMusicLoader.getClip();
                         //ObjectInstances::SPP->CrossfadeToNewDefault(tempClicp);
@@ -160,12 +172,12 @@ void MenuSdListViewController::DidDeactivate(bool removedFromHierarchy, bool sys
 {
     for (UnityEngine::UI::Button* button : MenuQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     MenuQSlist = {};
-    if (AudioClips::menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active) {
-        getLogger().debug("Returning custom audioClip");
-        SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
-    }
-    else {
-        getLogger().debug("Returning default audioClip");
-        SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.get_OriginalClip());
-    }
+    //if (AudioClips::menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active) {
+    //    getLogger().debug("Returning custom audioClip");
+    //    SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
+    //}
+    //else {
+    //    getLogger().debug("Returning default audioClip");
+    //    SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.get_OriginalClip());
+    //}
 }
