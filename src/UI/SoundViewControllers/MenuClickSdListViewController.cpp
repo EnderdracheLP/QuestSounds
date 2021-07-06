@@ -25,7 +25,7 @@
 using namespace QuestSounds;
 
 #include "GlobalNamespace/BasicUIAudioManager.hpp"
-
+#include "GlobalNamespace/RandomObjectPicker_1.hpp"
 
 #ifndef REGISTER_FUNCTION
 DEFINE_TYPE(QuestSounds, MenuClickSdListViewController);
@@ -49,8 +49,18 @@ void MenuClickSelectSound()
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
             QSoundsConfig::Config.menuClick_filepath = QSoundsConfig::MenuClickPath + filename;
             AudioClips::menuClickLoader.filePath = QSoundsConfig::Config.menuClick_filepath;
-            AudioClips::menuClickLoader.loaded = false;
             AudioClips::menuClickLoader.load();
+            std::thread PlayAudio([&]() {
+                while (!AudioClips::menuClickLoader.loaded && QSoundsConfig::Config.menuClick_Active) {
+                    usleep(100);
+                }
+                if (!QSoundsConfig::Config.menuClick_Active) {
+                    return;
+                }
+                AudioClips::menuClickLoader.audioSource->Stop(true);
+                return AudioClips::menuClickLoader.audioSource->PlayOneShot(AudioClips::menuClickLoader.getClip(), 0.8f);
+                });
+            PlayAudio.detach();
             getLogger().debug("Selected filename %s, Sound Path %s", filename.c_str(), QSoundsConfig::Config.menuClick_filepath.c_str());
         }
     }
@@ -68,7 +78,7 @@ void MenuClickRefreshList()
         std::string filename = fileent->d_name;
         for (char& ch : filename) ch = tolower(ch);
 
-        if (std::regex_search(filename, std::regex(".ogg|.mp3|.wav|.aiff|.aif")))
+        if (std::regex_search(filename, std::regex(".ogg|.mp3|.mp2|.wav|.aiff|.aif")))
         {
             UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(MenuClickListView->SDlistscroll->get_transform());
             UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, MenuClickSelectSound);
@@ -99,8 +109,6 @@ void MenuClickSdListViewController::DidActivate(bool firstActivation, bool added
         QSconfigcontainer->set_childAlignment(UnityEngine::TextAnchor::UpperCenter);
         QSconfigcontainer->set_childForceExpandHeight(false);
         QSconfigcontainer->set_childControlHeight(true);
-
-        QuestUI::BeatSaberUI::CreateText(QSconfigcontainer->get_rectTransform(), "CHANGES REQUIRE GAME RESTART", false);
 
         // Enable or Disable MenuClickSounds
         //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom MenuClickSounds", &QSoundsConfig::Config.menuClick_Active, SDlistscroll, "Activates or deactivates Custom MenuClickSounds");
@@ -134,8 +142,9 @@ void MenuClickSdListViewController::DidDeactivate(bool removedFromHierarchy, boo
     if (QSoundsConfig::Config.menuClick_Active && AudioClips::menuClickLoader.loaded) {
         //BUIAM->audioSource = AudioClips::menuClickLoader.audioSource;
         AudioClips::menuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader);
-        BUIAM->clickSounds = AudioClips::menuClickArr;
-        BUIAM->audioSource->set_clip(AudioClips::menuClickLoader.getClip());
+        //BUIAM->clickSounds = AudioClips::menuClickArr;
+        //BUIAM->audioSource->set_clip(AudioClips::menuClickLoader.getClip());
+        BUIAM->randomSoundPicker->objects = AudioClips::menuClickArr;
     }
     else {
         //BUIAM->audioSource = AudioClips::menuClickLoader.OriginalAudioSource;

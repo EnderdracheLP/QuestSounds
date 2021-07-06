@@ -20,6 +20,7 @@
 #include "UnityEngine/UI/LayoutElement.hpp"
 #include "UnityEngine/UI/VerticalLayoutGroup.hpp"
 #include "UnityEngine/UI/HorizontalLayoutGroup.hpp"
+#include "UnityEngine/AudioSource.hpp"
 //#include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/Events/UnityAction.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
@@ -56,6 +57,19 @@ void HitSelectSound()
             QSoundsConfig::Config.hitSound_filepath = QSoundsConfig::HitSoundPath + filename;
             AudioClips::hitSoundLoader.filePath = QSoundsConfig::Config.hitSound_filepath;
             AudioClips::hitSoundLoader.load();
+            std::thread PlayAudio([&]() {
+                while (!AudioClips::hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active) {
+                    usleep(100);
+                }
+                if (!QSoundsConfig::Config.hitSound_Active) {
+                    return;
+                }
+                if (AudioClips::hitSoundLoader.audioSource != nullptr) {
+                    AudioClips::hitSoundLoader.audioSource->Stop(true);
+                    return AudioClips::hitSoundLoader.audioSource->PlayOneShot(AudioClips::hitSoundLoader.getClip(), 0.8f);
+                }
+                });
+            PlayAudio.detach();
             getLogger().debug("Selected filename %s, Sound Path %s", filename.c_str(), QSoundsConfig::Config.hitSound_filepath.c_str());
         }
     }
@@ -73,7 +87,7 @@ void HitRefreshList()
         std::string filename = fileent->d_name;
         for (char& ch : filename) ch = tolower(ch);
 
-        if (std::regex_search(filename, std::regex(".ogg|.mp3|.wav|.aiff|.aif")))
+        if (std::regex_search(filename, std::regex(".ogg|.mp3|.mp2|.wav|.aiff|.aif")))
         {
             UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(HitListView->SDlistscroll->get_transform());
             UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, HitSelectSound);
@@ -110,6 +124,7 @@ void HitSdListViewController::DidActivate(bool firstActivation, bool addedToHier
             [&](bool value) {
                 QSoundsConfig::Config.hitSound_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
+                if (AudioClips::hitSoundLoader.audioSource != nullptr) AudioClips::hitSoundLoader.audioSource->Stop(true);
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Hit Sounds");
 
@@ -132,4 +147,5 @@ void HitSdListViewController::DidDeactivate(bool removedFromHierarchy, bool syst
     //QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : HitQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     HitQSlist = {};
+    if (AudioClips::hitSoundLoader.audioSource != nullptr) AudioClips::hitSoundLoader.audioSource->Stop(true);
 }

@@ -11,9 +11,9 @@ echo "Arg $($i) is $($args[$i])"
 }
 if ($args.Count -eq 0 -or $actions -ne $true) {
 $ModID = "QuestSounds"
-$BSHook = "1_3_5"
+$BSHook = "2_0_3"
 $VERSION = "1.0.0"
-$codegen_ver = "0_9_0"
+$codegen_ver = "0_10_2"
 }
 
 
@@ -48,11 +48,11 @@ if (-not ($PSVersionTable.PSEdition -eq "Core")) {
     $buildScript += ".cmd"
 }
 if ($trace -eq $true) {
-& $buildScript -j4 NDK_PROJECT_PATH=$PSScriptRoot APP_BUILD_SCRIPT=$PSScriptRoot/Android.mk NDK_APPLICATION_MK=$PSScriptRoot/Application.mk VERSION=$VERSION --trace
+& $buildScript NDK_PROJECT_PATH=$PSScriptRoot APP_BUILD_SCRIPT=$PSScriptRoot/Android.mk NDK_APPLICATION_MK=$PSScriptRoot/Application.mk -j4 VERSION=$VERSION --trace
 } elseif ($dryrun -eq $true) {
-& $buildScript -j4 NDK_PROJECT_PATH=$PSScriptRoot APP_BUILD_SCRIPT=$PSScriptRoot/Android.mk NDK_APPLICATION_MK=$PSScriptRoot/Application.mk VERSION=$VERSION -n
+& $buildScript NDK_PROJECT_PATH=$PSScriptRoot APP_BUILD_SCRIPT=$PSScriptRoot/Android.mk NDK_APPLICATION_MK=$PSScriptRoot/Application.mk -j4 VERSION=$VERSION -n
 } else {
-& $buildScript -j4 NDK_PROJECT_PATH=$PSScriptRoot APP_BUILD_SCRIPT=$PSScriptRoot/Android.mk NDK_APPLICATION_MK=$PSScriptRoot/Application.mk VERSION=$VERSION
+& $buildScript NDK_PROJECT_PATH=$PSScriptRoot APP_BUILD_SCRIPT=$PSScriptRoot/Android.mk NDK_APPLICATION_MK=$PSScriptRoot/Application.mk -j4 VERSION=$VERSION
 }
 
 echo Done

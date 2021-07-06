@@ -11,6 +11,9 @@
 #include "beatsaber-hook/shared/utils/il2cpp-utils.hpp"
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 #include "beatsaber-hook/shared/config/config-utils.hpp"
+#if !defined(MAKE_HOOK_OFFSETLESS)
+#include "beatsaber-hook/shared/utils/hooking.hpp"
+#endif
 
 // Define these functions here so that we can easily read configuration and log information from other files
 Configuration& getConfig();

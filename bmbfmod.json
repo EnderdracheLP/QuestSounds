@@ -9,7 +9,7 @@
     ],
     "category": "Gameplay",
     "gameVersion": "1.13.2",
-    "version": "0.3.0-Dev1",
+    "version": "1.0.0-InDev",
     "platform": "Quest",
     "components": [
         {

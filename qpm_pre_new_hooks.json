@@ -1,0 +1,38 @@
+{
+  "sharedDir": "shared",
+  "dependenciesDir": "extern",
+  "info": {
+    "name": "QuestSounds",
+    "id": "QuestSounds",
+    "version": "0.3.0",
+    "url": null,
+    "additionalData": {}
+  },
+  "dependencies": [
+    {
+      "id": "beatsaber-hook",
+      "versionRange": "^1.3.5",
+      "additionalData": {
+        "extraFiles": [
+          "src/inline-hook"
+        ]
+      }
+    },
+    {
+      "id": "codegen",
+      "versionRange": "^0.9.0",
+      "additionalData": {}
+    },
+    {
+      "id": "questui",
+      "versionRange": "<=0.7.0",
+      "additionalData": {}
+    },
+    {
+      "id": "custom-types",
+      "versionRange": "<=0.8.3",
+      "additionalData": {}
+    }
+  ],
+  "additionalData": {}
+}

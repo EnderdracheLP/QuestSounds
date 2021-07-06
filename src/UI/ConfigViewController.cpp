@@ -56,12 +56,14 @@ void QuestSounds::ConfigViewController::DidActivate(bool firstActivation, bool a
         configcontainer->set_childForceExpandWidth(false);
         configcontainer->set_childControlWidth(true);
         configcontainer->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(80.0);
-        configcontainer->GetComponent<UnityEngine::RectTransform*>()->set_sizeDelta(UnityEngine::Vector2(6.0f, 6.0f));
-        UnityEngine::UI::LayoutElement* ccle = configcontainer->GetComponent<UnityEngine::UI::LayoutElement*>();
+        //configcontainer->GetComponent<UnityEngine::RectTransform*>()->set_sizeDelta(UnityEngine::Vector2(6.0f, 6.0f));
+        //UnityEngine::UI::LayoutElement* ccle = configcontainer->GetComponent<UnityEngine::UI::LayoutElement*>();
 
         //getLogger().debug("Width is minWidth: %d, preferredWidth %d, flexibleWidth %d", ccle->get_minWidth(), ccle->get_preferredWidth(), ccle->get_flexibleWidth());
         //configcontainer->GetComponent<UnityEngine::UI::LayoutElement*>()->set_preferredWidth(100.0);
         //configcontainer->GetComponent<UnityEngine::RectTransform*>()->
+
+        if (QSoundsConfig::LegacyConfig) QuestUI::BeatSaberUI::CreateText(configcontainer->get_rectTransform(), "Legacy Config Detected,\nplease move your files into the new folders,\nfor selection in-game", false);
 
         UnityEngine::UI::Button* MenuMusic = BeatSaberUI::CreateUIButton(configcontainer->get_rectTransform(), "MenuMusic",
             [&]() {

@@ -35,9 +35,18 @@
 #include "GlobalNamespace/HMTask.hpp"
 
 using namespace QuestSounds;
+#ifndef REGISTER_FUNCTION
+DEFINE_TYPE(QuestSounds, MenuSdListViewController);
+#elif defined(DEFINE_TYPE)
 DEFINE_TYPE(MenuSdListViewController);
+#elif defined(DEFINE_CLASS)
+DEFINE_CLASS(MenuSdListViewController);
+#endif
 
-GlobalNamespace::SongPreviewPlayer* SPP;
+namespace QuestSounds::ObjectInstances {
+    GlobalNamespace::SongPreviewPlayer* SPP;
+}
+using namespace QuestSounds::ObjectInstances;
 
 MenuSdListViewController* MenuListView;
 std::list<UnityEngine::UI::Button*> MenuQSlist = {};
@@ -70,7 +79,9 @@ void MenuSelectSound()
                 if (!QSoundsConfig::Config.menuMusic_Active) { 
                     return; 
                 } 
-                return SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip()); 
+                if (AudioClips::menuMusicLoader.audioSource != nullptr) {
+                    return SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
+                }
                 });
             replaceAudio.detach();
                     //if (AudioClips::menuMusicLoader.load(true) && AudioClips::menuMusicLoader.loaded) {
@@ -101,7 +112,7 @@ void MenuRefreshList()
         std::string filename = fileent->d_name;
         for (char& ch : filename) ch = tolower(ch);
 
-        if (std::regex_search(filename, std::regex(".ogg|.mp3|.wav|.aiff|.aif")))
+        if (std::regex_search(filename, std::regex(".ogg|.mp3|.mp2|.wav|.aiff|.aif")))
         {
             UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(MenuListView->SDlistscroll->get_transform());
             UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, MenuSelectSound);

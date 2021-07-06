@@ -17,6 +17,7 @@
 #include "UnityEngine\Networking\UnityWebRequestMultimedia.hpp"
 using namespace UnityEngine::Networking;
 
+#include "System/Threading/Tasks/TaskStatus.hpp"
 #include "System/Threading/Tasks/Task.hpp"
 #include "System/Threading/Tasks/Task_1.hpp"
 #include "System/Action_1.hpp"
@@ -36,7 +37,7 @@ custom_types::Helpers::Coroutine AsyncAudioClipLoader::loader::GetAudioClip(Syst
     {
         //logger.debug("audioClipRequest set");
         co_yield reinterpret_cast<System::Collections::IEnumerator*>(audioClipAsync = audioClipRequest->SendWebRequest());
-        audioClipAsync->set_allowSceneActivation(true);
+        audioClipAsync->set_allowSceneActivation(false);
 
         if (audioClipRequest->get_isHttpError() || audioClipRequest->get_isNetworkError()) {
 
@@ -82,20 +83,24 @@ custom_types::Helpers::Coroutine AsyncAudioClipLoader::loader::GetAudioClip(Syst
     //}
 
 int getAudioType(std::string path) {
-    //if (path.ends_with(".ogg")) {
-    //    getLogger().debug("File is ogg");
-    //    return 0xE;
-    //}
-    /*else*/ if (path.ends_with(".wav")) {
-        getLogger().debug("File is wav");
-        return 0x14;
+    if (path.ends_with(".ogg")) {
+        getLogger().debug("File is OGGVORBIS");
+        return 0xE;
     }
-    else if (path.ends_with(".mp3")) {
-        getLogger().debug("File is mp3");
+    else if (path.ends_with(".mp3") || path.ends_with(".mp2")) {
+        getLogger().debug("File is MPEG");
         return 0xD;
     }
+    else if (path.ends_with(".m4a")) {
+        getLogger().debug("File is ACC");
+        return 1;
+    }
+    else if (path.ends_with(".wav")) {
+        getLogger().debug("File is WAV");
+        return 0x14;
+    }
     else if (path.ends_with(".aiff") || path.ends_with(".aif")) {
-        getLogger().debug("File is aiff");
+        getLogger().debug("File is AIFF");
         return 2;
     }
     return 0;
@@ -157,6 +162,8 @@ bool AsyncAudioClipLoader::loader::load()
         audioType = getAudioType(filePath);
 
         auto actionUWRM = il2cpp_utils::MakeDelegate<System::Action_1<UnityEngine::AsyncOperation*>*>(classof(System::Action_1<UnityEngine::AsyncOperation*>*), this, audioClipCompleted);
+        //                ^
+        // Got a crash there somehow
         auto start = std::chrono::high_resolution_clock::now();
         //GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(AsyncAudioClipLoader::loader::GetAudioClip(actionUWRM, this, audioType, filePathStr))));
         getLogger().debug("Check before StartCoroutine, loading %s", filePath.c_str());
@@ -166,7 +173,7 @@ bool AsyncAudioClipLoader::loader::load()
         auto end = std::chrono::high_resolution_clock::now();
         double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
         time_taken *= 1e-9;
-        getLogger().debug("UnityWebRequestMultimedia: Time taken %ld", time_taken);
+        getLogger().debug("UnityWebRequestMultimedia: Time taken %f", time_taken);
 
     }
     getLogger().debug("Stage 2 done with filepath %s", filePath.c_str());
@@ -181,9 +188,16 @@ void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject*
     //getLogger().debug("isOGG %d", obj->isOGG);
     UnityEngine::AudioClip* temporaryClip = nullptr;
     //UnityEngine::AudioClip* temporaryClip = obj->audioClipTask->get_ResultOnSuccess();
-    if (!obj->UsesUWR && obj->audioClipTask->get_IsRanToCompletion()) temporaryClip = obj->audioClipTask->get_ResultOnSuccess();
+    if (!obj->UsesUWR /*&& obj->audioClipTask->get_IsRanToCompletion()*/) temporaryClip = obj->audioClipTask->get_ResultOnSuccess();
     else if (obj->UsesUWR) temporaryClip = UnityEngine::Networking::DownloadHandlerAudioClip::GetContent(obj->audioClipRequest); // TODO: This method takes too long
-    
+    if (temporaryClip == nullptr && !obj->UsesUWR) {
+        Il2CppString* filePathStr = il2cpp_utils::newcsstr("file://" + obj->filePath);
+        obj->audioClipTask = GlobalNamespace::MediaAsyncLoader::LoadAudioClipAsync(filePathStr, System::Threading::CancellationToken::get_None());
+        ////Stage 2
+        auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), obj, audioClipCompleted);
+        reinterpret_cast<System::Threading::Tasks::Task*>(obj->audioClipTask)->ContinueWith(actionMAL);
+    }
+
     if(temporaryClip != nullptr)
     {  
         static auto goName = il2cpp_utils::createcsstr("AudioClipGO", il2cpp_utils::StringType::Manual);
@@ -192,11 +206,13 @@ void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject*
         obj->audioSource->set_playOnAwake(false);
         obj->audioSource->set_clip(temporaryClip);
         UnityEngine::Object::DontDestroyOnLoad(audioClipGO);
+        //obj->audioSource->set_volume(0.7f);
         obj->loaded = true;
         getLogger().debug("Stage 1 done with temporaryClip");
     }
     else {
-        getLogger().error("Stage 1 failed with temporaryClip being nullptr");
+        getLogger().error("Stage 1 failed with temporaryClip being nullptr %p", temporaryClip);
+        if (!obj->UsesUWR) getLogger().error("Task Status was %d", (int)obj->audioClipTask->get_Status());
         return;
     }
     auto end_final = std::chrono::high_resolution_clock::now();
@@ -216,7 +232,7 @@ UnityEngine::AudioClip* AsyncAudioClipLoader::loader::getClip()
         return audioSource->get_clip();
     } else
     {
-        getLogger().debug("nullptr returned: is AudioSource null: %d, is loaded: %d", audioSource, loaded);
+        getLogger().debug("nullptr returned: is AudioSource null: %p, is loaded: %d", audioSource, loaded);
         return nullptr;
     }
 }
@@ -246,7 +262,7 @@ UnityEngine::AudioClip* AsyncAudioClipLoader::loader::get_OriginalClip()
     }
     else
     {
-        getLogger().debug("nullptr returned: is OriginalAudioSource null: %d", OriginalAudioSource);
+        getLogger().debug("nullptr returned: is OriginalAudioSource null: %ld", (long int)OriginalAudioSource);
         return nullptr;
     }
 }

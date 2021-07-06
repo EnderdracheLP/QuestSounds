@@ -57,6 +57,19 @@ void BadHitSelectSound()
             AudioClips::badHitSoundLoader.filePath = QSoundsConfig::Config.badHitSound_filepath;
             AudioClips::badHitSoundLoader.loaded = false;
             AudioClips::badHitSoundLoader.load();
+            std::thread PlayAudio([&]() {
+                while (!AudioClips::badHitSoundLoader.loaded && QSoundsConfig::Config.badHitSound_Active) {
+                    usleep(100);
+                }
+                if (!QSoundsConfig::Config.badHitSound_Active) {
+                    return;
+                }
+                if (AudioClips::badHitSoundLoader.audioSource != nullptr) {
+                    AudioClips::badHitSoundLoader.audioSource->Stop(true);
+                    return AudioClips::badHitSoundLoader.audioSource->PlayOneShot(AudioClips::badHitSoundLoader.getClip(), 0.8f);
+                }
+                });
+            PlayAudio.detach();
             getLogger().debug("Selected Sound Path %s", QSoundsConfig::Config.badHitSound_filepath.c_str());
         }
     }
@@ -74,7 +87,7 @@ void BadHitRefreshList()
         std::string filename = fileent->d_name;
         for (char& ch : filename) ch = tolower(ch);
 
-        if (std::regex_search(filename, std::regex(".ogg|.mp3|.wav|.aiff|.aif")))
+        if (std::regex_search(filename, std::regex(".ogg|.mp3|.mp2|.wav|.aiff|.aif")))
         {
             UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(BadHitListView->SDlistscroll->get_transform());
             UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, BadHitSelectSound);

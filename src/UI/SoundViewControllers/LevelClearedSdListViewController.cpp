@@ -2,7 +2,7 @@
 #include "QSoundsConfig.hpp"
 #include "ViewControllers/LevelClearedSdListViewController.hpp"
 #include "AudioClips.hpp"
-//#include "ObjectInstances.hpp"
+#include "ObjectInstances.hpp"
 
 #include <dirent.h>
 #include <regex>
@@ -57,6 +57,17 @@ void LevelClearedSelectSound()
             QuestSounds::AudioClips::levelClearedLoader.filePath = QSoundsConfig::Config.levelCleared_filepath;
             AudioClips::levelClearedLoader.loaded = false;
             AudioClips::levelClearedLoader.load();
+            std::thread PlayAudio([&]() {
+                while (!AudioClips::levelClearedLoader.loaded && QSoundsConfig::Config.levelCleared_Active) {
+                    usleep(100);
+                }
+                if (!QSoundsConfig::Config.levelCleared_Active) {
+                    return;
+                }
+                AudioClips::levelClearedLoader.audioSource->Stop(true); // TODO: Figure out why this Stop won't work
+                return AudioClips::levelClearedLoader.audioSource->PlayOneShot(AudioClips::levelClearedLoader.getClip(), 0.6f);
+                });
+            PlayAudio.detach();
             getLogger().debug("Selected filename %s, Sound Path %s", filename.c_str(), QSoundsConfig::Config.levelCleared_filepath.c_str());
         }
     }
@@ -74,7 +85,7 @@ void LevelClearedRefreshList()
         std::string filename = fileent->d_name;
         for (char& ch : filename) ch = tolower(ch);
 
-        if (std::regex_search(filename, std::regex(".ogg|.mp3|.wav|.aiff|.aif")))
+        if (std::regex_search(filename, std::regex(".ogg|.mp3|.mp2|.wav|.aiff|.aif")))
         {
             UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(LevelClearedListView->SDlistscroll->get_transform());
             UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, LevelClearedSelectSound);
@@ -111,6 +122,7 @@ void LevelClearedSdListViewController::DidActivate(bool firstActivation, bool ad
             [&](bool value) {
                 QSoundsConfig::Config.levelCleared_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
+                if (AudioClips::levelClearedLoader.audioSource != nullptr) AudioClips::levelClearedLoader.audioSource->Stop(true);
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom LevelCleared Sounds");
 
@@ -133,4 +145,6 @@ void LevelClearedSdListViewController::DidDeactivate(bool removedFromHierarchy, 
     //QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : LevelClearedQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     LevelClearedQSlist = {};
+    if (AudioClips::levelClearedLoader.audioSource != nullptr) AudioClips::levelClearedLoader.audioSource->Stop(true);
+
 }

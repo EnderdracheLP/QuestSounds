@@ -57,6 +57,16 @@ void FireworkSelectSound()
             QuestSounds::AudioClips::fireworkSoundLoader.filePath = QSoundsConfig::Config.firework_filepath;
             AudioClips::fireworkSoundLoader.loaded = false;
             AudioClips::fireworkSoundLoader.load();
+            std::thread PlayAudio([&]() {
+                while (!AudioClips::fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active) {
+                    usleep(100);
+                }
+                if (!QSoundsConfig::Config.firework_Active) {
+                    return;
+                }
+                return AudioClips::fireworkSoundLoader.audioSource->PlayOneShot(AudioClips::fireworkSoundLoader.getClip(), 0.8f);
+                });
+            PlayAudio.detach();
             getLogger().debug("Selected filename %s, Sound Path %s", filename.c_str(), QSoundsConfig::Config.firework_filepath.c_str());
         }
     }
@@ -74,7 +84,7 @@ void FireworkRefreshList()
         std::string filename = fileent->d_name;
         for (char& ch : filename) ch = tolower(ch);
 
-        if (std::regex_search(filename, std::regex(".ogg|.mp3|.wav|.aiff|.aif")))
+        if (std::regex_search(filename, std::regex(".ogg|.mp3|.mp2|.wav|.aiff|.aif")))
         {
             UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(FireworkListView->SDlistscroll->get_transform());
             UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, FireworkSelectSound);

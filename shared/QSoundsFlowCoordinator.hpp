@@ -24,7 +24,7 @@ DECLARE_CLASS_CODEGEN(QuestSounds, QSoundsFlowCoordinator, HMUI::FlowCoordinator
 
 
     public:
-        void SubMenuButtonWasPressed(int type);
+        void SubMenuButtonWasPressed(int VCtype);
 
 #if defined(BS__1_16) && defined(REGISTER_FUNCTION)
     REGISTER_FUNCTION(
