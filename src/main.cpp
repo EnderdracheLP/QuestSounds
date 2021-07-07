@@ -6,7 +6,7 @@
 
 #include "main.hpp"
 //#include "audiocliploader.hpp"
-#include "AsyncAudiocliploader.hpp"
+#include "Utils/AsyncAudiocliploader.hpp"
 #include "QSoundsConfig.hpp"
 using namespace QSoundsConfig;
 //using namespace audioClipLoader;
@@ -71,7 +71,6 @@ Configuration& getConfig() {
     return config;
 }
 
-
 Logger& getLogger() {
     static auto logger = new Logger(modInfo, LoggerOptions(false, true));
     return *logger;
@@ -93,7 +92,7 @@ void makeFolder()
         int makePath = mkpath(MenuMusicPath.data());
         if (makePath == -1)
         {
-            getLogger().debug("Failed to make MenuMusic Folder path!");
+            getLogger().error("Failed to make MenuMusic Folder path!");
         }
     }
 
@@ -102,7 +101,7 @@ void makeFolder()
         int makePath = mkpath(HitSoundPath.data());
         if (makePath == -1)
         {
-            getLogger().debug("Failed to make HitSound Folder path!");
+            getLogger().error("Failed to make HitSound Folder path!");
         }
     }
 
@@ -111,7 +110,7 @@ void makeFolder()
         int makePath = mkpath(BadHitSoundPath.data());
             if (makePath == -1)
             {
-                getLogger().debug("Failed to make BadHitSound Folder path!");
+                getLogger().error("Failed to make BadHitSound Folder path!");
             }
     }    
 
@@ -120,7 +119,7 @@ void makeFolder()
         int makePath = mkpath(MenuClickPath.data());
         if (makePath == -1)
         {
-            getLogger().debug("Failed to make MenuClick Folder path!");
+            getLogger().error("Failed to make MenuClick Folder path!");
         }
     }
 
@@ -129,7 +128,7 @@ void makeFolder()
         int makePath = mkpath(FireworkSoundPath.data());
         if (makePath == -1)
         {
-            getLogger().debug("Failed to make FireworkSound Folder path!");
+            getLogger().error("Failed to make FireworkSound Folder path!");
         }
     }
 
@@ -138,7 +137,7 @@ void makeFolder()
         int makePath = mkpath(LevelClearedPath.data());
         if (makePath == -1)
         {
-            getLogger().debug("Failed to make LevelCleared Folder path!");
+            getLogger().error("Failed to make LevelCleared Folder path!");
         }
     }
 #ifndef BS__1_13_2
@@ -147,7 +146,7 @@ void makeFolder()
         int makePath = mkpath(LobbyMusicPath.data());
         if (makePath == -1)
         {
-            getLogger().debug("Failed to make LevelCleared Folder path!");
+            getLogger().error("Failed to make LevelCleared Folder path!");
         }
     }
 #endif
@@ -172,9 +171,8 @@ Array<UnityEngine::AudioClip*> *hitSoundArr,    // hitSoundArray
                                *fireworkSoundArr;
 
 
-Array<UnityEngine::AudioClip*> *origBadHitSoundArr, // badHitSoundArray
-                               *origMenuClickArr,
-                               *origFireworkSoundArr;
+Array<UnityEngine::AudioClip*> *origFireworkSoundArr,
+                               *origMenuClickArr;
 
 
     void loadAudioClips()
@@ -189,8 +187,8 @@ Array<UnityEngine::AudioClip*> *origBadHitSoundArr, // badHitSoundArray
         lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
 #endif
 
-        if (Config.menuMusic_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuMusicLoader.load(); }), nullptr)->Run();
-        if (Config.menuClick_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuClickLoader.load(); }), nullptr)->Run();
+        GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuMusicLoader.load(); }), nullptr)->Run();
+        GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuClickLoader.load(); }), nullptr)->Run();
         if (Config.hitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { hitSoundLoader.load(); }), nullptr)->Run();
         if (Config.badHitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { badHitSoundLoader.load(); }), nullptr)->Run();
         if (Config.firework_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { fireworkSoundLoader.load(); }), nullptr)->Run();
@@ -219,13 +217,25 @@ Array<UnityEngine::AudioClip*> *origBadHitSoundArr, // badHitSoundArray
         //if (Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
     }
     // Creates an Array, of AudioClips
-    Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader)
+    Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader, bool GetOriginalClip)
     {
-        UnityEngine::AudioClip* tempClip = clipLoader.getClip();
+        UnityEngine::AudioClip* tempClip;
+        if (!GetOriginalClip) tempClip = clipLoader.getClip();
+        else tempClip = clipLoader.get_OriginalClip();
         auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(tempClip);
         //temporaryArray->values[0] = tempClip;
         return temporaryArray;
     }
+
+    // Creates an Array of AudioClips for the original Clip
+    Array<UnityEngine::AudioClip*>* createOrigAudioClipArray(AsyncAudioClipLoader::loader clipLoader)
+    {
+        UnityEngine::AudioClip* tempClip = clipLoader.get_OriginalClip();
+        auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(tempClip);
+        //temporaryArray->values[0] = tempClip;
+        return temporaryArray;
+    }
+
 }
 
 // TODO: Add LevelFailed sound as option
@@ -248,7 +258,7 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
 QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, SongPreviewPlayer* self) {
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
 
-    if (menuMusicLoader.OriginalAudioSource == nullptr) {
+    if (!menuMusicLoader.OriginalAudioSource) {
         menuMusicLoader.set_OriginalClip(self->defaultAudioClip);
     }
 
@@ -419,6 +429,13 @@ QS_MAKE_HOOK(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCut
 }
 
 QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, BasicUIAudioManager* self) {
+    if (!menuClickLoader.OriginalAudioSource) menuClickLoader.set_OriginalClip(self->clickSounds->values[0]);
+
+    //for (int i = 0; i < self->clickSounds->Length(); i++) {
+    //    getLogger().debug("Post-Fix Checking Ptr clickSounds->values[%d]: %p", i, self->clickSounds->values[i]);
+    //}
+
+
     if(menuClickLoader.loaded && QSoundsConfig::Config.menuClick_Active)
     {
         menuClickArr = createAudioClipArray(menuClickLoader);
@@ -428,10 +445,15 @@ QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, Basic
 }
 
 QS_MAKE_HOOK(FireworkItemController_Awake, &FireworkItemController::Awake, void, FireworkItemController* self) {
+    if (!origFireworkSoundArr) origFireworkSoundArr = self->explosionClips;
+    
     if(fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active)
     {
         fireworkSoundArr = createAudioClipArray(fireworkSoundLoader);
         self->explosionClips = fireworkSoundArr;
+    }
+    else {
+        self->explosionClips = origFireworkSoundArr;
     }
     FireworkItemController_Awake(self);
 }

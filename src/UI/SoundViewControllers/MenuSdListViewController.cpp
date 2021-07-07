@@ -151,7 +151,12 @@ void MenuSdListViewController::DidActivate(bool firstActivation, bool addedToHie
             [&](bool value) {
                 QSoundsConfig::Config.menuMusic_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
-                if (!AudioClips::menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && value) AudioClips::menuMusicLoader.load();
+                /*if (!AudioClips::menuMusicLoader.loaded && value) {
+                    AudioClips::menuMusicLoader.load();
+                } else */if (AudioClips::menuMusicLoader.loaded && value) SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
+                else {
+                    if (AudioClips::menuMusicLoader.OriginalAudioSource) SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.get_OriginalClip());
+                }
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Menu Music");
 

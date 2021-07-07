@@ -15,7 +15,7 @@ namespace QSoundsConfig {
     static std::string HitSoundPath = soundPath + "HitSounds/";
     static std::string BadHitSoundPath = soundPath + "BadHitSounds/";
     static std::string MenuClickPath = soundPath + "MenuClicks/";
-    static std::string FireworkSoundPath = soundPath + "FireworkSounds/";
+    static std::string FireworkSoundPath = soundPath + "Fireworks/";
     static std::string LevelClearedPath = soundPath + "LevelCleared/";
 #ifndef BS__1_13_2
     static std::string LobbyMusicPath = soundPath + "LobbyMusic/";

@@ -24,18 +24,15 @@
       ],
       "includePath": [
         "${workspaceRoot}/**",
-        "${workspaceRoot}/shared",
-        "${workspaceRoot}/include",
+        "${workspaceRoot}/shared/**",
+        "${workspaceRoot}/include/**",
         "${workspaceRoot}/extern/**",
         "${workspaceRoot}/extern/libil2cpp/il2cpp/libil2cpp",
         "${workspaceRoot}/../android-ndk-r22/**"
       ],
       //"inheritEnvironments": [ "clang-arm64" ],
       "intelliSenseMode": "android-clang-arm64",
-      "name": "Quest",
-      "undefines": [
-        "_MSC_INTTYPES_H_"
-      ]
+      "name": "Quest"
     }
   ],
   "version": 4

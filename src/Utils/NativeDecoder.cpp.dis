@@ -1,0 +1,119 @@
+#include "main.hpp"
+#include <NdkMediaCodec.h>
+#include <NdkMediaError.h>
+#include <NdkMediaExtractor.h>
+#include <NdkMediaFormat.h>
+#include <string>
+#include <stdio.h>
+#include <cstring>
+#include <stdint.h>
+#include <cstdint>
+
+#include <asset_manager.h>
+#include <asset_manager_jni.h>
+//typedef signed __int64 int64_t;
+
+void GetAudioData(std::string filePath) {
+	FILE* File = fopen(filePath.c_str(), "r"); 
+
+    fseek(File, 0L, SEEK_END);
+    off64_t ans = ftell(File);
+    rewind(File);
+
+	int fd = fileno(File);
+	AMediaExtractor* mediaExtractor = AMediaExtractor_new();
+	media_status_t err = AMediaExtractor_setDataSourceFd(mediaExtractor, fd, 0, ans);
+    if (err != 0) {
+        getLogger().error("Failed to read");
+    }
+	
+    //size_t trackCount = AMediaExtractor_getTrackCount(mediaExtractor);
+    AMediaFormat* mFormat = AMediaExtractor_getTrackFormat(mediaExtractor, 1);
+    const char* mime;
+
+    if (!AMediaFormat_getString(mFormat, AMEDIAFORMAT_KEY_MIME, &mime)) {
+        getLogger().error("Mime type cannot be determined!");
+        return;
+    }
+    else
+        if (!strncmp(mime, "audio/", 6)) {
+            AMediaCodec* mCodec = AMediaCodec_createDecoderByType(mime);
+            err = AMediaCodec_configure(mCodec, mFormat, NULL, NULL, 0);
+            getLogger().debug("Media err %d", (int)err);
+            err = AMediaCodec_start(mCodec);
+
+            
+
+            bool mInputEof = false;
+
+            if (err == AMEDIA_ERROR_END_OF_STREAM) mInputEof = true;
+
+            if (!mInputEof) {
+                ssize_t bufidx = AMediaCodec_dequeueInputBuffer(mCodec, 1);
+                getLogger().debug("input buffer % zd", bufidx);
+                if (bufidx >= 0) {
+                    size_t bufsize;
+                    uint8_t* buf = AMediaCodec_getInputBuffer(mCodec, bufidx, &bufsize);
+                    int sampleSize = AMediaExtractor_readSampleData(mediaExtractor, buf, bufsize);
+                    if (sampleSize < 0) {
+                        sampleSize = 0;
+                        mInputEof = true;
+                        getLogger().debug("video producer input EOS");
+                    }
+                    int64_t presentationTimeUs = AMediaExtractor_getSampleTime(mediaExtractor);
+
+                    AMediaCodec_queueInputBuffer(mCodec, bufidx, 0, sampleSize, presentationTimeUs,
+                        mInputEof ? AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM
+                        : 0);
+                    AMediaExtractor_advance(mediaExtractor);
+                }
+            }
+            bool eof;
+            bool mOutputEof;
+
+            if (!mOutputEof) {
+                AMediaCodecBufferInfo info;
+                ssize_t status = AMediaCodec_dequeueOutputBuffer(mCodec, &info, 1);
+
+                if (status >= 0) {
+
+                    if (info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
+                        getLogger().debug("video producer output EOS");
+
+                        eof = true;
+                        mOutputEof = true;
+                    }
+
+                    uint8_t* outputBuf = AMediaCodec_getOutputBuffer(mCodec, status, NULL/* out_size */);
+                    size_t dataSize = info.size;
+                    if (outputBuf != nullptr && dataSize != 0) {
+                        long pts = info.presentationTimeUs;
+                        int32_t pts32 = (int32_t)pts;
+
+                        *buffer = (uint8_t*)mlt_pool_alloc(dataSize);
+                        memcpy(*buffer, outputBuf + info.offset, dataSize);
+                        *buffersize = dataSize;
+                    }
+
+                    int64_t presentationNano = info.presentationTimeUs * 1000;
+                    getLogger().debug("pts %lld outsize %d", info.presentationTimeUs, dataSize);
+                    /*if (delay > 0) {
+                        usleep(delay / 1000);
+                    }*/
+                    AMediaCodec_releaseOutputBuffer(mCodec, status, info.size != 0);
+                }
+                else if (status == AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
+                    getLogger().debug("output buffers changed");
+                }
+                else if (status == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
+                    AMediaFormat_delete(mFormat);
+                }
+                else if (status == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
+                    getLogger().debug("no output buffer right now");
+                }
+                else {
+                    getLogger().debug("unexpected info code: %zd", status);
+                }
+            }
+        }
+}

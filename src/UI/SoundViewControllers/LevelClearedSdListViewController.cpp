@@ -24,8 +24,6 @@
 #include "UnityEngine/Events/UnityAction.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 
-#include "GlobalNamespace/SongPreviewPlayer.hpp"
-
 #include "System/Action.hpp"
 #include "System/Threading/Tasks/Task_1.hpp"
 #include "System/Threading/ThreadStart.hpp"

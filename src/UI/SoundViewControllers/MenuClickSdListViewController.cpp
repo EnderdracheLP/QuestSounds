@@ -116,7 +116,15 @@ void MenuClickSdListViewController::DidActivate(bool firstActivation, bool added
             [&](bool value) {
                 QSoundsConfig::Config.menuClick_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
-                AudioClips::menuClickLoader.load();
+                if (AudioClips::menuClickLoader.audioSource) AudioClips::menuClickLoader.audioSource->Stop(true);
+                if (value && AudioClips::menuClickLoader.loaded) {
+                    AudioClips::menuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader);
+                    BUIAM->randomSoundPicker->objects = AudioClips::menuClickArr;
+                }
+                else {
+                    AudioClips::origMenuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader, true);
+                    BUIAM->randomSoundPicker->objects = AudioClips::origMenuClickArr;
+                }
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Menu ClickSounds");
 
@@ -147,6 +155,8 @@ void MenuClickSdListViewController::DidDeactivate(bool removedFromHierarchy, boo
         BUIAM->randomSoundPicker->objects = AudioClips::menuClickArr;
     }
     else {
+        AudioClips::origMenuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader, true);
+        BUIAM->randomSoundPicker->objects = AudioClips::origMenuClickArr;
         //BUIAM->audioSource = AudioClips::menuClickLoader.OriginalAudioSource;
     }
 }

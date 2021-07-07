@@ -43,6 +43,8 @@ DEFINE_TYPE(QuestSounds::FireworkSdListViewController);
 DEFINE_CLASS(QuestSounds::FireworkSdListViewController);
 #endif
 
+bool FireworkSelectionChanged = false;
+
 FireworkSdListViewController* FireworkListView;
 std::list<UnityEngine::UI::Button*> FireworkQSlist = {};
 
@@ -64,6 +66,7 @@ void FireworkSelectSound()
                 if (!QSoundsConfig::Config.firework_Active) {
                     return;
                 }
+                FireworkSelectionChanged = true;
                 return AudioClips::fireworkSoundLoader.audioSource->PlayOneShot(AudioClips::fireworkSoundLoader.getClip(), 0.8f);
                 });
             PlayAudio.detach();
@@ -143,4 +146,5 @@ void FireworkSdListViewController::DidDeactivate(bool removedFromHierarchy, bool
     //QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : FireworkQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     FireworkQSlist = {};
+    if (FireworkSelectionChanged) AudioClips::fireworkSoundArr = AudioClips::createAudioClipArray(AudioClips::fireworkSoundLoader);
 }
