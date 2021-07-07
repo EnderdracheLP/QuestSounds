@@ -7,9 +7,9 @@
 
 //#include "GlobalNamespace/SongPreviewPlayer.hpp"
 
-#include "UnityEngine\Networking\UnityWebRequestAsyncOperation.hpp"
-#include "UnityEngine\Networking\UnityWebRequestMultimedia.hpp"
-#include "UnityEngine\Networking\UnityWebRequest.hpp"
+#include "UnityEngine/Networking/UnityWebRequestAsyncOperation.hpp"
+#include "UnityEngine/Networking/UnityWebRequestMultimedia.hpp"
+#include "UnityEngine/Networking/UnityWebRequest.hpp"
 
 #include "custom-types/shared/coroutine.hpp"
 
