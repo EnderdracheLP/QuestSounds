@@ -187,15 +187,15 @@ Array<UnityEngine::AudioClip*> *origFireworkSoundArr,
         lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
 #endif
 
-        GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuMusicLoader.load(); }), nullptr)->Run();
-        GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuClickLoader.load(); }), nullptr)->Run();
-        if (Config.hitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { hitSoundLoader.load(); }), nullptr)->Run();
-        if (Config.badHitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { badHitSoundLoader.load(); }), nullptr)->Run();
-        if (Config.firework_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { fireworkSoundLoader.load(); }), nullptr)->Run();
-        if (Config.levelCleared_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { levelClearedLoader.load(); }), nullptr)->Run();
-#ifndef BS__1_13_2
-        if (Config.lobbyAmbience_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { lobbyAmbienceLoader.load(); }), nullptr)->Run();    // Added for LobbyMusic
-#endif
+//        GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuMusicLoader.load(); }), nullptr)->Run();
+//        GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuClickLoader.load(); }), nullptr)->Run();
+//        if (Config.hitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { hitSoundLoader.load(); }), nullptr)->Run();
+//        if (Config.badHitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { badHitSoundLoader.load(); }), nullptr)->Run();
+//        if (Config.firework_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { fireworkSoundLoader.load(); }), nullptr)->Run();
+//        if (Config.levelCleared_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { levelClearedLoader.load(); }), nullptr)->Run();
+//#ifndef BS__1_13_2
+//        if (Config.lobbyAmbience_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { lobbyAmbienceLoader.load(); }), nullptr)->Run();    // Added for LobbyMusic
+//#endif
         //if (Config.hitSound_Active) {
         //    std::thread hitSoundThread(hitSoundLoader.load());
         //    hitSoundThread.detach();
@@ -207,14 +207,15 @@ Array<UnityEngine::AudioClip*> *origFireworkSoundArr,
         //if (Config.levelCleared_Active) std::thread(levelClearedLoader.load()).detach();
         //if (Config.lobbyAmbience_Active) std::thread(lobbyAmbienceLoader.load()).detach();    // Added for LobbyMusic
 
-
-        //if (Config.hitSound_Active) hitSoundLoader.load();
-        //if (Config.badHitSound_Active) badHitSoundLoader.load();
-        //if (Config.menuMusic_Active) menuMusicLoader.load();
-        //if (Config.menuClick_Active) menuClickLoader.load();
-        //if (Config.firework_Active) fireworkSoundLoader.load();
-        //if (Config.levelCleared_Active) levelClearedLoader.load();
-        //if (Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
+        menuMusicLoader.load();
+        menuClickLoader.load();
+        if (Config.hitSound_Active) hitSoundLoader.load();
+        if (Config.badHitSound_Active) badHitSoundLoader.load();
+        if (Config.firework_Active) fireworkSoundLoader.load();
+        if (Config.levelCleared_Active) levelClearedLoader.load();
+#ifndef BS__1_13_2
+        if (Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
+#endif
     }
     // Creates an Array, of AudioClips
     Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader, bool GetOriginalClip)

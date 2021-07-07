@@ -142,6 +142,8 @@ bool AsyncAudioClipLoader::loader::load()
         UsesUWR = false;
         filePathStr = il2cpp_utils::newcsstr(filePath);
         audioClipTask = GlobalNamespace::MediaAsyncLoader::LoadAudioClipAsync(filePathStr, System::Threading::CancellationToken::get_None());
+        //              ^
+        //      Known crash there
         ////Stage 2
         auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), this, audioClipCompleted);
         reinterpret_cast<System::Threading::Tasks::Task*>(audioClipTask)->ContinueWith(actionMAL);
