@@ -6,8 +6,8 @@ env:
      module_id: QuestSounds
      version: 1.0.0-Pre1
      BSVersion: 1.14.0
-     bs_hook: 1_3_3
-     codegen: 0_7_2
+     bs_hook: 2_0_3
+     codegen: 0_10_2
      ndkname: android-ndk-r22
 
 
