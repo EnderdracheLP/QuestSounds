@@ -1,6 +1,5 @@
-__**QuestSounds 1.0.0-Pre1 for Beat Saber 1.16.x**__
+__**QuestSounds 1.0.0-Pre1 for Beat Saber 1.16.2**__
 
-**READ ENTIRE POST BEFORE OPENING AN ISSUE**
 Description:
 QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sounds without asset mods, 
 just drop them into the Folder and select them in-game!
