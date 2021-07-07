@@ -31,5 +31,3 @@ Sounds you can change and their default folder Path:
 -  Firework:         sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Fireworks/
 -  LevelCleared:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared/
 -  LobbyMusic:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic/
-
-__**Download**__
