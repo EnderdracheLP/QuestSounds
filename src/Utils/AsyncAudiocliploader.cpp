@@ -13,8 +13,8 @@
 
 //using namespace audioClipLoader;
 
-#include "UnityEngine\Networking\DownloadHandlerAudioClip.hpp"
-#include "UnityEngine\Networking\UnityWebRequestMultimedia.hpp"
+#include "UnityEngine/Networking/DownloadHandlerAudioClip.hpp"
+#include "UnityEngine/Networking/UnityWebRequestMultimedia.hpp"
 using namespace UnityEngine::Networking;
 
 #include "System/Threading/Tasks/TaskStatus.hpp"
