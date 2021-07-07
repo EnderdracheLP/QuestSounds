@@ -10,18 +10,19 @@ __**Changelog:**__
 - Added In-Game Menu for Settings and Sound File selection
 - Added toogle to turn Custom Sounds on or off in-game
 
-*NOTE:*
-It will pick up old configs and let you use them but for selection in-game these sound files will have to be moved to their new location.
-An In-Game warning will be displayed if an old config is loaded, it will disappear after the first time you visit the config menu.
-
 Features:
   NEW: In-Game Menu for selecting sound files and enabling/disabling custom sounds.
   Support for OGG, MP3, WAV, MP2 and AIFF file formats!
   Creates QuestSounds folder at /sdcard/ModData/com.beatgames.beatsaber/Mods/ 
   which contains the subfolders for the sounds.
   AFTER YOU HAVE RAN THE MOD ONCE
-**Avoid using any files that use MPEG format like MP3 or MP2 unless you don't mind brief freezing upon loading**
-
+  
+  **Avoid using any files that use MPEG format like MP3 or MP2 unless you don't mind brief freezing upon loading**
+  
+*NOTE:*
+It will pick up old configs and let you use them but for selection in-game these sound files will have to be moved to their new location.
+An In-Game warning will be displayed if an old config is loaded, it will disappear after the first time you visit the config menu.
+  
 Sounds you can change and their default folder Path:
 -  HitSounds:        sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSounds/
 -  BadHitSounds:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/
