@@ -1,4 +1,4 @@
-__**QuestSounds 0.3.0-Pre4 for Beat Saber 1.15.0**__
+__**QuestSounds 0.3.0-Pre4 for Beat Saber 1.16.2**__
 
 **READ ENTIRE POST BEFORE OPENING AN ISSUE**
 Description:
@@ -22,6 +22,7 @@ Features:
   AFTER YOU HAVE RAN THE MOD ONCE
   Config for disabling and enabling Custom Sounds!
   Custom filepaths in config, so you can decide where you want the sounds!
+  
 **YOU NEED TO CHANGE CONFIG IF YOU WANT TO USE ANOTHER FILE FORMAT THAN OGG or MP3**
 
 Sounds you can change and default path:
@@ -32,5 +33,3 @@ Sounds you can change and default path:
   Firework:         sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Firework.ogg
   LevelCleared:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared.ogg
   LobbyMusic:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic.ogg
-
-__**Download**__
