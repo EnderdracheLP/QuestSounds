@@ -57,13 +57,37 @@ jobs:
         path: QPM
         repo: sc2ad/QuestPackageManager
       
+    - name: QPM Dependencies Cache
+      id: cache-qpm-deps
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-qpm-deps
+      with:
+        path: QPM_Temp
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm_${{ env.BSVersion }}.json', '.github/BuildMod.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ env.cache-name }}-
+          ${{ runner.os }}-${{ env.cache-name }}
+      
     - name: QPM Restore
       run: |
         chmod +x ./QPM/QPM
         ./QPM/QPM restore
-    - name: test
+
+    - name: Check dependency Folders
       run: |
-        ls ./QPM/QPM_Temp
+        echo "Checking extern Folder"
+        ls -lh ${GITHUB_WORKSPACE}/extern/
+        echo ""
+        echo "Checking QPM_Temp Folders"
+        ls -lh QPM_Temp/
+        echo ""
+        echo "Listing beatsaber-hook folder"
+        ls QPM_Temp/beatsaber-hook/
+        echo ""
+        echo "Listing all .so files in QPM_Temp"
+        find QPM_Temp -type f -name "*.so"
+
     - name: Build
       run: |
         cd ${GITHUB_WORKSPACE}
