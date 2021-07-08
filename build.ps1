@@ -2,8 +2,8 @@ $NDKPath = Get-Content $PSScriptRoot/ndkpath.txt
 if ($args.Count -eq 0) {
 $ModID = "QuestSounds"
 $VERSION = "0.3.0-InDev"
-$BSHook = "1_3_5"
-$codegen_ver = "0_9_0"
+$BSHook = "2_0_3"
+$codegen_ver = "0_10_2"
 }
 
 if ($args[0] -eq "--actions") {

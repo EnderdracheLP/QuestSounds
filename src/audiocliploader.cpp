@@ -127,7 +127,7 @@ bool audioClipLoader::loader::load()
             }
             else
             {
-                getLogger().error("Something went wrong when trying to load", filePath.c_str());
+                getLogger().error("Something went wrong when trying to load %s", filePath.c_str());
             }
             getLogger().error("Stage 0 Failed");
             return false;

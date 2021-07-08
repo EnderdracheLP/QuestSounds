@@ -1,10 +1,30 @@
 #define NO_CODEGEN_USE
 #include "audiocliploader.hpp"
 #include "main.hpp"
-#include <dlfcn.h>
 #define RAPIDJSON_HAS_STDSTRING 1
 #define SOUND_PATH_FORMAT "/sdcard/ModData/%s/Mods/QuestSounds/"
 
+#if defined(MAKE_HOOK_OFFSETLESS) && !defined(MAKE_HOOK_FIND_VERBOSE)
+#define QS_MAKE_HOOK(name, infoGet, retval, ...) MAKE_HOOK_OFFSETLESS(name, retval, __VA_ARGS__)
+#define QS_INSTALL_HOOK(logger, name, methodInfo) INSTALL_HOOK_OFFSETLESS(logger, name, methodInfo)
+#elif defined(MAKE_HOOK_FIND_VERBOSE)
+#define QS_MAKE_HOOK(name, infoGet, retval, ...) MAKE_HOOK_FIND_VERBOSE(name, infoGet, retval, __VA_ARGS__)
+#define QS_INSTALL_HOOK(logger, name, methodInfo) INSTALL_HOOK(logger, name)
+#else
+#error No Compatible HOOK macro found
+#endif
+
+static const MethodInfo* SM_ActiveSceneChanged;
+static const MethodInfo* RVC_DidActivate;
+static const MethodInfo* SPP_OnEnable;
+static const MethodInfo* NCSEM_Start;
+static const MethodInfo* BUIAM_Start;
+static const MethodInfo* NCSE_Awake;
+static const MethodInfo* FIC_Awake;
+static const MethodInfo* MMSFC_DidActivate;
+static const MethodInfo* MMSFC_DidDeactivate;
+static const MethodInfo* GSLFC_DidActivate;
+static const MethodInfo* GSLFC_DidDeactivate;
 
 
 static ModInfo modInfo;
@@ -151,7 +171,7 @@ Il2CppArray* createAudioClipArray(audioClipLoader::loader clipLoader)
     return temporaryArray;
 }
 
-MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+QS_MAKE_HOOK(ResultsViewController_DidActivate, RVC_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     if(levelClearedLoader.loaded && addedToHierarchy)
     {
@@ -162,7 +182,7 @@ MAKE_HOOK_OFFSETLESS(ResultsViewController_DidActivate, void, Il2CppObject* self
     ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
-MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
+QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, SPP_OnEnable, void, Il2CppObject* self)
 {
     
     getLogger().info("MenuMusic is it true: %i", menuMusicLoader.loaded);
@@ -176,7 +196,7 @@ MAKE_HOOK_OFFSETLESS(SongPreviewPlayer_OnEnable, void, Il2CppObject* self)
     SongPreviewPlayer_OnEnable(self);
 }
 
-MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidActivate, GSLFC_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
 
@@ -193,7 +213,7 @@ MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidActivate, void, Il2CppObj
     GameServerLobbyFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
-MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidDeactivate, void, Il2CppObject* self, bool removedFromHierarchy, bool screenSystemDisabling)
+QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidDeactivate, GSLFC_DidDeactivate, void, Il2CppObject* self, bool removedFromHierarchy, bool screenSystemDisabling)
 {
     getLogger().debug("GameServerLobbyFlowCoordinator_DidDeactivate");
 
@@ -209,10 +229,8 @@ MAKE_HOOK_OFFSETLESS(GameServerLobbyFlowCoordinator_DidDeactivate, void, Il2CppO
     }
     GameServerLobbyFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
 }
-// */
 
-// /*
-MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidActivate, MMSFC_DidActivate, void, Il2CppObject* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidActivate");
 
@@ -229,7 +247,7 @@ MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidActivate, void, 
     MultiplayerModeSelectionFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling); // This has to be ran last, otherwise it will not work correctly
 }
 // /*
-MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, void, Il2CppObject* self, bool removedFromHierarchy, bool screenSystemDisabling)
+QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, MMSFC_DidDeactivate, void, Il2CppObject* self, bool removedFromHierarchy, bool screenSystemDisabling)
 {
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidDeactivate");
 
@@ -247,7 +265,7 @@ MAKE_HOOK_OFFSETLESS(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, void
 }
 //*/
 
-MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, Il2CppObject* self)
+QS_MAKE_HOOK(NoteCutSoundEffectManager_Start, NCSEM_Start, void, Il2CppObject* self)
 {
     if(hitSoundLoader.loaded)
     {
@@ -258,7 +276,7 @@ MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_Start, void, Il2CppObject* self)
     NoteCutSoundEffectManager_Start(self);
 }
 
-MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, Il2CppObject* self)
+QS_MAKE_HOOK(NoteCutSoundEffect_Awake, NCSE_Awake, void, Il2CppObject* self)
 {
     if(badHitSoundLoader.loaded)
     {
@@ -268,7 +286,7 @@ MAKE_HOOK_OFFSETLESS(NoteCutSoundEffect_Awake, void, Il2CppObject* self)
     NoteCutSoundEffect_Awake(self);
 }
 
-MAKE_HOOK_OFFSETLESS(BasicUIAudioManager_Start, void, Il2CppObject* self)
+QS_MAKE_HOOK(BasicUIAudioManager_Start, BUIAM_Start, void, Il2CppObject* self)
 {
     if(menuClickLoader.loaded)
     {
@@ -278,7 +296,7 @@ MAKE_HOOK_OFFSETLESS(BasicUIAudioManager_Start, void, Il2CppObject* self)
     BasicUIAudioManager_Start(self);
 }
 
-MAKE_HOOK_OFFSETLESS(FireworkItemController_Awake, void, Il2CppObject* self)
+QS_MAKE_HOOK(FireworkItemController_Awake, FIC_Awake, void, Il2CppObject* self)
 {
     if(fireworkSoundLoader.loaded)
     {
@@ -294,7 +312,7 @@ struct Scene {
 };
 DEFINE_IL2CPP_ARG_TYPE(Scene, "UnityEngine.SceneManagement", "Scene");
 
-MAKE_HOOK_OFFSETLESS(SceneManager_ActiveSceneChanged, void, Scene previousActiveScene, Scene nextActiveScene)
+QS_MAKE_HOOK(SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged, void, Scene previousActiveScene, Scene nextActiveScene)
 {
     Il2CppString* activeSceneName = CRASH_UNLESS(il2cpp_utils::RunMethod<Il2CppString*>(il2cpp_utils::GetClassFromName("UnityEngine.SceneManagement", "Scene"), "GetNameInternal", nextActiveScene.m_Handle));
     std::string activeSceneStr = to_utf8(csstrtostr(activeSceneName));
@@ -327,27 +345,28 @@ extern "C" void load()
         getLogger().info("Modloader Finished");
     }
     getLogger().info("Installing QuestSounds!");
-    auto* SM_ActiveSceneChanged =   il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2);
-    auto* RVC_DidActivate =         il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3);
-    auto* SPP_OnEnable =            il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0);
-    auto* NCSEM_Start =             il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0);
-    auto* BUIAM_Start =             il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0);
-    auto* NCSE_Awake =              il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0);
-    auto* FIC_Awake =               il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0);
-    auto* MMSFC_DidActivate =       il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidActivate", 3);
-    auto* MMSFC_DidDeactivate =     il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidDeactivate", 2);
-    auto* GSLFC_DidActivate =       il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidActivate", 3);
-    auto* GSLFC_DidDeactivate =     il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidDeactivate", 2);
-    INSTALL_HOOK_OFFSETLESS(hkLog, SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged);
-    INSTALL_HOOK_OFFSETLESS(hkLog, SongPreviewPlayer_OnEnable, SPP_OnEnable);
-    INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_Start, NCSEM_Start);
-    INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffect_Awake, NCSE_Awake);
-    INSTALL_HOOK_OFFSETLESS(hkLog, FireworkItemController_Awake, FIC_Awake);
-    INSTALL_HOOK_OFFSETLESS(hkLog, BasicUIAudioManager_Start, BUIAM_Start);
-    INSTALL_HOOK_OFFSETLESS(hkLog, ResultsViewController_DidActivate, RVC_DidActivate);
-    INSTALL_HOOK_OFFSETLESS(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, MMSFC_DidActivate);     // Added for switching out MP Lobby Music
-    INSTALL_HOOK_OFFSETLESS(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate, MMSFC_DidDeactivate);  // Added for switching out MP Lobby Music
-    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidActivate, GSLFC_DidActivate);              // Added for switching out MP Lobby Music
-    INSTALL_HOOK_OFFSETLESS(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate, GSLFC_DidDeactivate);          // Added for switching out MP Lobby Music
+    SM_ActiveSceneChanged = il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2);
+    RVC_DidActivate = il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3);
+    SPP_OnEnable = il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0);
+    NCSEM_Start = il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0);
+    BUIAM_Start = il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0);
+    NCSE_Awake = il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0);
+    FIC_Awake = il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0);
+    MMSFC_DidActivate = il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidActivate", 3);
+    MMSFC_DidDeactivate = il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidDeactivate", 2);
+    GSLFC_DidActivate = il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidActivate", 3);
+    GSLFC_DidDeactivate = il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidDeactivate", 2);
+
+    QS_INSTALL_HOOK(hkLog, SongPreviewPlayer_OnEnable, SPP_OnEnable);
+    QS_INSTALL_HOOK(hkLog, NoteCutSoundEffectManager_Start, NCSEM_Start);
+    QS_INSTALL_HOOK(hkLog, NoteCutSoundEffect_Awake, NCSE_Awake);
+    QS_INSTALL_HOOK(hkLog, FireworkItemController_Awake, FIC_Awake);
+    QS_INSTALL_HOOK(hkLog, BasicUIAudioManager_Start, BUIAM_Start);
+    QS_INSTALL_HOOK(hkLog, ResultsViewController_DidActivate, RVC_DidActivate);
+    QS_INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, MMSFC_DidActivate);     // Added for switching out MP Lobby Music
+    QS_INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate, MMSFC_DidDeactivate);  // Added for switching out MP Lobby Music
+    QS_INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidActivate, GSLFC_DidActivate);              // Added for switching out MP Lobby Music
+    QS_INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate, GSLFC_DidDeactivate);          // Added for switching out MP Lobby Music
+    QS_INSTALL_HOOK(hkLog, SceneManager_ActiveSceneChanged, SM_ActiveSceneChanged);
     getLogger().info("Installed QuestSounds!");
 }

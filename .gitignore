@@ -64,3 +64,5 @@ extern/
 .vscode/c_cpp_properties.json
 /QuestSounds.qmod
 *.log
+*.txt
+/log_timestamp
