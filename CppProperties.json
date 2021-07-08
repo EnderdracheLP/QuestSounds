@@ -20,7 +20,8 @@
         "ID=\"streamer-tools\"",
         "VERSION=\"0.1.0\"",
         "__GNUC__",
-        "__aarch64__"
+        "__aarch64__",
+        "ANDROID"
       ],
       "includePath": [
         "${workspaceRoot}/**",
