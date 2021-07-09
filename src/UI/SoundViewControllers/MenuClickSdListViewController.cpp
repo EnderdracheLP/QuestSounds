@@ -2,14 +2,12 @@
 #include "QSoundsConfig.hpp"
 #include "ViewControllers/MenuClickSdListViewController.hpp"
 #include "AudioClips.hpp"
-//#include "ObjectInstances.hpp"
 
 #include <dirent.h>
 #include <regex>
 #include <list>
 
 #include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
 #include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
 
 #include "UnityEngine/Object.hpp"
@@ -149,15 +147,11 @@ void MenuClickSdListViewController::DidDeactivate(bool removedFromHierarchy, boo
     for (UnityEngine::UI::Button* button : MenuClickQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     MenuClickQSlist = {};
     if (QSoundsConfig::Config.menuClick_Active && AudioClips::menuClickLoader.loaded) {
-        //BUIAM->audioSource = AudioClips::menuClickLoader.audioSource;
         AudioClips::menuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader);
-        //BUIAM->clickSounds = AudioClips::menuClickArr;
-        //BUIAM->audioSource->set_clip(AudioClips::menuClickLoader.getClip());
         BUIAM->randomSoundPicker->objects = AudioClips::menuClickArr;
     }
     else {
         AudioClips::origMenuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader, true);
         BUIAM->randomSoundPicker->objects = AudioClips::origMenuClickArr;
-        //BUIAM->audioSource = AudioClips::menuClickLoader.OriginalAudioSource;
     }
 }

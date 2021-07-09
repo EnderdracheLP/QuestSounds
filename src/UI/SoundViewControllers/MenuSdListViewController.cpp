@@ -2,7 +2,6 @@
 #include "QSoundsConfig.hpp"
 #include "ViewControllers/MenuSdListViewController.hpp"
 #include "AudioClips.hpp"
-//#include "ObjectInstances.hpp"
 
 #include <dirent.h>
 #include <regex>
@@ -10,7 +9,6 @@
 #include <unistd.h>
 
 #include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
 #include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
 
 #include "UnityEngine/Object.hpp"
@@ -21,18 +19,10 @@
 #include "UnityEngine/UI/LayoutElement.hpp"
 #include "UnityEngine/UI/VerticalLayoutGroup.hpp"
 #include "UnityEngine/UI/HorizontalLayoutGroup.hpp"
-//#include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/Events/UnityAction.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
-
-#include "System/Action.hpp"
-#include "System/Threading/Tasks/Task_1.hpp"
-#include "System/Threading/ThreadStart.hpp"
-
-
-#include "GlobalNamespace/HMTask.hpp"
 
 using namespace QuestSounds;
 #ifndef REGISTER_FUNCTION

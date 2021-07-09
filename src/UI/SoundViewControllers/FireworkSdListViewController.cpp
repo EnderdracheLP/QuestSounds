@@ -2,14 +2,12 @@
 #include "QSoundsConfig.hpp"
 #include "ViewControllers/FireworkSdListViewController.hpp"
 #include "AudioClips.hpp"
-//#include "ObjectInstances.hpp"
 
 #include <dirent.h>
 #include <regex>
 #include <list>
 
 #include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
 #include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
 
 #include "UnityEngine/Object.hpp"
@@ -20,18 +18,11 @@
 #include "UnityEngine/UI/LayoutElement.hpp"
 #include "UnityEngine/UI/VerticalLayoutGroup.hpp"
 #include "UnityEngine/UI/HorizontalLayoutGroup.hpp"
-//#include "UnityEngine/UI/Button.hpp"
 #include "UnityEngine/Events/UnityAction.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 
-#include "GlobalNamespace/SongPreviewPlayer.hpp"
-
-#include "System/Action.hpp"
-#include "System/Threading/Tasks/Task_1.hpp"
-#include "System/Threading/ThreadStart.hpp"
-
-
-#include "GlobalNamespace/HMTask.hpp"
+#include "GlobalNamespace/FireworkItemController.hpp"
+#include "GlobalNamespace/RandomObjectPicker_1.hpp"
 
 using namespace QuestSounds;
 
@@ -44,6 +35,7 @@ DEFINE_CLASS(QuestSounds::FireworkSdListViewController);
 #endif
 
 bool FireworkSelectionChanged = false;
+GlobalNamespace::FireworkItemController* FIC;
 
 FireworkSdListViewController* FireworkListView;
 std::list<UnityEngine::UI::Button*> FireworkQSlist = {};
@@ -109,6 +101,8 @@ void FireworkSdListViewController::DidActivate(bool firstActivation, bool addedT
     FireworkListView = this;
     if (firstActivation && addedToHierarchy)
     {
+        FireworkSelectionChanged = false;
+        FIC = UnityEngine::GameObject::FindObjectOfType<GlobalNamespace::FireworkItemController*>();
         UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
         container->set_spacing(0.4f);
         container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(125.0);
@@ -126,6 +120,13 @@ void FireworkSdListViewController::DidActivate(bool firstActivation, bool addedT
                 QSoundsConfig::Config.firework_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
                 if (AudioClips::fireworkSoundLoader.audioSource != nullptr) AudioClips::fireworkSoundLoader.audioSource->Stop();
+                if (value && AudioClips::fireworkSoundLoader.loaded) {
+                    AudioClips::fireworkSoundArr = AudioClips::createAudioClipArray(AudioClips::fireworkSoundLoader);
+                    if (FIC != nullptr) FIC->randomAudioPicker->objects = AudioClips::fireworkSoundArr;
+                }
+                else {
+                    if (FIC != nullptr && AudioClips::origFireworkSoundArr != nullptr) FIC->randomAudioPicker->objects = AudioClips::origFireworkSoundArr;
+                }
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Firework Sounds");
 
@@ -148,5 +149,11 @@ void FireworkSdListViewController::DidDeactivate(bool removedFromHierarchy, bool
     //QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : FireworkQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     FireworkQSlist = {};
-    if (FireworkSelectionChanged) AudioClips::fireworkSoundArr = AudioClips::createAudioClipArray(AudioClips::fireworkSoundLoader);
+    if (FireworkSelectionChanged && QSoundsConfig::Config.firework_Active && AudioClips::fireworkSoundLoader.loaded) {
+        AudioClips::fireworkSoundArr = AudioClips::createAudioClipArray(AudioClips::fireworkSoundLoader);
+        if (FIC != nullptr) FIC->randomAudioPicker->objects = AudioClips::fireworkSoundArr;
+    }
+    else {
+        if (FIC != nullptr && AudioClips::origFireworkSoundArr != nullptr) FIC->randomAudioPicker->objects = AudioClips::origFireworkSoundArr;
+    }
 }

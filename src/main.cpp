@@ -187,26 +187,6 @@ Array<UnityEngine::AudioClip*> *origFireworkSoundArr,
         lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
 #endif
 
-//        GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuMusicLoader.load(); }), nullptr)->Run();
-//        GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { menuClickLoader.load(); }), nullptr)->Run();
-//        if (Config.hitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { hitSoundLoader.load(); }), nullptr)->Run();
-//        if (Config.badHitSound_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { badHitSoundLoader.load(); }), nullptr)->Run();
-//        if (Config.firework_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { fireworkSoundLoader.load(); }), nullptr)->Run();
-//        if (Config.levelCleared_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { levelClearedLoader.load(); }), nullptr)->Run();
-//#ifndef BS__1_13_2
-//        if (Config.lobbyAmbience_Active) GlobalNamespace::HMTask::New_ctor(il2cpp_utils::MakeDelegate<System::Action*>(classof(System::Action*), (std::function<void()>)[&] { lobbyAmbienceLoader.load(); }), nullptr)->Run();    // Added for LobbyMusic
-//#endif
-        //if (Config.hitSound_Active) {
-        //    std::thread hitSoundThread(hitSoundLoader.load());
-        //    hitSoundThread.detach();
-        //}
-        //if (Config.badHitSound_Active) std::thread(badHitSoundLoader.load()).detach();
-        //if (Config.menuMusic_Active) std::thread(menuMusicLoader.load()).detach();
-        //if (Config.menuClick_Active) std::thread(menuClickLoader.load()).detach();
-        //if (Config.firework_Active) std::thread(fireworkSoundLoader.load()).detach();
-        //if (Config.levelCleared_Active) std::thread(levelClearedLoader.load()).detach();
-        //if (Config.lobbyAmbience_Active) std::thread(lobbyAmbienceLoader.load()).detach();    // Added for LobbyMusic
-
         menuMusicLoader.load();
         menuClickLoader.load();
         if (Config.hitSound_Active) hitSoundLoader.load();
@@ -278,10 +258,10 @@ QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, Son
 #ifndef BS__1_13_2
 QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoordinator::DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
+    getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
     if (!lobbyAmbienceLoader.OriginalAudioSource) lobbyAmbienceLoader.set_OriginalClip(self->ambienceAudioClip);
 
-    getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
-    if (lobbyAmbienceLoader.loaded && QSoundsConfig::Config.lobbyAmbience_Active && addedToHierarchy)
+    if (lobbyAmbienceLoader.loaded && QSoundsConfig::Config.lobbyAmbience_Active)
     {
         getLogger().debug("Overwriting LobbyAmbience Audio");
         self->ambienceAudioClip = lobbyAmbienceLoader.getClip();
@@ -294,7 +274,7 @@ QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoo
 
 QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFlowCoordinator::DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
 {
-    getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
+    getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
@@ -309,8 +289,6 @@ QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFlowC
 QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidActivate, &MultiplayerModeSelectionFlowCoordinator::DidActivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidActivate");
-
-    getLogger().info("LobbyMusic is it true: %i", menuMusicLoader.loaded);
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
@@ -344,85 +322,16 @@ QS_MAKE_HOOK(FileHelpers_GetEscapedURLForFilePath, &FileHelpers::GetEscapedURLFo
 QS_MAKE_HOOK(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start, void, NoteCutSoundEffectManager* self) {
     if(hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active)
     {
-
         hitSoundArr = createAudioClipArray(hitSoundLoader);
         self->longCutEffectsAudioClips = hitSoundArr;
         self->shortCutEffectsAudioClips = hitSoundArr;
         getLogger().debug("NoteCutSoundEffectManager_Start: Loaded hitSoundArray");
-
-        //for (int i = 0; i < self->longCutEffectsAudioClips->Length(); i++) {
-        //    getLogger().debug("Pre-Fix Checking Ptr longCutEffectsAudioClips->values[%d]: %p", i, self->longCutEffectsAudioClips->values[i]);
-        //}
-        //for (int i = 0; i < self->shortCutEffectsAudioClips->Length(); i++) {
-        //    getLogger().debug("Pre-Fix Checking Ptr shortCutEffectsAudioClips->values[%d]: %p", i, self->shortCutEffectsAudioClips->values[i]);
-        //}
-
-
-
-        //Array<UnityEngine::AudioClip*>* tempArraylongCut;
-        //Array<UnityEngine::AudioClip*>* tempArrayshortCut;
-
-        //tempArraylongCut = self->longCutEffectsAudioClips;
-        //getLogger().debug("longCutEffectsAudioClips Length: %d", self->longCutEffectsAudioClips->Length());
-        //for (int i = 0; i < self->longCutEffectsAudioClips->Length(); i++) {
-        //    self->longCutEffectsAudioClips->values[i] = hitSoundLoader.getClip();
-        //    getLogger().debug("Replacing longCutEffectsAudioClips->values[%d]", i);
-        //}
-        //self->longCutEffectsAudioClips = tempArraylongCut;
-
-        //tempArrayshortCut = self->shortCutEffectsAudioClips;
-        //getLogger().debug("shortCutEffectsAudioClips Length: %d", self->shortCutEffectsAudioClips->Length());
-        //for (int i = 0; i < self->shortCutEffectsAudioClips->Length(); i++) {
-        //    self->shortCutEffectsAudioClips->values[i] = hitSoundLoader.getClip();
-        //    getLogger().debug("Replacing shortCutEffectsAudioClips->values[%d]", i);
-        //}
-        //self->shortCutEffectsAudioClips = tempArrayshortCut;
-        //hitSoundArrIl2Cpp = createAudioClipIl2CppArray(hitSoundLoader);
-        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_shortCutEffectsAudioClips", hitSoundArrIl2Cpp));
-        //CRASH_UNLESS(il2cpp_utils::SetFieldValue(self, "_longCutEffectsAudioClips", hitSoundArrIl2Cpp));
     }
     else {
         getLogger().debug("NoteCutSoundEffectManager_Start: Loading normally");
     }
-    //getLogger().debug("NoteCutSoundEffectManager_Start Pre-Fix end");
     NoteCutSoundEffectManager_Start(self);
-    //getLogger().debug("NoteCutSoundEffectManager_Start Post-Fix start");
-    //getLogger().debug("randomLongCutSoundPicker minimumPickInterval: %lf", self->randomLongCutSoundPicker->minimumPickInterval);
-    //getLogger().debug("randomLongCutSoundPicker objects->get_Length(): %d", self->randomLongCutSoundPicker->objects->get_Length());
-
-    //getLogger().debug("randomShortCutSoundPicker minimumPickInterval: %lf", self->randomShortCutSoundPicker->minimumPickInterval);
-    //getLogger().debug("randomShortCutSoundPicker objects->get_Length(): %d", self->randomShortCutSoundPicker->objects->get_Length());
-    
-    //hitSoundArr = createAudioClipArray(hitSoundLoader);
-
-    //self->randomShortCutSoundPicker->objects = hitSoundArr;
-    //self->randomLongCutSoundPicker->objects = hitSoundArr;
-        //for (int i = 0; i < self->randomShortCutSoundPicker->objects->get_Length(); i++) {
-        //    self->randomShortCutSoundPicker->objects = hitSoundLoader.getClip();
-        //    getLogger().debug("Replacing longCutEffectsAudioClips->values[%d]", i);
-        //}
-    //for (int i = 0; i < self->longCutEffectsAudioClips->Length(); i++) {
-    //    getLogger().debug("Post-Fix Checking Ptr longCutEffectsAudioClips->values[%d]: %p", i, self->longCutEffectsAudioClips->values[i]);
-    //}
-    //for (int i = 0; i < self->shortCutEffectsAudioClips->Length(); i++) {
-    //    getLogger().debug("Post-Fix Checking Ptr shortCutEffectsAudioClips->values[%d]: %p", i, self->shortCutEffectsAudioClips->values[i]);
-    //}
-    //getLogger().debug("NoteCutSoundEffectManager_Start Finished");
-
 }
-
-//MAKE_HOOK_OFFSETLESS(NoteCutSoundEffectManager_HandleNoteWasCut, void, NoteCutSoundEffectManager* self, GlobalNamespace::NoteController* noteController, GlobalNamespace::NoteCutInfo& noteCutInfo) {
-//    
-//    NoteCutSoundEffectManager_HandleNoteWasCut(self, noteController, noteCutInfo);
-//    getLogger().debug("NoteCutSoundEffectManager_HandleNoteWasCut");
-//    for (int i = 0; i < self->longCutEffectsAudioClips->Length(); i++) {
-//        getLogger().debug("Post-Fix Checking Ptr longCutEffectsAudioClips->values[%d]: %p", i, self->longCutEffectsAudioClips->values[i]);
-//    }
-//    for (int i = 0; i < self->shortCutEffectsAudioClips->Length(); i++) {
-//        getLogger().debug("Post-Fix Checking Ptr shortCutEffectsAudioClips->values[%d]: %p", i, self->shortCutEffectsAudioClips->values[i]);
-//    }
-//
-//}
 
 QS_MAKE_HOOK(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCutSoundEffect* self) {
     if(badHitSoundLoader.loaded && QSoundsConfig::Config.badHitSound_Active)
@@ -436,11 +345,6 @@ QS_MAKE_HOOK(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCut
 QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, BasicUIAudioManager* self) {
     if (!menuClickLoader.OriginalAudioSource) menuClickLoader.set_OriginalClip(self->clickSounds->values[0]);
 
-    //for (int i = 0; i < self->clickSounds->Length(); i++) {
-    //    getLogger().debug("Post-Fix Checking Ptr clickSounds->values[%d]: %p", i, self->clickSounds->values[i]);
-    //}
-
-
     if(menuClickLoader.loaded && QSoundsConfig::Config.menuClick_Active)
     {
         menuClickArr = createAudioClipArray(menuClickLoader);
@@ -452,15 +356,26 @@ QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, Basic
 QS_MAKE_HOOK(FireworkItemController_Awake, &FireworkItemController::Awake, void, FireworkItemController* self) {
     if (!origFireworkSoundArr) origFireworkSoundArr = self->explosionClips;
     
+    for (int i = 0; i < self->explosionClips->Length(); i++) {
+        getLogger().debug("Checking Ptr explosionClips->values[%d]: %p", i, self->explosionClips->values[i]);
+    }
+
     if(fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active)
     {
+        getLogger().debug("Setting custom Fireworks Sounds");
         fireworkSoundArr = createAudioClipArray(fireworkSoundLoader);
         self->explosionClips = fireworkSoundArr;
     }
     else {
+        getLogger().debug("Return default Fireworks Sounds");
         self->explosionClips = origFireworkSoundArr;
     }
     FireworkItemController_Awake(self);
+
+    for (int i = 0; i < self->explosionClips->Length(); i++) {
+        getLogger().debug("Post Hook, Checking Ptr explosionClips->values[%d]: %p", i, self->explosionClips->values[i]);
+    }
+
 }
 
 QS_MAKE_HOOK(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_ActiveSceneChanged, void, Scene previousActiveScene, Scene newActiveScene) {
