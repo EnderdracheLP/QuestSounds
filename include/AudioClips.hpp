@@ -16,8 +16,7 @@ namespace QuestSounds::AudioClips {
 											* badHitSoundArr, // badHitSoundArray
 											* menuClickArr,
 											* fireworkSoundArr;
-	extern Array<UnityEngine::AudioClip*>	*origFireworkSoundArr,
-											*origMenuClickArr;
+	extern Array<UnityEngine::AudioClip*>	*origMenuClickArr;
 	extern void loadAudioClips();
 
 	extern Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader, bool GetOriginalClip = false);

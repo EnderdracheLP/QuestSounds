@@ -171,8 +171,7 @@ Array<UnityEngine::AudioClip*> *hitSoundArr,    // hitSoundArray
                                *fireworkSoundArr;
 
 
-Array<UnityEngine::AudioClip*> *origFireworkSoundArr,
-                               *origMenuClickArr;
+Array<UnityEngine::AudioClip*> *origMenuClickArr;
 
 
     void loadAudioClips()
@@ -353,29 +352,31 @@ QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, Basic
     BasicUIAudioManager_Start(self);
 }
 
-QS_MAKE_HOOK(FireworkItemController_Awake, &FireworkItemController::Awake, void, FireworkItemController* self) {
-    if (!origFireworkSoundArr) origFireworkSoundArr = self->explosionClips;
-    
-    for (int i = 0; i < self->explosionClips->Length(); i++) {
-        getLogger().debug("Checking Ptr explosionClips->values[%d]: %p", i, self->explosionClips->values[i]);
-    }
+//QS_MAKE_HOOK(FireworkItemController_Awake, &FireworkItemController::Awake, void, FireworkItemController* self) {
+//    if (!origFireworkSoundArr) origFireworkSoundArr = self->explosionClips;
+//    
+//    if(fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active)
+//    {
+//        getLogger().debug("Setting custom Fireworks Sounds");
+//        fireworkSoundArr = createAudioClipArray(fireworkSoundLoader);
+//        self->explosionClips = fireworkSoundArr;
+//    }
+//    else {
+//        getLogger().debug("Return default Fireworks Sounds");
+//        self->explosionClips = origFireworkSoundArr;
+//    }
+//    FireworkItemController_Awake(self);
+//}
 
-    if(fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active)
-    {
-        getLogger().debug("Setting custom Fireworks Sounds");
-        fireworkSoundArr = createAudioClipArray(fireworkSoundLoader);
-        self->explosionClips = fireworkSoundArr;
+// Replacing the function here, as replacing the AudioClips proves to be difficult
+QS_MAKE_HOOK(FireworkItemController_PlayExplosionSound, &FireworkItemController::PlayExplosionSound, void, FireworkItemController* self) {
+    if (fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active) {
+        self->audioSource->set_clip(fireworkSoundLoader.getClip());
+        float pitch = 1.2f + (((float)rand()) / (float)RAND_MAX) * (0.8f - 1.2f);
+        self->audioSource->set_pitch(pitch);
+        self->audioSource->Play();
     }
-    else {
-        getLogger().debug("Return default Fireworks Sounds");
-        self->explosionClips = origFireworkSoundArr;
-    }
-    FireworkItemController_Awake(self);
-
-    for (int i = 0; i < self->explosionClips->Length(); i++) {
-        getLogger().debug("Post Hook, Checking Ptr explosionClips->values[%d]: %p", i, self->explosionClips->values[i]);
-    }
-
+    else FireworkItemController_PlayExplosionSound(self);
 }
 
 QS_MAKE_HOOK(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_ActiveSceneChanged, void, Scene previousActiveScene, Scene newActiveScene) {
@@ -437,9 +438,10 @@ extern "C" void load()
     QS_INSTALL_HOOK(hkLog, NoteCutSoundEffectManager_Start, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0));
     //INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_HandleNoteWasCut, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "HandleNoteWasCut", 2));
     QS_INSTALL_HOOK(hkLog, NoteCutSoundEffect_Awake, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0));
-    QS_INSTALL_HOOK(hkLog, FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
+    //QS_INSTALL_HOOK(hkLog, FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
     QS_INSTALL_HOOK(hkLog, BasicUIAudioManager_Start, il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0));
     QS_INSTALL_HOOK(hkLog, ResultsViewController_DidActivate, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3));
+    QS_INSTALL_HOOK(hkLog, FireworkItemController_PlayExplosionSound, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "PlayExplosionSound", 0))
 #ifndef BS__1_13_2
     QS_INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidActivate", 3));     // Added for switching out MP Lobby Music
     QS_INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate, il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidDeactivate", 2));  // Added for switching out MP Lobby Music

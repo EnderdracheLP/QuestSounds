@@ -21,8 +21,8 @@
 #include "UnityEngine/Events/UnityAction.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 
-#include "GlobalNamespace/FireworkItemController.hpp"
-#include "GlobalNamespace/RandomObjectPicker_1.hpp"
+//#include "GlobalNamespace/FireworkItemController.hpp"
+//#include "GlobalNamespace/RandomObjectPicker_1.hpp"
 
 using namespace QuestSounds;
 
@@ -35,7 +35,7 @@ DEFINE_CLASS(QuestSounds::FireworkSdListViewController);
 #endif
 
 bool FireworkSelectionChanged = false;
-GlobalNamespace::FireworkItemController* FIC;
+//GlobalNamespace::FireworkItemController* FIC;
 
 FireworkSdListViewController* FireworkListView;
 std::list<UnityEngine::UI::Button*> FireworkQSlist = {};
@@ -102,7 +102,7 @@ void FireworkSdListViewController::DidActivate(bool firstActivation, bool addedT
     if (firstActivation && addedToHierarchy)
     {
         FireworkSelectionChanged = false;
-        FIC = UnityEngine::GameObject::FindObjectOfType<GlobalNamespace::FireworkItemController*>();
+        //FIC = UnityEngine::GameObject::FindObjectOfType<GlobalNamespace::FireworkItemController*>();
         UnityEngine::UI::VerticalLayoutGroup* container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(get_rectTransform());
         container->set_spacing(0.4f);
         container->GetComponent<UnityEngine::UI::LayoutElement*>()->set_minWidth(125.0);
@@ -120,13 +120,21 @@ void FireworkSdListViewController::DidActivate(bool firstActivation, bool addedT
                 QSoundsConfig::Config.firework_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
                 if (AudioClips::fireworkSoundLoader.audioSource != nullptr) AudioClips::fireworkSoundLoader.audioSource->Stop();
-                if (value && AudioClips::fireworkSoundLoader.loaded) {
-                    AudioClips::fireworkSoundArr = AudioClips::createAudioClipArray(AudioClips::fireworkSoundLoader);
-                    if (FIC != nullptr) FIC->randomAudioPicker->objects = AudioClips::fireworkSoundArr;
-                }
-                else {
-                    if (FIC != nullptr && AudioClips::origFireworkSoundArr != nullptr) FIC->randomAudioPicker->objects = AudioClips::origFireworkSoundArr;
-                }
+                //if (value && AudioClips::fireworkSoundLoader.loaded) {
+                //    AudioClips::fireworkSoundArr = AudioClips::createAudioClipArray(AudioClips::fireworkSoundLoader);
+                //    if (FIC != nullptr) {
+                //        FIC->explosionClips = AudioClips::fireworkSoundArr;
+                //        FIC->randomAudioPicker->objects = AudioClips::fireworkSoundArr;
+                //    }
+                //    else getLogger().warning("Could not set custom FireworkSoundArray");
+                //}
+                //else {
+                //    if (FIC != nullptr && AudioClips::origFireworkSoundArr != nullptr) {
+                //        FIC->explosionClips = AudioClips::origFireworkSoundArr;
+                //        FIC->randomAudioPicker->objects = AudioClips::origFireworkSoundArr;
+                //    }
+                //    else getLogger().warning("Could not set OriginalFireworkSoundArray");
+                //}
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Firework Sounds");
 
@@ -149,11 +157,19 @@ void FireworkSdListViewController::DidDeactivate(bool removedFromHierarchy, bool
     //QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : FireworkQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     FireworkQSlist = {};
-    if (FireworkSelectionChanged && QSoundsConfig::Config.firework_Active && AudioClips::fireworkSoundLoader.loaded) {
-        AudioClips::fireworkSoundArr = AudioClips::createAudioClipArray(AudioClips::fireworkSoundLoader);
-        if (FIC != nullptr) FIC->randomAudioPicker->objects = AudioClips::fireworkSoundArr;
-    }
-    else {
-        if (FIC != nullptr && AudioClips::origFireworkSoundArr != nullptr) FIC->randomAudioPicker->objects = AudioClips::origFireworkSoundArr;
-    }
+    //if (FireworkSelectionChanged && QSoundsConfig::Config.firework_Active && AudioClips::fireworkSoundLoader.loaded) {
+    //    AudioClips::fireworkSoundArr = AudioClips::createAudioClipArray(AudioClips::fireworkSoundLoader);
+    //    if (FIC != nullptr) {
+    //        FIC->explosionClips = AudioClips::fireworkSoundArr;
+    //        FIC->randomAudioPicker->objects = AudioClips::fireworkSoundArr;
+    //    }
+    //    else getLogger().warning("Could not set custom FireworkSoundArray");
+    //}
+    //else {
+    //    if (FIC != nullptr && AudioClips::origFireworkSoundArr != nullptr) {
+    //        FIC->explosionClips = AudioClips::origFireworkSoundArr;
+    //        FIC->randomAudioPicker->objects = AudioClips::origFireworkSoundArr;
+    //    }
+    //    else getLogger().warning("Could not set OriginalFireworkSoundArray");
+    //}
 }
