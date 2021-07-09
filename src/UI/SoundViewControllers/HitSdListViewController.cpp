@@ -56,6 +56,7 @@ void HitSelectSound()
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
             QSoundsConfig::Config.hitSound_filepath = QSoundsConfig::HitSoundPath + filename;
             AudioClips::hitSoundLoader.filePath = QSoundsConfig::Config.hitSound_filepath;
+            if (AudioClips::hitSoundLoader.audioSource != nullptr) AudioClips::hitSoundLoader.audioSource->Stop();
             AudioClips::hitSoundLoader.load();
             std::thread PlayAudio([&]() {
                 while (!AudioClips::hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active) {
@@ -65,8 +66,8 @@ void HitSelectSound()
                     return;
                 }
                 if (AudioClips::hitSoundLoader.audioSource != nullptr) {
-                    AudioClips::hitSoundLoader.audioSource->Stop(true);
-                    return AudioClips::hitSoundLoader.audioSource->PlayOneShot(AudioClips::hitSoundLoader.getClip(), 0.8f);
+                    AudioClips::hitSoundLoader.audioSource->set_volume(0.6f);
+                    return AudioClips::hitSoundLoader.audioSource->Play();
                 }
                 });
             PlayAudio.detach();
@@ -124,7 +125,7 @@ void HitSdListViewController::DidActivate(bool firstActivation, bool addedToHier
             [&](bool value) {
                 QSoundsConfig::Config.hitSound_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
-                if (AudioClips::hitSoundLoader.audioSource != nullptr) AudioClips::hitSoundLoader.audioSource->Stop(true);
+                if (AudioClips::hitSoundLoader.audioSource != nullptr) AudioClips::hitSoundLoader.audioSource->Stop();
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Hit Sounds");
 
@@ -147,5 +148,5 @@ void HitSdListViewController::DidDeactivate(bool removedFromHierarchy, bool syst
     //QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : HitQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     HitQSlist = {};
-    if (AudioClips::hitSoundLoader.audioSource != nullptr) AudioClips::hitSoundLoader.audioSource->Stop(true);
+    if (AudioClips::hitSoundLoader.audioSource != nullptr) AudioClips::hitSoundLoader.audioSource->Stop();
 }

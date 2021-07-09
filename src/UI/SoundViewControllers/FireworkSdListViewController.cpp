@@ -56,8 +56,8 @@ void FireworkSelectSound()
         {
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
             QSoundsConfig::Config.firework_filepath = QSoundsConfig::FireworkSoundPath + filename;
-            QuestSounds::AudioClips::fireworkSoundLoader.filePath = QSoundsConfig::Config.firework_filepath;
-            AudioClips::fireworkSoundLoader.loaded = false;
+            AudioClips::fireworkSoundLoader.filePath = QSoundsConfig::Config.firework_filepath;
+            if (AudioClips::fireworkSoundLoader.audioSource != nullptr) AudioClips::fireworkSoundLoader.audioSource->Stop();
             AudioClips::fireworkSoundLoader.load();
             std::thread PlayAudio([&]() {
                 while (!AudioClips::fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active) {
@@ -67,7 +67,8 @@ void FireworkSelectSound()
                     return;
                 }
                 FireworkSelectionChanged = true;
-                return AudioClips::fireworkSoundLoader.audioSource->PlayOneShot(AudioClips::fireworkSoundLoader.getClip(), 0.8f);
+                AudioClips::fireworkSoundLoader.audioSource->set_volume(0.6f);
+                return AudioClips::fireworkSoundLoader.audioSource->Play();
                 });
             PlayAudio.detach();
             getLogger().debug("Selected filename %s, Sound Path %s", filename.c_str(), QSoundsConfig::Config.firework_filepath.c_str());
@@ -124,6 +125,7 @@ void FireworkSdListViewController::DidActivate(bool firstActivation, bool addedT
             [&](bool value) {
                 QSoundsConfig::Config.firework_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
+                if (AudioClips::fireworkSoundLoader.audioSource != nullptr) AudioClips::fireworkSoundLoader.audioSource->Stop();
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Firework Sounds");
 

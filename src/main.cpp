@@ -278,12 +278,16 @@ QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, Son
 #ifndef BS__1_13_2
 QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoordinator::DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
+    if (!lobbyAmbienceLoader.OriginalAudioSource) lobbyAmbienceLoader.set_OriginalClip(self->ambienceAudioClip);
+
     getLogger().info("LobbyMusic is it true: %i", lobbyAmbienceLoader.loaded);
     if (lobbyAmbienceLoader.loaded && QSoundsConfig::Config.lobbyAmbience_Active && addedToHierarchy)
     {
         getLogger().debug("Overwriting LobbyAmbience Audio");
-        UnityEngine::AudioClip* audioClip = lobbyAmbienceLoader.getClip();
-        self->ambienceAudioClip = audioClip;
+        self->ambienceAudioClip = lobbyAmbienceLoader.getClip();
+    }
+    else {
+        self->ambienceAudioClip = lobbyAmbienceLoader.get_OriginalClip();
     }
     GameServerLobbyFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
@@ -294,8 +298,10 @@ QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFlowC
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
-        UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
-        self->ambienceAudioClip = audioClip;
+        self->ambienceAudioClip = menuMusicLoader.getClip();
+    }
+    else {
+        self->ambienceAudioClip = menuMusicLoader.get_OriginalClip();
     }
     GameServerLobbyFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
 }
@@ -305,11 +311,10 @@ QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidActivate, &MultiplayerMo
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidActivate");
 
     getLogger().info("LobbyMusic is it true: %i", menuMusicLoader.loaded);
-    if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && addedToHierarchy)
+    if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
-        UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
-        self->ambienceAudioClip = audioClip;
+        self->ambienceAudioClip = menuMusicLoader.getClip();
     }
     else {
         self->ambienceAudioClip = menuMusicLoader.get_OriginalClip();
@@ -322,8 +327,7 @@ QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &Multiplayer
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidDeactivate");
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
     {
-        UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
-        self->ambienceAudioClip = audioClip;
+        self->ambienceAudioClip = menuMusicLoader.getClip();
     }
     else {
         self->ambienceAudioClip = menuMusicLoader.get_OriginalClip();

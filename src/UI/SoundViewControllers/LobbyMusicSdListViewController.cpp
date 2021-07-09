@@ -46,8 +46,6 @@ DEFINE_CLASS(QuestSounds::LobbyMusicSdListViewController);
 LobbyMusicSdListViewController* LobbyMusicListView;
 std::list<UnityEngine::UI::Button*> LobbyMusicQSlist = {};
 
-//GlobalNamespace::SongPreviewPlayer* SPP2;
-
 void LobbyMusicSelectSound()
 {
     for (UnityEngine::UI::Button* button : LobbyMusicQSlist)
@@ -57,7 +55,7 @@ void LobbyMusicSelectSound()
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
             QSoundsConfig::Config.lobbyAmbience_filepath = QSoundsConfig::LobbyMusicPath + filename;
             QuestSounds::AudioClips::lobbyAmbienceLoader.filePath = QSoundsConfig::Config.lobbyAmbience_filepath;
-            AudioClips::lobbyAmbienceLoader.loaded = false;
+            if (AudioClips::lobbyAmbienceLoader.audioSource != nullptr) AudioClips::lobbyAmbienceLoader.audioSource->Stop();
             AudioClips::lobbyAmbienceLoader.load();
             std::thread PlayAudio([&]() {
                 while (!AudioClips::lobbyAmbienceLoader.loaded && QSoundsConfig::Config.lobbyAmbience_Active) {
@@ -66,8 +64,8 @@ void LobbyMusicSelectSound()
                 if (!QSoundsConfig::Config.lobbyAmbience_Active) {
                     return;
                 }
-                AudioClips::lobbyAmbienceLoader.audioSource->Stop(true);
-                return AudioClips::lobbyAmbienceLoader.audioSource->PlayOneShot(AudioClips::lobbyAmbienceLoader.getClip(), 0.8f);
+                AudioClips::lobbyAmbienceLoader.audioSource->set_volume(0.6f);
+                return AudioClips::lobbyAmbienceLoader.audioSource->Play();
                 });
             PlayAudio.detach();
             getLogger().debug("Selected filename %s, Sound Path %s", filename.c_str(), QSoundsConfig::Config.lobbyAmbience_filepath.c_str());
@@ -127,7 +125,7 @@ void LobbyMusicSdListViewController::DidActivate(bool firstActivation, bool adde
             [&](bool value) {
                 QSoundsConfig::Config.lobbyAmbience_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
-                if (AudioClips::lobbyAmbienceLoader.audioSource != nullptr) AudioClips::lobbyAmbienceLoader.audioSource->Stop(true);
+                if (AudioClips::lobbyAmbienceLoader.audioSource != nullptr) AudioClips::lobbyAmbienceLoader.audioSource->Stop();
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Lobby Music");
 
@@ -152,5 +150,5 @@ void LobbyMusicSdListViewController::DidDeactivate(bool removedFromHierarchy, bo
     //QSoundsConfig::SaveConfig();
     for (UnityEngine::UI::Button* button : LobbyMusicQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
     LobbyMusicQSlist = {};
-    if (AudioClips::lobbyAmbienceLoader.audioSource != nullptr) AudioClips::lobbyAmbienceLoader.audioSource->Stop(true);
+    if (AudioClips::lobbyAmbienceLoader.audioSource != nullptr) AudioClips::lobbyAmbienceLoader.audioSource->Stop();
 }

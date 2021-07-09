@@ -1,0 +1,61 @@
+#include "Utils/PreviewerAndLoader.hpp"
+#include "AudioClips.hpp"
+#include "QSoundsConfig.hpp"
+
+
+void SelectSound(AsyncAudioClipLoader::loader loader, std::list<UnityEngine::UI::Button*> QSlist, std::string& filePath, bool Active, std::string FolderPath)
+{
+    for (UnityEngine::UI::Button* button : QSlist)
+    {
+        if (button->hasSelection)
+        {
+            std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
+            filePath = FolderPath + filename;
+            loader.filePath = filePath;
+            if (loader.audioSource != nullptr) loader.audioSource->Stop();
+            loader.loaded = false;
+            loader.load();
+            std::thread PlayAudio([&]() {
+                while (!loader.loaded && Active) {
+                    usleep(100);
+                }
+                if (!Active) {
+                    return;
+                }
+                loader.audioSource->set_volume(0.6f);
+                return loader.audioSource->Play();
+                });
+            PlayAudio.detach();
+            getLogger().debug("Selected filename %s, Sound Path %s", filename.c_str(), filePath.c_str());
+        }
+    }
+}
+
+template <typename T>
+void RefreshList(T* ListView, std::list<UnityEngine::UI::Button*> &QSlist)
+{
+    if (ListView->listtxtgroup && ListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(LobbyMusicListView->listtxtgroup->get_gameObject());
+    for (UnityEngine::UI::Button* button : QSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
+    QSlist = {};
+    DIR* sounddir = opendir(QSoundsConfig::LobbyMusicPath.c_str());
+    dirent* fileent;
+    while ((fileent = readdir(sounddir)) != NULL)
+    {
+        std::string filename = fileent->d_name;
+        for (char& ch : filename) ch = tolower(ch);
+
+        if (std::regex_search(filename, std::regex(".ogg|.mp3|.mp2|.wav|.aiff|.aif")))
+        {
+            UnityEngine::UI::HorizontalLayoutGroup* rowgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(LobbyMusicListView->SDlistscroll->get_transform());
+            UnityEngine::UI::Button* button = QuestUI::BeatSaberUI::CreateUIButton(rowgroup->get_rectTransform(), fileent->d_name, LobbyMusicSelectSound);
+            button->get_gameObject()->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->set_fontStyle(2);
+            LobbyMusicQSlist.push_back(button);
+        }
+    }
+    if (LobbyMusicQSlist.size() < 1)
+    {
+        LobbyMusicListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(LobbyMusicListView->SDlistscroll->get_transform());
+        QuestUI::BeatSaberUI::CreateText(LobbyMusicListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n" + QSoundsConfig::LobbyMusicPath + "\nto continue.", false);
+    }
+    (void)closedir(sounddir);
+}

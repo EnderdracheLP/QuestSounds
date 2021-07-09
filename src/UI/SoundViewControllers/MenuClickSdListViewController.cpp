@@ -49,6 +49,7 @@ void MenuClickSelectSound()
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
             QSoundsConfig::Config.menuClick_filepath = QSoundsConfig::MenuClickPath + filename;
             AudioClips::menuClickLoader.filePath = QSoundsConfig::Config.menuClick_filepath;
+            if (AudioClips::menuClickLoader.audioSource != nullptr) AudioClips::menuClickLoader.audioSource->Stop();
             AudioClips::menuClickLoader.load();
             std::thread PlayAudio([&]() {
                 while (!AudioClips::menuClickLoader.loaded && QSoundsConfig::Config.menuClick_Active) {
@@ -57,8 +58,8 @@ void MenuClickSelectSound()
                 if (!QSoundsConfig::Config.menuClick_Active) {
                     return;
                 }
-                AudioClips::menuClickLoader.audioSource->Stop(true);
-                return AudioClips::menuClickLoader.audioSource->PlayOneShot(AudioClips::menuClickLoader.getClip(), 0.8f);
+                AudioClips::menuClickLoader.audioSource->set_volume(0.6f);
+                return AudioClips::menuClickLoader.audioSource->Play();
                 });
             PlayAudio.detach();
             getLogger().debug("Selected filename %s, Sound Path %s", filename.c_str(), QSoundsConfig::Config.menuClick_filepath.c_str());
@@ -116,7 +117,7 @@ void MenuClickSdListViewController::DidActivate(bool firstActivation, bool added
             [&](bool value) {
                 QSoundsConfig::Config.menuClick_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
-                if (AudioClips::menuClickLoader.audioSource) AudioClips::menuClickLoader.audioSource->Stop(true);
+                if (AudioClips::menuClickLoader.audioSource) AudioClips::menuClickLoader.audioSource->Stop();
                 if (value && AudioClips::menuClickLoader.loaded) {
                     AudioClips::menuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader);
                     BUIAM->randomSoundPicker->objects = AudioClips::menuClickArr;

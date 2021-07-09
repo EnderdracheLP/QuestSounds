@@ -55,7 +55,7 @@ void BadHitSelectSound()
             std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
             QSoundsConfig::Config.badHitSound_filepath = QSoundsConfig::BadHitSoundPath + filename;
             AudioClips::badHitSoundLoader.filePath = QSoundsConfig::Config.badHitSound_filepath;
-            AudioClips::badHitSoundLoader.loaded = false;
+            if (AudioClips::badHitSoundLoader.audioSource != nullptr) AudioClips::badHitSoundLoader.audioSource->Stop();
             AudioClips::badHitSoundLoader.load();
             std::thread PlayAudio([&]() {
                 while (!AudioClips::badHitSoundLoader.loaded && QSoundsConfig::Config.badHitSound_Active) {
@@ -65,8 +65,8 @@ void BadHitSelectSound()
                     return;
                 }
                 if (AudioClips::badHitSoundLoader.audioSource != nullptr) {
-                    AudioClips::badHitSoundLoader.audioSource->Stop(true);
-                    return AudioClips::badHitSoundLoader.audioSource->PlayOneShot(AudioClips::badHitSoundLoader.getClip(), 0.8f);
+                    AudioClips::badHitSoundLoader.audioSource->set_volume(0.6f);
+                    return AudioClips::badHitSoundLoader.audioSource->Play();
                 }
                 });
             PlayAudio.detach();
@@ -124,6 +124,7 @@ void BadHitSdListViewController::DidActivate(bool firstActivation, bool addedToH
             [&](bool value) {
                 QSoundsConfig::Config.badHitSound_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
+                if (AudioClips::badHitSoundLoader.audioSource != nullptr) AudioClips::badHitSoundLoader.audioSource->Stop();
             });
         ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Bad Hit Sounds");
 
