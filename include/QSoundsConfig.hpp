@@ -41,11 +41,14 @@ namespace QSoundsConfig {
         std::string firework_filepath = FireworkSoundPath + "Firework.ogg";
         std::string levelCleared_filepath = LevelClearedPath + "LevelCleared.ogg";
         std::string lobbyAmbience_filepath = LobbyMusicPath + "LobbyMusic.ogg";
+        float hitSound_beatOffSet = 0.185f;
     };
     extern Config_t Config;
 
     void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, ConfigDocument::AllocatorType& allocator);
+    void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, float beatOffSet, ConfigDocument::AllocatorType& allocator);
     bool ParseSound(bool& active, std::string& filepath, ConfigValue& parent, std::string_view soundName);
+    bool ParseSound(bool& active, std::string& filepath, float& beatOffSet, ConfigValue& parent, std::string_view soundName);
 
     void SaveConfig();
     bool LoadConfig();

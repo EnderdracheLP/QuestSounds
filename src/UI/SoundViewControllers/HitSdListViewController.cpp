@@ -109,13 +109,19 @@ void HitSdListViewController::DidActivate(bool firstActivation, bool addedToHier
 
         // Enable or Disable HitSounds
         //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom HitSounds", &QSoundsConfig::Config.hitSound_Active, this, "Activates or deactivates Custom HitSounds");
-        auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Hit Sounds", QSoundsConfig::Config.hitSound_Active,
+        auto HSToggle = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Hit Sounds", QSoundsConfig::Config.hitSound_Active,
             [&](bool value) {
                 QSoundsConfig::Config.hitSound_Active = value;
                 this->SDlistscroll->get_gameObject()->SetActive(value);
                 if (AudioClips::hitSoundLoader.audioSource != nullptr) AudioClips::hitSoundLoader.audioSource->Stop();
             });
-        ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Hit Sounds");
+        QuestUI::BeatSaberUI::AddHoverHint(HSToggle->get_gameObject(), "Activates or deactivates Custom Hit Sounds");
+
+            auto HSOffSet = ::QuestUI::BeatSaberUI::CreateIncrementSetting(QSconfigcontainer->get_rectTransform(), "Hit Sound OffSet (ms)", 3, 0.005f, QSoundsConfig::Config.hitSound_beatOffSet, 0.0f, 0.25f,
+                [&](float value) {
+                    QSoundsConfig::Config.hitSound_beatOffSet = value;
+                });
+        QuestUI::BeatSaberUI::AddHoverHint(HSOffSet->get_gameObject(), "Sets a custom HitSound beatOffSet (default: 0.185 ms)");
 
 
         // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)

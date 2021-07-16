@@ -19,6 +19,17 @@ namespace QSoundsConfig {
         parent.AddMember((ConfigValue::StringRefType)soundName.data(), value, allocator);
     }
 
+    void AddChildSound(ConfigValue& parent, std::string_view soundName, bool active, std::string filePath, float beatOffSet, ConfigDocument::AllocatorType& allocator)
+    {
+        ConfigValue value(rapidjson::kObjectType);
+        value.AddMember("activated", active, allocator);
+        std::string data(filePath);
+        value.AddMember("filepath", data, allocator);
+        value.AddMember("beatOffSet", beatOffSet, allocator);
+        parent.AddMember((ConfigValue::StringRefType)soundName.data(), value, allocator);
+    }
+
+
     // Edited ParseVector made by Darknight1050
     bool ParseSound(bool& active, std::string& filepath, ConfigValue& parent, std::string_view soundName)
     {
@@ -29,11 +40,30 @@ namespace QSoundsConfig {
         ConfigValue value = parent[soundName.data()].GetObject();
         if (!(value.HasMember("activated") && value["activated"].IsBool() &&
             value.HasMember("filepath") && value["filepath"].IsString())) {
-            getLogger().error("Error Parsing, %s, bool activated is: c_struct %d config %d, string filepath is: %s", soundName.data(), (int)active, (int)value["activated"].GetBool(), std::string(value["filepath"].GetString()).c_str());
+            getLogger().error("Error Parsing, %s, bool activated is: internal struct: %d config %d; string filepath is: %s", soundName.data(), (int)active, (int)value["activated"].GetBool(), std::string(value["filepath"].GetString()).c_str());
             return false;
         }
         active = value["activated"].GetBool();
         filepath = value["filepath"].GetString();
+        return true;
+    }
+
+    // Edited ParseVector made by Darknight1050
+    bool ParseSound(bool& active, std::string& filepath, float& beatOffSet, ConfigValue& parent, std::string_view soundName)
+    {
+        if (!parent.HasMember(soundName.data()) || !parent[soundName.data()].IsObject()) {
+            getLogger().error("Error Parsing, %s, parent member bool: %d, parent object bool: %d", soundName.data(), parent.HasMember(soundName.data()), parent[soundName.data()].IsObject());
+            return false;
+        }
+        ConfigValue value = parent[soundName.data()].GetObject();
+        if (!(value.HasMember("activated") && value["activated"].IsBool() &&
+            value.HasMember("filepath") && value["filepath"].IsString() && value.HasMember("beatOffSet") && value["beatOffSet"].IsFloat())) {
+            getLogger().error("Error Parsing, %s, bool activated is: internal struct: %d, config: %d; string filepath is: %s; float beatOffSet is %f", soundName.data(), (int)active, (int)value["activated"].GetBool(), std::string(value["filepath"].GetString()).c_str(), value["beatOffSet"].GetFloat());
+            return false;
+        }
+        active = value["activated"].GetBool();
+        filepath = value["filepath"].GetString();
+        beatOffSet = value["beatOffSet"].GetFloat();
         return true;
     }
 
@@ -45,7 +75,7 @@ namespace QSoundsConfig {
         auto& allocator = getConfig().config.GetAllocator();
 
         ConfigValue soundsValue(rapidjson::kObjectType);
-        AddChildSound(soundsValue, "HitSound", Config.hitSound_Active, Config.hitSound_filepath, allocator);
+        AddChildSound(soundsValue, "HitSound", Config.hitSound_Active, Config.hitSound_filepath , Config.hitSound_beatOffSet, allocator);
         AddChildSound(soundsValue, "BadHitSound", Config.badHitSound_Active, Config.badHitSound_filepath, allocator);
         AddChildSound(soundsValue, "MenuMusic", Config.menuMusic_Active, Config.menuMusic_filepath, allocator);
         AddChildSound(soundsValue, "MenuClick", Config.menuClick_Active, Config.menuClick_filepath, allocator);
@@ -63,7 +93,7 @@ namespace QSoundsConfig {
         if (getConfig().config.HasMember(CONFIG_VERSION) && getConfig().config[CONFIG_VERSION].IsObject())
         {
             ConfigValue soundsValue = getConfig().config[CONFIG_VERSION].GetObject();
-            if (!ParseSound(Config.hitSound_Active, Config.hitSound_filepath, soundsValue, "HitSound")) return false;
+            if (!ParseSound(Config.hitSound_Active, Config.hitSound_filepath, Config.hitSound_beatOffSet, soundsValue, "HitSound")) return false;
             if (!ParseSound(Config.badHitSound_Active, Config.badHitSound_filepath, soundsValue, "BadHitSound")) return false;
             if (!ParseSound(Config.menuMusic_Active, Config.menuMusic_filepath, soundsValue, "MenuMusic")) return false;
             if (!ParseSound(Config.menuClick_Active, Config.menuClick_filepath, soundsValue, "MenuClick")) return false;
