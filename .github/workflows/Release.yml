@@ -3,9 +3,10 @@ on:
 
     env:
      module_id: QuestSounds
-     version: 0.3.0
-     BS_Version: 1.15.0
-     bs_hook: 1_3_3
+     version: 1.0.0
+     BSVersion: 1.14.0
+     bs_hook: 2_0_3
+     codegen: 0_10_2
      ndkname: android-ndk-r22
 
 name: Release Mod
@@ -63,8 +64,9 @@ jobs:
         cache-name: cache-qpm-deps
       with:
         path: QPM_Temp
-        key: ${{ runner.os }}-${{ env.cache-name }}
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm_${{ env.BSVersion }}.json', '.github/BuildMod.yml') }}
         restore-keys: |
+          ${{ runner.os }}-${{ env.cache-name }}-
           ${{ runner.os }}-${{ env.cache-name }}
       
     - name: QPM Restore
@@ -80,9 +82,11 @@ jobs:
         echo "Checking QPM_Temp Folders"
         ls -lh QPM_Temp/
         echo ""
+        echo "Listing beatsaber-hook folder"
+        ls QPM_Temp/beatsaber-hook/
+        echo ""
         echo "Listing all .so files in QPM_Temp"
         find QPM_Temp -type f -name "*.so"
-#      continue-on-error: true
 
     - name: Build
       run: |
@@ -107,11 +111,11 @@ jobs:
       with:
         tag_name: ${{ env.version }}
         release_name: ${{ env.module_id }} ${{ env.version }} for Beat Saber ${{ env.BSVersion }}
-        body_path: ./rl-notes.md
+        body_path: ./rl-notes
         draft: false
         prerelease: false
     - name: Upload QMOD Release Asset
-      id: upload-prerelease-QMOD 
+      id: upload-release-QMOD 
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

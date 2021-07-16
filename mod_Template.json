@@ -13,6 +13,5 @@
     "libbeatsaber-hook_{BS_Hook}.so"
   ],
   "dependencies": [],
-  "fileCopies": [],
-  "description": "Allows users to change their sfx sounds easily!"
+  "fileCopies": []
 }

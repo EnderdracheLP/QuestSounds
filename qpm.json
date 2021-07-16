@@ -4,19 +4,36 @@
   "info": {
     "name": "QuestSounds",
     "id": "QuestSounds",
-    "version": "0.3.0",
+    "version": "1.0.0",
     "url": null,
-    "additionalData": {}
+    "additionalData": {
+      "overrideSoName": "libQuestSounds.so"
+    }
   },
   "dependencies": [
     {
       "id": "beatsaber-hook",
-      "versionRange": "^2.0.3",
+      "versionRange": "^2.0.2",
       "additionalData": {
         "extraFiles": [
           "src/inline-hook"
         ]
       }
+    },
+    {
+      "id": "codegen",
+      "versionRange": "^0.10.2",
+      "additionalData": {}
+    },
+    {
+      "id": "questui",
+      "versionRange": "^0.9.0",
+      "additionalData": {}
+    },
+    {
+      "id": "custom-types",
+      "versionRange": "^0.12.3",
+      "additionalData": {}
     }
   ],
   "additionalData": {}

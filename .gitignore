@@ -33,11 +33,13 @@
 *.app
 
 # VSCode config stuff
+.vscode/
 !.vscode/c_cpp_properties.json
 !.vscode/tasks.json
 
 # VS Stuff
 .vs/
+!.vs/tasks.vs.json
 
 # NDK stuff
 out/
@@ -50,19 +52,11 @@ ndkpath.txt
 
 # Other files
 extern/
-*.zip
 
 qpm.shared.json
 extern/
 *.backup
 
-
-
-
-.vscode/settings.json
-
-.vscode/c_cpp_properties.json
-/QuestSounds.qmod
 *.log
-*.txt
+crash.txt
 /log_timestamp

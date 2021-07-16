@@ -3,23 +3,27 @@ name: NDK build
 on:
   workflow_dispatch:
   push:
-    branches: [ master, dev ]
+    branches: [ master, dev, 1.16.2-Testing ]
     paths-ignore:
       - '**.yml'
-      - '!.github/workflows/BuildQSounds.yml'
+      - '!.github/workflows/BuildMod.yml'
       - '**.json'
       - '!qpm.json'
+      - '!qpm_1.16.2.json'
       - '**.ps1'
+      - '!build.ps1'
+      - '!buildQMOD.ps1'
       - '**.md'
       - '.gitignore'
   pull_request:
-    branches: [ master, dev ]
+    branches: [ master, dev, 1.16.2-Testing ]
 
 env:
      module_id: QuestSounds
-     version: 0.3.0-Dev-${{ github.run_number }}
+     version: 1.0.0-Dev-${{ github.run_number }}
+     BSVersion: 1.16.2
      bs_hook: 2_0_3
-     BS_Version: 1.16.2
+     codegen: 0_10_2
      ndkname: android-ndk-r22
     
 jobs:
@@ -57,7 +61,6 @@ jobs:
       run: |
         cd ndk
         pwd > ${GITHUB_WORKSPACE}/ndkpath.txt
-
     - name: Get QPM
       if: steps.cache-qpm.outputs.cache-hit != 'true'
       uses: dawidd6/action-download-artifact@v2
@@ -67,7 +70,7 @@ jobs:
         name: QPM-ubuntu-x64
         path: QPM
         repo: sc2ad/QuestPackageManager
-
+        
     - name: QPM Dependencies Cache
       id: cache-qpm-deps
       uses: actions/cache@v2
@@ -75,7 +78,7 @@ jobs:
         cache-name: cache-qpm-deps
       with:
         path: QPM_Temp
-        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm.json', '.github/BuildQSounds.yml') }}
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm_${{ env.BSVersion }}.json', '.github/BuildMod.yml') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.cache-name }}-
           ${{ runner.os }}-${{ env.cache-name }}
@@ -84,7 +87,6 @@ jobs:
       run: |
         chmod +x ./QPM/QPM
         ./QPM/QPM restore
-
     - name: Check dependency Folders
       run: |
         echo "Checking extern Folder"
@@ -98,7 +100,6 @@ jobs:
         echo ""
         echo "Listing all .so files in QPM_Temp"
         find QPM_Temp -type f -name "*.so"
-
     - name: Build
       run: |
         cd ${GITHUB_WORKSPACE}
@@ -107,7 +108,7 @@ jobs:
       id: libname
       run: |
         cd ./libs/arm64-v8a/
-        pattern="lib${module_id}*.so"
+        pattern="lib${module_id}.so"
         files=( $pattern )
         echo ::set-output name=NAME::"${files[0]}"
     - name: Package QMOD
