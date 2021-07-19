@@ -329,10 +329,11 @@ QS_MAKE_HOOK(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start,
     else {
         getLogger().debug("NoteCutSoundEffectManager_Start: Loading normally");
     }
+    getLogger().debug("audioSamplesBeatAlignOffset was: %f", self->audioSamplesBeatAlignOffset);
+    self->audioSamplesBeatAlignOffset = QSoundsConfig::Config.hitSound_beatOffSet;
+    getLogger().debug("audioSamplesBeatAlignOffset changed to: %f", self->audioSamplesBeatAlignOffset);
     NoteCutSoundEffectManager_Start(self);
-    getLogger().debug("Beatalign offset was: % f", self->beatAlignOffset);
-    self->beatAlignOffset = QSoundsConfig::Config.hitSound_beatOffSet;
-    getLogger().debug("Changed Beatalign offset to: %f", self->beatAlignOffset);
+    getLogger().debug("Beatalign offset is: %f", self->beatAlignOffset);
 }
 
 QS_MAKE_HOOK(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCutSoundEffect* self) {
