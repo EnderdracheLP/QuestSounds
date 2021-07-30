@@ -2,7 +2,7 @@
 #include "custom-types/shared/macros.hpp"
 #include "HMUI/ViewController.hpp"
 
-DECLARE_CLASS_CODEGEN(QuestSounds, MenuSdListViewController, HMUI::ViewController,
+DECLARE_CLASS_CODEGEN(QuestSounds::ViewControllers, MenuSdListViewController, HMUI::ViewController,
     DECLARE_INSTANCE_FIELD(UnityEngine::UI::VerticalLayoutGroup*, QSconfigcontainer);
     DECLARE_INSTANCE_FIELD(UnityEngine::UI::HorizontalLayoutGroup*, listtxtgroup);
     DECLARE_INSTANCE_FIELD(UnityEngine::GameObject*, SDlistscroll);

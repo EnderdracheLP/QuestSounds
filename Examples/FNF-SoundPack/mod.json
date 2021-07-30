@@ -1,0 +1,54 @@
+{
+	"_QPVersion": "0.1.1",
+	"id": "FNF-SoundPack",
+	"name": "Friday Night Funkin SoundPack",
+	"version": "1.0.0",
+	"author": "EnderdracheLP",
+	"packageId": "com.beatgames.beatsaber",
+	"packageVersion": "1.16.4",
+	"description": "The Friday Night Funkin Sound Pack contains Sounds from the Game Friday Night Funkint to funk along to in Beat Saber.",
+	"coverImage": "logo.png",
+	"modFiles": [],
+	"libraryFiles": [],
+	"dependencies": [
+		{
+			"id": "QuestSounds",
+			"version": "1.*.*",
+			"downloadIfMissing": "https://github.com/EnderdracheLP/QuestSounds/releases/latest/download/QuestSounds.qmod"
+		}
+	],
+	"fileCopies": [
+		{
+			"name": "freshIntro.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSounds/FNF freshIntro Sound.ogg"
+		},
+		{
+			"name": "missnote1.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/FNF MissNote.ogg"
+		},
+		{
+			"name": "freakyMenu.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic/FNF Freaky Menu.ogg"
+		},
+		{
+			"name": "scrollMenu.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuClicks/FNF scrollMenu.ogg"
+		},
+		{
+			"name": "confirmMenu.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Fireworks/FNF confirmMenu.ogg"
+		},
+		{
+			"name": "gameOverEnd.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared/FNF gameOverEnd.ogg"
+		},
+		{
+			"name": "LoseGameOver.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared/FNF LoseGameOver.ogg"
+		},
+		{
+			"name": "gameOver-pixel.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic/FNF gameOverPixel.ogg"
+		}
+	]
+}

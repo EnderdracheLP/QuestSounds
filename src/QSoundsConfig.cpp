@@ -81,6 +81,7 @@ namespace QSoundsConfig {
         AddChildSound(soundsValue, "MenuClick", Config.menuClick_Active, Config.menuClick_filepath, allocator);
         AddChildSound(soundsValue, "Firework", Config.firework_Active, Config.firework_filepath, allocator);
         AddChildSound(soundsValue, "LevelCleared", Config.levelCleared_Active, Config.levelCleared_filepath, allocator);
+        AddChildSound(soundsValue, "LevelFailed", Config.levelFailed_Active, Config.levelFailed_filepath, allocator);
         AddChildSound(soundsValue, "LobbyMusic", Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, allocator);
         getConfig().config.AddMember(CONFIG_VERSION, soundsValue, allocator);
         getConfig().Write();
@@ -99,6 +100,7 @@ namespace QSoundsConfig {
             if (!ParseSound(Config.menuClick_Active, Config.menuClick_filepath, soundsValue, "MenuClick")) return false;
             if (!ParseSound(Config.firework_Active, Config.firework_filepath, soundsValue, "Firework")) return false;
             if (!ParseSound(Config.levelCleared_Active, Config.levelCleared_filepath, soundsValue, "LevelCleared")) return false;
+            if (!ParseSound(Config.levelFailed_Active, Config.levelFailed_filepath, soundsValue, "LevelFailed")) return false;
             if (!ParseSound(Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, soundsValue, "LobbyMusic")) return false;
         }
         else if (getConfig().config.HasMember(CONFIG_VERSION_LEGACY) && getConfig().config[CONFIG_VERSION_LEGACY].IsObject()) {

@@ -146,13 +146,6 @@ void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject*
     UnityEngine::AudioClip* temporaryClip = nullptr;
     if (!obj->UsesUWR) temporaryClip = obj->audioClipTask->get_ResultOnSuccess();
     else if (obj->UsesUWR) temporaryClip = UnityEngine::Networking::DownloadHandlerAudioClip::GetContent(obj->audioClipRequest); // TODO: This method takes too long
-    if (temporaryClip == nullptr && !obj->UsesUWR) {
-        Il2CppString* filePathStr = il2cpp_utils::newcsstr("file://" + obj->filePath);
-        obj->audioClipTask = GlobalNamespace::MediaAsyncLoader::LoadAudioClipAsync(filePathStr, System::Threading::CancellationToken::get_None());
-        ////Stage 2
-        auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), obj, audioClipCompleted);
-        reinterpret_cast<System::Threading::Tasks::Task*>(obj->audioClipTask)->ContinueWith(actionMAL);
-    }
 
     if(temporaryClip != nullptr)
     {  
@@ -167,7 +160,7 @@ void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject*
         getLogger().info("Stage 2 done with temporaryClip");
     }
     else {
-        getLogger().error("Stage 2 failed with temporaryClip being nullptr %p", temporaryClip);
+        getLogger().error("Stage 2 failed with temporaryClip being nullptr %p Object FilePath: %s", temporaryClip, obj->filePath.c_str());
         if (!obj->UsesUWR) getLogger().error("Task Status was %d", (int)obj->audioClipTask->get_Status());
         return;
     } // Finished

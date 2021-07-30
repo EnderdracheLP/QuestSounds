@@ -17,6 +17,7 @@ namespace QSoundsConfig {
     static std::string MenuClickPath = soundPath + "MenuClicks/";
     static std::string FireworkSoundPath = soundPath + "Fireworks/";
     static std::string LevelClearedPath = soundPath + "LevelCleared/";
+    static std::string LevelFailedPath = soundPath + "LevelFailed/";
 #ifndef BS__1_13_2
     static std::string LobbyMusicPath = soundPath + "LobbyMusic/";
 #endif
@@ -33,6 +34,7 @@ namespace QSoundsConfig {
         bool menuClick_Active = true;
         bool firework_Active = true;
         bool levelCleared_Active = true;
+        bool levelFailed_Active = true;
         bool lobbyAmbience_Active = true;
         std::string hitSound_filepath = HitSoundPath + "HitSound.ogg";
         std::string badHitSound_filepath = BadHitSoundPath + "BadHitSound.ogg";
@@ -40,6 +42,7 @@ namespace QSoundsConfig {
         std::string menuClick_filepath = MenuClickPath + "MenuClick.ogg";
         std::string firework_filepath = FireworkSoundPath + "Firework.ogg";
         std::string levelCleared_filepath = LevelClearedPath + "LevelCleared.ogg";
+        std::string levelFailed_filepath = LevelFailedPath + "LevelFailed.ogg";
         std::string lobbyAmbience_filepath = LobbyMusicPath + "LobbyMusic.ogg";
         float hitSound_beatOffSet = 0.185f;
     };

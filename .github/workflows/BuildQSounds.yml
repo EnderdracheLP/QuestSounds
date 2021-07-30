@@ -20,7 +20,7 @@ on:
 
 env:
      module_id: QuestSounds
-     version: 1.0.0-Dev-${{ github.run_number }}
+     version: 1.0.0-Dev.${{ github.run_number }}
      BSVersion: 1.16.2
      bs_hook: 2_0_3
      codegen: 0_10_2
