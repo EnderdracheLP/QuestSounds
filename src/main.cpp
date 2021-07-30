@@ -403,6 +403,7 @@ QS_MAKE_HOOK(FireworkItemController_PlayExplosionSound, &FireworkItemController:
 }
 
 QS_MAKE_HOOK(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_ActiveSceneChanged, void, Scene previousActiveScene, Scene newActiveScene) {
+    SceneManager_Internal_ActiveSceneChanged(previousActiveScene, newActiveScene);
     if (newActiveScene.IsValid()) {
         std::string sceneName = to_utf8(csstrtostr(newActiveScene.get_name()));
         getLogger().info("Scene found: %s", sceneName.data());
@@ -410,7 +411,6 @@ QS_MAKE_HOOK(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_A
         std::string shaderWarmup = "ShaderWarmup";
             if(sceneName == shaderWarmup) QuestSounds::AudioClips::loadAudioClips();
     }
-    SceneManager_Internal_ActiveSceneChanged(previousActiveScene, newActiveScene);
 }
 
 extern "C" void setup(ModInfo &info)
