@@ -2,15 +2,17 @@
   "_QPVersion": "0.1.1",
   "id": "QuestSounds",
   "name": "Quest Sounds",
-  "version": "{VERSION_NUMBER_PLACEHOLDER}",
+  "version": "1.0.0",
   "author": "Rugtveit, EnderdracheLP",
   "packageId": "com.beatgames.beatsaber",
-  "packageVersion": "{BS_Version}",
+  "packageVersion": "1.16.4",
+  "description": "Allows users to change their sfx sounds easily!",
+  "coverImage": "Cover.jpg",
   "modFiles": [
     "libQuestSounds.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_{BS_Hook}.so"
+    "libbeatsaber-hook_2_2_4.so"
   ],
   "dependencies": [],
   "fileCopies": []
