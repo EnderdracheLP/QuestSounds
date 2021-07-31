@@ -3,9 +3,6 @@
 #include "main.hpp"
 #include "ObjectInstances.hpp"
 
-#include "System/Collections/IEnumerator.hpp"
-#include "custom-types/shared/coroutine.hpp"
-
 #include <dirent.h>
 #include <regex>
 

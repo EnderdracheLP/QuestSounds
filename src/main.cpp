@@ -30,6 +30,9 @@ using namespace GlobalNamespace;
 
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
+#include "UnityEngine/MonoBehaviour.hpp"
+#include "UnityEngine/WaitForSeconds.hpp"
+#include "UnityEngine/Time.hpp"
 using namespace UnityEngine::SceneManagement;
 
 #include "questui/shared/BeatSaberUI.hpp"
@@ -220,6 +223,24 @@ Array<UnityEngine::AudioClip*> *origMenuClickArr;
     }
 }
 
+// Coroutine for Pausing the MenuMusic, and FadeIn after delay
+custom_types::Helpers::Coroutine PauseForDelay(SongPreviewPlayer* self, float delayInSeconds) {
+    UnityEngine::AudioSource* audioSource = self->audioSourceControllers->values[self->activeChannel]->audioSource;
+    float volume = 0;
+    self->PauseCurrentChannel();
+    co_yield reinterpret_cast<System::Collections::IEnumerator*>(UnityEngine::WaitForSeconds::New_ctor(delayInSeconds - 0.5));
+    audioSource->set_volume(0);
+    self->UnPauseCurrentChannel();
+    while (volume < self->volume) {
+        volume += 0.1 * self->fadeInSpeed;
+        audioSource->set_volume(volume);
+        co_yield reinterpret_cast<System::Collections::IEnumerator*>(UnityEngine::WaitForSeconds::New_ctor(0.1));
+    }
+    if (volume > self->volume) audioSource->set_volume(self->volume);
+    co_return;
+}
+
+
 // TODO: Add LevelFailed sound as option
 QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     if (firstActivation && addedToHierarchy && !levelClearedLoader.OriginalAudioSource) {
@@ -230,7 +251,15 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
         // TODO: Play level failed sound
         if (levelFailedLoader.loaded && addedToHierarchy && QSoundsConfig::Config.levelFailed_Active) {
             UnityEngine::AudioClip* FailedSound = levelFailedLoader.getClip();
-            self->songPreviewPlayer->CrossfadeTo(FailedSound, -4.0f, 0.0f, FailedSound->get_length());
+            float length = FailedSound->get_length();
+            getLogger().debug("Duration of LevelFailed Sound: %f", length);
+            if (length > 8.0f) {
+                self->songPreviewPlayer->CrossfadeTo(FailedSound, -4.0f, 0.0f, length);
+            }
+            else {
+                self->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(PauseForDelay(self->songPreviewPlayer, length))));
+                levelFailedLoader.audioSource->Play();
+            }
         }
     }
     else {
@@ -247,9 +276,8 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
 }
 
 QS_MAKE_HOOK(ResultsViewController_DidDeactivate, &ResultsViewController::DidDeactivate, void, ResultsViewController* self, bool removedFromHierarchy, bool screenSystemDisabling) {
-    //self->songPreviewPlayer->audioSourceControllers->values[self->songPreviewPlayer->activeChannel]->audioSource->Stop();
-    getLogger().debug("ResultsViewController_DidDeactivate");
-    self->songPreviewPlayer->CrossfadeToDefault();
+    getLogger().debug("ResultsViewController_DidDeactivate, Crossfade back to Default MenuMusic Sounds");
+    //self->songPreviewPlayer->CrossfadeToDefault();
     ResultsViewController_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
 }
 
