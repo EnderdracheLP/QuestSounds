@@ -223,28 +223,6 @@ Array<UnityEngine::AudioClip*> *origMenuClickArr;
     }
 }
 
-// Coroutine for Pausing the MenuMusic, and FadeIn after delay
-//custom_types::Helpers::Coroutine PauseForDelay(SongPreviewPlayer* self, float delayInSeconds) {
-//    //UnityEngine::AudioSource* audioSource = self->audioSourceControllers->values[self->activeChannel]->audioSource;
-//    //float volume = 0;
-//    //self->PauseCurrentChannel();
-//	self->songPreviewPlayer->volume = 0;
-//    self->fadeSpeed = self->fadeInSpeed;
-//    self->CrossFadeAfterDelayCoroutine(delayInSeconds - self->crossFadeToDefaultSpeed);
-//	//co_yield reinterpret_cast<System::Collections::IEnumerator*>(UnityEngine::WaitForSeconds::New_ctor(delayInSeconds - 0.5));
-//    //audioSource->set_volume(0);
-//    //self->UnPauseCurrentChannel();
-//    //while (self->volume < 1) {
-//    //    self->volume += 0.1 * self->fadeInSpeed;
-//    //    //audioSource->set_volume(volume);
-//    //    co_yield reinterpret_cast<System::Collections::IEnumerator*>(UnityEngine::WaitForSeconds::New_ctor(0.1));
-//    //}
-//    //if (volume > self->volume) audioSource->set_volume(self->volume);
-//	//if (self->volume > 1) self->volume = 1;
-//    co_return;
-//}
-
-
 // TODO: Add LevelFailed sound as option
 QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     if (firstActivation && addedToHierarchy && !levelClearedLoader.OriginalAudioSource) {
@@ -262,11 +240,7 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
             }
             else {
                 self->songPreviewPlayer->StopAllCoroutines();
-                //self->songPreviewPlayer->audioSourceControllers->values[self->songPreviewPlayer->activeChannel]->audioSource->set_volume(0);
-                //self->songPreviewPlayer->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(PauseForDelay(self->songPreviewPlayer, length))));
-				//self->songPreviewPlayer->volume = 0;
 				self->songPreviewPlayer->fadeSpeed = self->songPreviewPlayer->fadeInSpeed;
-				//self->songPreviewPlayer->CrossFadeAfterDelayCoroutine(length - self->songPreviewPlayer->crossFadeToDefaultSpeed);
                 self->songPreviewPlayer->CrossfadeTo(self->songPreviewPlayer->defaultAudioClip, -4.0f, length - 0.5f, -1, true);
                 levelFailedLoader.audioSource->Play();
             }
@@ -284,13 +258,6 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
     }
     ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
-
-//QS_MAKE_HOOK(ResultsViewController_DidDeactivate, &ResultsViewController::DidDeactivate, void, ResultsViewController* self, bool removedFromHierarchy, bool screenSystemDisabling) {
-//    getLogger().debug("ResultsViewController_DidDeactivate, Crossfade back to Default MenuMusic Sounds");
-//    //self->songPreviewPlayer->CrossfadeToDefault();
-//    //self->songPreviewPlayer->UnPauseCurrentChannel();
-//    ResultsViewController_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
-//}
 
 QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, SongPreviewPlayer* self) {
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
@@ -503,7 +470,6 @@ extern "C" void load()
     //QS_INSTALL_HOOK(hkLog, FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
     QS_INSTALL_HOOK(hkLog, BasicUIAudioManager_Start, il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0));
     QS_INSTALL_HOOK(hkLog, ResultsViewController_DidActivate, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3));
-    //QS_INSTALL_HOOK(hkLog, ResultsViewController_DidDeactivate, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidDeactivate", 2));
     QS_INSTALL_HOOK(hkLog, FireworkItemController_PlayExplosionSound, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "PlayExplosionSound", 0))
 #ifndef BS__1_13_2
     QS_INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidActivate", 3));     // Added for switching out MP Lobby Music
