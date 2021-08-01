@@ -1,15 +1,15 @@
+name: Release Mod
+
 on:
   workflow_dispatch:
 
-    env:
+env:
      module_id: QuestSounds
      version: 1.0.0
      BSVersion: 1.16.4
      bs_hook: 2_2_4
      codegen: 0_12_5
      ndkname: android-ndk-r22
-
-name: Release Mod
 
 jobs:
   build:
@@ -29,7 +29,6 @@ jobs:
       uses: actions/cache@v2
       env:
         cache-name: cache-ndk
-        ndkname: android-ndk-r22
       with:
         path: ndk
         key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.ndkname }}

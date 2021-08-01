@@ -1,7 +1,8 @@
+name: Pre-Release Mod
+
 on:
   workflow_dispatch:
 
-name: Pre-Release Mod
 env:
      module_id: QuestSounds
      version: 1.0.0-rc.1
