@@ -9,7 +9,6 @@ on:
 
 env:
      module_id: QuestSounds
-     version: ${{ github.ref }}
      BSVersion: 1.16.4
      bs_hook: 2_2_4
      codegen: 0_12_5
@@ -25,8 +24,12 @@ jobs:
       with:
         submodules: true
         lfs: true
+
     - name: Install Powershell
       run: sudo apt-get install -y powershell
+
+    - name: Get the tag name
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
 
     - name: Cache Android NDK
       id: cache-ndk
