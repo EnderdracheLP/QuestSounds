@@ -117,7 +117,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: ${{ env.module_id }} ${{ github.ref }} for Beat Saber ${{ env.BSVersion }}
-        body_path: ./rl-notes
+        body_path: ./rl-notes.md
         draft: true
         prerelease: false
     - name: Upload QMOD Release Asset
