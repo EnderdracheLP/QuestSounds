@@ -1,4 +1,4 @@
-__**QuestSounds 1.0.0 for Beat Saber 1.14.0**__
+__**QuestSounds 1.0.0 for Beat Saber 1.16.4**__
 
 **READ ENTIRE POST BEFORE OPENING AN ISSUE**
 Description:
@@ -6,18 +6,19 @@ QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sound
 just drop them into the Folder and select them in-game!
 
 __**Changelog:**__ 
-- Changed Locations for sound files now in folders
+- Changed Locations for sound files now in seperate folders
 - Added In-Game Menu for Settings and Sound File selection
-- Added toogle to turn Custom Sounds on or off in-game
+- Added toggle to switch Custom Sounds/Music on or off in-game
 - Added Option to set BeatOffset for HitSounds
 - Added LevelFailed Sound
 - Added LobbyMusic
+- Added support for MP2, AIF/AIFF
 
 Features:
   NEW: In-Game Menu for selecting sound files and enabling/disabling custom sounds.
   Support for OGG, MP3, WAV, MP2 and AIFF/AIF file formats!
   Creates QuestSounds folder at /sdcard/ModData/com.beatgames.beatsaber/Mods/ 
-  which contains the subfolders for the sounds.
+  which contains the sub-folders for the sounds.
   AFTER YOU HAVE RAN THE MOD ONCE
   
   **Avoid using any files that use MPEG format like MP3 or MP2 unless you don't mind brief freezing upon loading**

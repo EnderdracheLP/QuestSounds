@@ -2,10 +2,14 @@ name: Release Mod
 
 on:
   workflow_dispatch:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+    - '*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 env:
      module_id: QuestSounds
-     version: 1.0.0
+     version: ${{ github.ref }}
      BSVersion: 1.16.4
      bs_hook: 2_2_4
      codegen: 0_12_5
@@ -108,10 +112,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ env.version }}
-        release_name: ${{ env.module_id }} ${{ env.version }} for Beat Saber ${{ env.BSVersion }}
+        tag_name: ${{ github.ref }}
+        release_name: ${{ env.module_id }} ${{ github.ref }} for Beat Saber ${{ env.BSVersion }}
         body_path: ./rl-notes
-        draft: false
+        draft: true
         prerelease: false
     - name: Upload QMOD Release Asset
       id: upload-release-QMOD 
