@@ -239,9 +239,9 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
             }
             else {
                 getLogger().debug("Short LevelFailedSound");
-                self->songPreviewPlayer->fadeSpeed = self->songPreviewPlayer->fadeInSpeed;
                 self->songPreviewPlayer->FadeOut(0.1f);
-                self->songPreviewPlayer->StartCoroutine(self->songPreviewPlayer->CrossFadeAfterDelayCoroutine(length - 1.0f));
+                self->songPreviewPlayer->fadeSpeed = self->songPreviewPlayer->fadeInSpeed;
+                self->songPreviewPlayer->StartCoroutine(self->songPreviewPlayer->CrossFadeAfterDelayCoroutine(length - 1.2f));
                 levelFailedLoader.audioSource->Play();
             }
         }
