@@ -223,25 +223,25 @@ Array<UnityEngine::AudioClip*> *origMenuClickArr;
     }
 }
 
-// TODO: Add LevelFailed sound as option
 QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     if (firstActivation && addedToHierarchy && !levelClearedLoader.OriginalAudioSource) {
         levelClearedLoader.set_OriginalClip(self->levelClearedAudioClip);
     }
-
     if (self->levelCompletionResults->levelEndStateType == LevelCompletionResults::LevelEndStateType::Failed) {
-        // TODO: Play level failed sound
+        self->songPreviewPlayer->StopAllCoroutines();
         if (levelFailedLoader.loaded && addedToHierarchy && QSoundsConfig::Config.levelFailed_Active) {
             UnityEngine::AudioClip* FailedSound = levelFailedLoader.getClip();
             float length = FailedSound->get_length();
             getLogger().debug("Duration of LevelFailed Sound: %f", length);
             if (length > 8.0f) {
+                getLogger().debug("Long LevelFailedSound");
                 self->songPreviewPlayer->CrossfadeTo(FailedSound, -4.0f, 0.0f, length);
             }
             else {
-                self->songPreviewPlayer->StopAllCoroutines();
-				self->songPreviewPlayer->fadeSpeed = self->songPreviewPlayer->fadeInSpeed;
-                self->songPreviewPlayer->CrossfadeTo(self->songPreviewPlayer->defaultAudioClip, -4.0f, length - 0.5f, -1, true);
+                getLogger().debug("Short LevelFailedSound");
+                self->songPreviewPlayer->fadeSpeed = self->songPreviewPlayer->fadeInSpeed;
+                self->songPreviewPlayer->FadeOut(0.1f);
+                self->songPreviewPlayer->StartCoroutine(self->songPreviewPlayer->CrossFadeAfterDelayCoroutine(length - 1.0f));
                 levelFailedLoader.audioSource->Play();
             }
         }
