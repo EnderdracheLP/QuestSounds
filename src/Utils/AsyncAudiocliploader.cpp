@@ -24,25 +24,6 @@ using namespace System;
 #include "UnityEngine/GameObject.hpp"
 using namespace UnityEngine;
 
-#include "GlobalNamespace/SharedCoroutineStarter.hpp"
-
-custom_types::Helpers::Coroutine AsyncAudioClipLoader::loader::GetAudioClip(System::Action_1<UnityEngine::AsyncOperation*>* actionUWRM, AsyncAudioClipLoader::loader* self, int audioType, Il2CppString* filePathStr/*, Logger& logger*/) {
-    audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
-    {
-        co_yield reinterpret_cast<System::Collections::IEnumerator*>(audioClipAsync = audioClipRequest->SendWebRequest());
-        audioClipAsync->set_allowSceneActivation(false);
-
-        if (audioClipRequest->get_isHttpError() || audioClipRequest->get_isNetworkError()) {            
-            co_return;
-        }
-        else {
-            //Stage 2
-            audioClipAsync->add_completed(actionUWRM);
-            co_return;
-        }
-    }
-}
-
 int getAudioType(std::string path) {
     if (path.ends_with(".ogg")) {
         getLogger().debug("File is OGGVORBIS");
@@ -125,9 +106,19 @@ bool AsyncAudioClipLoader::loader::load()
         // Got a crash there somehow
         auto start = std::chrono::high_resolution_clock::now();
         //GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(AsyncAudioClipLoader::loader::GetAudioClip(actionUWRM, this, audioType, filePathStr))));
-        GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(AsyncAudioClipLoader::loader::GetAudioClip(actionUWRM, this, audioType, filePathStr))));
+        //GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(AsyncAudioClipLoader::loader::GetAudioClip(actionUWRM, this, audioType, filePathStr))));
         //                                                       ^                                                                  ^
         //                                            TODO: Why did it crash there                                                or here
+        
+        audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
+        audioClipAsync = audioClipRequest->SendWebRequest();
+        audioClipAsync->set_allowSceneActivation(false);
+
+        if (!audioClipRequest->get_isHttpError() || !audioClipRequest->get_isNetworkError()) {
+            //Stage 2
+            audioClipAsync->add_completed(actionUWRM);
+        }
+
         auto end = std::chrono::high_resolution_clock::now();
         double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
         time_taken *= 1e-9;
@@ -146,12 +137,14 @@ void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject*
 
     if(temporaryClip != nullptr)
     {  
-        static auto goName = il2cpp_utils::createcsstr("AudioClipGO", il2cpp_utils::StringType::Manual);
-        GameObject* audioClipGO = GameObject::New_ctor(goName);
-        obj->audioSource = audioClipGO->AddComponent<AudioSource*>();
+        if (!obj->audioClipGO) {
+            static auto goName = il2cpp_utils::createcsstr("AudioClipGO", il2cpp_utils::StringType::Manual);
+            obj->audioClipGO = GameObject::New_ctor(goName);
+            obj->audioSource = obj->audioClipGO->AddComponent<AudioSource*>();
+            UnityEngine::Object::DontDestroyOnLoad(obj->audioClipGO);
+        }
         obj->audioSource->set_playOnAwake(false);
         obj->audioSource->set_clip(temporaryClip);
-        UnityEngine::Object::DontDestroyOnLoad(audioClipGO);
         obj->audioSource->set_volume(0.6f);
         obj->loaded = true;
         getLogger().info("Stage 2 done with temporaryClip");

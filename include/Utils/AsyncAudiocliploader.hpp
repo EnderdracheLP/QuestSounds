@@ -1,6 +1,7 @@
 #pragma once
 #include "UnityEngine/AudioSource.hpp"
 #include "UnityEngine/AudioClip.hpp"
+#include "UnityEngine/GameObject.hpp"
 
 #include "System/Threading/Tasks/Task.hpp"
 #include "GlobalNamespace/MediaAsyncLoader.hpp"
@@ -11,7 +12,7 @@
 #include "UnityEngine/Networking/UnityWebRequestMultimedia.hpp"
 #include "UnityEngine/Networking/UnityWebRequest.hpp"
 
-#include "custom-types/shared/coroutine.hpp"
+//#include "custom-types/shared/coroutine.hpp"
 
 
 namespace AsyncAudioClipLoader
@@ -30,6 +31,7 @@ namespace AsyncAudioClipLoader
         UnityEngine::AudioClip* get_OriginalClip(); //Audioclip
         UnityEngine::AudioSource* OriginalAudioSource = nullptr;
     private:
+        UnityEngine::GameObject* audioClipGO;
         static void audioClipCompleted(loader* obj, Il2CppObject* asyncOp);
         Il2CppString* path;
         bool UsesUWR = false;
@@ -37,7 +39,5 @@ namespace AsyncAudioClipLoader
 
         UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipAsync;
         UnityEngine::Networking::UnityWebRequest* audioClipRequest;
-        //custom_types::Helpers::Coroutine GetAudioClip(System::Action_1<UnityEngine::AsyncOperation*>* actionUWRM, AsyncAudioClipLoader::loader* self, int audioType, Il2CppString* filePathStr);
-        custom_types::Helpers::Coroutine GetAudioClip(System::Action_1<UnityEngine::AsyncOperation*>* actionUWRM, AsyncAudioClipLoader::loader* self, int audioType, Il2CppString* filePathStr);
     };
 }

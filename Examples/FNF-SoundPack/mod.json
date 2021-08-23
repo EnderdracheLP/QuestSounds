@@ -13,7 +13,7 @@
 	"dependencies": [
 		{
 			"id": "QuestSounds",
-			"version": "1.*.*",
+			"version": "1.*",
 			"downloadIfMissing": "https://github.com/EnderdracheLP/QuestSounds/releases/latest/download/QuestSounds.qmod"
 		}
 	],

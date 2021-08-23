@@ -137,7 +137,7 @@ void QSoundsFlowCoordinator::SubMenuButtonWasPressed(int VCtype) {
     case 8:
         if (!this->QSLobbyMusicSoundListView) this->QSLobbyMusicSoundListView = QuestUI::BeatSaberUI::CreateViewController<LobbyMusicSdListViewController*>();
         if (!this->QSLobbyMusicSoundListView || this->providedMainViewController == this->QSLobbyMusicSoundListView) break;
-        this->SetTitle(il2cpp_utils::createcsstr("QuestSounds FireworkSounds"), HMUI::ViewController::AnimationType::In);
+        this->SetTitle(il2cpp_utils::createcsstr("QuestSounds LobbyMusic"), HMUI::ViewController::AnimationType::In);
         this->ReplaceTopViewController(this->QSLobbyMusicSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
         CurrentActive = VCtype;
         break;
