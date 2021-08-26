@@ -6,13 +6,10 @@ QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sound
 just drop them into the Folder and select them in-game!
 
 __**Changelog:**__ 
-- Changed Locations for sound files now in seperate folders
-- Added In-Game Menu for Settings and Sound File selection
-- Added toggle to switch Custom Sounds/Music on or off in-game
-- Added Option to set BeatOffset for HitSounds
-- Added LevelFailed Sound
-- Added LobbyMusic
-- Added support for MP2, AIF/AIFF
+- Loading Sounds much earlier then before
+- Stop LevelFailed Sound on Level Restart
+- Fix typo for LobbyMusic Title, said Firework Sounds
+- Fix potential crashes by removing unnecessary coroutine
 
 Features:
   NEW: In-Game Menu for selecting sound files and enabling/disabling custom sounds.

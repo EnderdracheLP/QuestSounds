@@ -241,6 +241,11 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
                 getLogger().debug("Short LevelFailedSound");
                 self->songPreviewPlayer->FadeOut(0.1f);
                 self->songPreviewPlayer->fadeSpeed = self->songPreviewPlayer->fadeInSpeed;
+                getLogger().debug("volume: %f", self->songPreviewPlayer->volume);
+                getLogger().debug("AmbientVolume: %f", self->songPreviewPlayer->ambientVolumeScale);
+                getLogger().debug("Set Volume: %f", self->songPreviewPlayer->volume * self->songPreviewPlayer->ambientVolumeScale);
+
+                levelFailedLoader.audioSource->set_volume(self->songPreviewPlayer->volume * self->songPreviewPlayer->ambientVolumeScale);
                 self->songPreviewPlayer->StartCoroutine(self->songPreviewPlayer->CrossFadeAfterDelayCoroutine(length - 1.2f));
                 levelFailedLoader.audioSource->Play();
             }
@@ -257,6 +262,13 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
         }
     }
     ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
+}
+
+QS_MAKE_HOOK(ResultsViewController_RestartButtonPressed, &ResultsViewController::RestartButtonPressed, void, ResultsViewController* self) {
+    if (levelFailedLoader.audioSource->get_isPlaying()) {
+        levelFailedLoader.audioSource->Stop();
+    }
+    ResultsViewController_RestartButtonPressed(self);
 }
 
 QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, SongPreviewPlayer* self) {
@@ -414,8 +426,8 @@ QS_MAKE_HOOK(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_A
         std::string sceneName = to_utf8(csstrtostr(newActiveScene.get_name()));
         getLogger().info("Scene found: %s", sceneName.data());
 
-        std::string shaderWarmup = "ShaderWarmup";
-            if(sceneName == shaderWarmup) QuestSounds::AudioClips::loadAudioClips();
+        std::string questInit = "QuestInit";
+        if(sceneName == questInit) QuestSounds::AudioClips::loadAudioClips();
     }
 }
 
@@ -470,6 +482,7 @@ extern "C" void load()
     //QS_INSTALL_HOOK(hkLog, FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
     QS_INSTALL_HOOK(hkLog, BasicUIAudioManager_Start, il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0));
     QS_INSTALL_HOOK(hkLog, ResultsViewController_DidActivate, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3));
+    QS_INSTALL_HOOK(hkLog, ResultsViewController_RestartButtonPressed, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "RestartButtonPressed", 0));
     QS_INSTALL_HOOK(hkLog, FireworkItemController_PlayExplosionSound, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "PlayExplosionSound", 0))
 #ifndef BS__1_13_2
     QS_INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidActivate", 3));     // Added for switching out MP Lobby Music
