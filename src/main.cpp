@@ -232,7 +232,7 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
             UnityEngine::AudioClip* FailedSound = levelFailedLoader.getClip();
             float length = FailedSound->get_length();
             getLogger().debug("Duration of LevelFailed Sound: %f", length);
-            if (length > 8.0f) {
+            if (length > 7.0f) {
                 getLogger().debug("Long LevelFailedSound");
                 self->songPreviewPlayer->CrossfadeTo(FailedSound, -4.0f, 0.0f, length);
             }
@@ -352,7 +352,6 @@ QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &Multiplayer
 QS_MAKE_HOOK(FileHelpers_GetEscapedURLForFilePath, &FileHelpers::GetEscapedURLForFilePath, Il2CppString*, Il2CppString* filePath) {
     return il2cpp_utils::newcsstr(std::u16string(u"file://") + std::u16string(csstrtostr(filePath)));
 }
-
 
 QS_MAKE_HOOK(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start, void, NoteCutSoundEffectManager* self) {
     if(hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active)

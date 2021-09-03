@@ -6,7 +6,7 @@ if ($args.Count -eq 0 -or $args[0] -eq "--dev") {
     if ($args[0] -eq "--dev") {
         $VERSION += "-Dev"
     }
-    $BS_Version = "1.17.0"
+    $BS_Version = "1.17.1"
     echo "Compiling Mod"
     if ($args[0] -ne "--dev") {
         & $PSScriptRoot/build.ps1 --release
