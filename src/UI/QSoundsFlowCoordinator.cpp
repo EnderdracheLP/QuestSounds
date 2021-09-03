@@ -153,6 +153,5 @@ void QSoundsFlowCoordinator::BackButtonWasPressed(HMUI::ViewController* topView)
 {
     QSoundsConfig::SaveConfig();
     //QuestSounds::AudioClips::loadAudioClips();
-    HMUI::FlowCoordinator* ModSettingsFC = QuestUI::GetModSettingsFlowCoordinator();
-    ModSettingsFC->DismissFlowCoordinator(this, HMUI::ViewController::AnimationDirection::Horizontal, nullptr, false);
+    this->parentFlowCoordinator->DismissFlowCoordinator(this, HMUI::ViewController::AnimationDirection::Horizontal, nullptr, false);
 }

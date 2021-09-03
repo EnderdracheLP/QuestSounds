@@ -9,7 +9,6 @@ on:
       - '!.github/workflows/BuildMod.yml'
       - '**.json'
       - '!qpm.json'
-      - '!qpm_1.16.4.json'
       - '**.ps1'
       - '!build.ps1'
       - '!buildQMOD.ps1'
@@ -22,10 +21,10 @@ on:
 
 env:
      module_id: QuestSounds
-     version: 1.0.0-Dev.${{ github.run_number }}
-     BSVersion: 1.16.4
-     bs_hook: 2_2_5
-     codegen: 0_12_5
+     version: 1.0.1-Dev.${{ github.run_number }}
+     BSVersion: 1.17.0
+     bs_hook: 2_3_0
+     codegen: 0_13_0
 #     ndkname: android-ndk-r22
     
 jobs:
@@ -85,7 +84,7 @@ jobs:
         cache-name: cache-qpm-deps
       with:
         path: QPM_Temp
-        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm_${{ env.BSVersion }}.json', '.github/BuildMod.yml') }}
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm.json', '.github/BuildQSounds.yml') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.cache-name }}-
           ${{ runner.os }}-${{ env.cache-name }}

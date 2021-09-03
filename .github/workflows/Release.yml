@@ -9,10 +9,10 @@ on:
 
 env:
      module_id: QuestSounds
-     BSVersion: 1.16.4
-     bs_hook: 2_2_5
-     codegen: 0_12_5
-     ndkname: android-ndk-r22
+     BSVersion: 1.17.0
+     bs_hook: 2_3_0
+     codegen: 0_13_0
+     ndkname: android-ndk-r23
 
 jobs:
   build:
@@ -75,7 +75,7 @@ jobs:
         cache-name: cache-qpm-deps
       with:
         path: QPM_Temp
-        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm_${{ env.BSVersion }}.json', '.github/BuildMod.yml') }}
+        key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('qpm.json', '.github/Release.yml') }}
         restore-keys: |
           ${{ runner.os }}-${{ env.cache-name }}-
           ${{ runner.os }}-${{ env.cache-name }}

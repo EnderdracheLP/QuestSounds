@@ -158,7 +158,7 @@ void makeFolder()
         int makePath = mkpath(LobbyMusicPath.c_str());
         if (makePath == -1)
         {
-            getLogger().error("Failed to make LevelCleared Folder path!");
+            getLogger().error("Failed to make LobbyMusic Folder path!");
         }
     }
 #endif
@@ -185,7 +185,6 @@ Array<UnityEngine::AudioClip*> *hitSoundArr,    // hitSoundArray
 
 
 Array<UnityEngine::AudioClip*> *origMenuClickArr;
-
 
     void loadAudioClips()
     {
@@ -469,7 +468,8 @@ extern "C" void load()
 #endif
 #endif
     QuestUI::Register::RegisterModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
-
+    QuestUI::Register::RegisterMainMenuModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
+    
     if(!LoadConfig()) SaveConfig();
     makeFolder();
     //Modloader::getMods()

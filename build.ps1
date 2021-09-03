@@ -7,13 +7,17 @@ echo "Arg $($i) is $($args[$i])"
     elseif ($args[$i] -eq "--1_13_2") { $1_13_2build = $true }
     elseif ($args[$i] -eq "--trace") { $trace = $true }
     elseif ($args[$i] -eq "--dry-run") { $dryrun = $true }
+    elseif ($args[$i] -eq "--release") { $release = $true }
     else { $PARAM += $args[$i] }
 }
 if ($args.Count -eq 0 -or $actions -ne $true) {
 $ModID = "QuestSounds"
-$BSHook = "2_2_5"
-$VERSION = "1.0.0"
-$codegen_ver = "0_12_5"
+$BSHook = "2_3_0"
+$VERSION = "1.0.1"
+if ($release -ne $true) {
+    $VERSION += "-Dev"
+}
+$codegen_ver = "0_13_0"
 }
 
 
