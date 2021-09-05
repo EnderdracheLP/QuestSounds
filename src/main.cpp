@@ -264,7 +264,7 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
 }
 
 QS_MAKE_HOOK(ResultsViewController_RestartButtonPressed, &ResultsViewController::RestartButtonPressed, void, ResultsViewController* self) {
-    if (levelFailedLoader.audioSource->get_isPlaying()) {
+    if (levelFailedLoader.loaded && levelFailedLoader.audioSource->get_isPlaying()) {
         levelFailedLoader.audioSource->Stop();
     }
     ResultsViewController_RestartButtonPressed(self);
