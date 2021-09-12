@@ -1,4 +1,4 @@
-__**QuestSounds 1.0.2 for Beat Saber 1.17.0**__
+__**QuestSounds 1.0.3 for Beat Saber 1.17.1**__
 
 **READ ENTIRE POST BEFORE OPENING AN ISSUE**
 Description:
@@ -6,8 +6,7 @@ QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sound
 just drop them into the Folder and select them in-game!
 
 __**Changelog:**__ 
-- Fixed crash on level restart.
-- Changed threshold for long levelFailed sounds to 7 seconds, will be considered long if over that.
+- Updated for 1.17.1
 
 Features:
   In-Game Menu for selecting sound files and enabling/disabling custom sounds.

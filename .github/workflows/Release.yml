@@ -9,9 +9,9 @@ on:
 
 env:
      module_id: QuestSounds
-     BSVersion: 1.17.0
+     BSVersion: 1.17.1
      bs_hook: 2_3_0
-     codegen: 0_13_0
+     codegen: 0_14_0
      ndkname: android-ndk-r23
 
 jobs:
@@ -114,24 +114,36 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}
         pwsh -Command ./buildQMOD.ps1 --package
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Release
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ env.module_id }} ${{ github.ref }} for Beat Saber ${{ env.BSVersion }}
-        body_path: ./rl-notes.md
-        draft: true
-        prerelease: false
-    - name: Upload QMOD Release Asset
-      id: upload-release-QMOD 
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./${{ env.module_id }}.qmod
-        asset_name: ${{ env.module_id }}.qmod
-        asset_content_type: application/qmod
+          name: ${{ env.module_id }} ${{ github.ref }} for Beat Saber ${{ env.BSVersion }}
+          files: |
+            Examples/FNF-SoundPack/FNF-SoundPack.qmod
+            Examples/Bandoot-SoundPack.qmod
+            Examples/Osu-SoundPack.qmod
+            ./${{ env.module_id }}.qmod
+          body_path: ./rl-notes.md
+          draft: true
+
+    #- name: Create Release
+    #  id: create_release
+    #  uses: actions/create-release@v1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    tag_name: ${{ github.ref }}
+    #    release_name: ${{ env.module_id }} ${{ github.ref }} for Beat Saber ${{ env.BSVersion }}
+    #    body_path: ./rl-notes.md
+    #    draft: true
+    #    prerelease: false
+    #- name: Upload QMOD Release Asset
+    #  id: upload-release-QMOD 
+    #  uses: actions/upload-release-asset@v1
+    #  env:
+    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #  with:
+    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #    asset_path: ./${{ env.module_id }}.qmod
+    #    asset_name: ${{ env.module_id }}.qmod
+    #    asset_content_type: application/qmod

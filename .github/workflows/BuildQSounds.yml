@@ -21,10 +21,10 @@ on:
 
 env:
      module_id: QuestSounds
-     version: 1.0.2-Dev.${{ github.run_number }}
-     BSVersion: 1.17.0
+     version: 1.0.3-Dev.${{ github.run_number }}
+     BSVersion: 1.17.1
      bs_hook: 2_3_0
-     codegen: 0_13_0
+     codegen: 0_14_0
 #     ndkname: android-ndk-r22
     
 jobs:
