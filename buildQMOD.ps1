@@ -1,12 +1,12 @@
 # Builds a .qmod file for loading with QP
 if ($args.Count -eq 0 -or $args[0] -eq "--dev") {
     $ModID = "QuestSounds"
-    $BSHook = "2_3_0"
-    $VERSION = "1.0.1"
+    $BSHook = "3_4_4"
+    $VERSION = "1.0.4"
     if ($args[0] -eq "--dev") {
         $VERSION += "-Dev"
     }
-    $BS_Version = "1.17.1"
+    $BS_Version = "1.19.0"
     echo "Compiling Mod"
     if ($args[0] -ne "--dev") {
         & $PSScriptRoot/build.ps1 --release

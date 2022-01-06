@@ -9,9 +9,9 @@ on:
 
 env:
      module_id: QuestSounds
-     BSVersion: 1.17.1
-     bs_hook: 2_3_0
-     codegen: 0_14_0
+     BSVersion: 1.19.0
+     bs_hook: 3_4_4
+     codegen: 0_18_2
      ndkname: android-ndk-r23
 
 jobs:
@@ -117,7 +117,7 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-          name: ${{ env.module_id }} ${{ github.ref }} for Beat Saber ${{ env.BSVersion }}
+          name: ${{ env.module_id }} ${{ env.VERSION }} for Beat Saber ${{ env.BSVersion }}
           files: |
             Examples/FNF-SoundPack/FNF-SoundPack.qmod
             Examples/Bandoot-SoundPack.qmod

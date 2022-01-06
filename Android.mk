@@ -24,10 +24,9 @@ LOCAL_MODULE :=
 include $(CLEAR_VARS)
 # Creating prebuilt for dependency: beatsaber-hook - version: 1.3.3
 include $(CLEAR_VARS)
-LOCAL_MODULE := beatsaber-hook_2_3_0
+LOCAL_MODULE := beatsaber-hook_3_4_4
 LOCAL_EXPORT_C_INCLUDES := extern/beatsaber-hook
-LOCAL_SRC_FILES := extern/libbeatsaber-hook_2_3_0.so
-LOCAL_CPP_FEATURES := exceptions
+LOCAL_SRC_FILES := extern/libbeatsaber-hook_3_4_4.so
 include $(PREBUILT_SHARED_LIBRARY)
 # Creating prebuilt for dependency: codegen - version: 0.14.0
 include $(CLEAR_VARS)
@@ -60,12 +59,13 @@ LOCAL_SRC_FILES += $(call rwildcard,src/,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.cpp)
 LOCAL_SRC_FILES += $(call rwildcard,extern/beatsaber-hook/src/inline-hook,*.c)
 LOCAL_SHARED_LIBRARIES += modloader
-LOCAL_SHARED_LIBRARIES += beatsaber-hook_2_3_0
+LOCAL_SHARED_LIBRARIES += beatsaber-hook_3_4_4
 LOCAL_SHARED_LIBRARIES += codegen
 LOCAL_SHARED_LIBRARIES += custom-types
 LOCAL_SHARED_LIBRARIES += questui
 LOCAL_LDLIBS += -llog
 LOCAL_CFLAGS += -I'extern/libil2cpp/il2cpp/libil2cpp' -DID='"QuestSounds"' -DVERSION='"$(VERSION)"' -DBS__1_16=1 -I'./shared' -I'./extern' -isystem'extern/codegen/include' -Ofast
+LOCAL_CPP_FEATURES += rtti exceptions
 LOCAL_CPPFLAGS += -std=c++2a -Ofast
 LOCAL_C_INCLUDES += ./include ./src
 include $(BUILD_SHARED_LIBRARY)

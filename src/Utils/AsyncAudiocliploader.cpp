@@ -8,8 +8,6 @@
 
 #include <chrono>
 
-//using namespace audioClipLoader;
-
 #include "UnityEngine/Networking/DownloadHandlerAudioClip.hpp"
 #include "UnityEngine/Networking/UnityWebRequestMultimedia.hpp"
 using namespace UnityEngine::Networking;
@@ -33,10 +31,6 @@ int getAudioType(std::string path) {
         getLogger().debug("File is MPEG");
         return 0xD;
     }
-    else if (path.ends_with(".m4a")) {
-        getLogger().debug("File is AAC");
-        return 1;
-    }
     else if (path.ends_with(".wav")) {
         getLogger().debug("File is WAV");
         return 0x14;
@@ -55,8 +49,6 @@ bool AsyncAudioClipLoader::loader::load()
 {
     loaded = false;
     //Stage 0 
-    static const char* FileExtensions[] =
-    { "mp3","wav","aiff","aif"};
     bool fileError;
     getLogger().info("Starting Stage 0");
     getLogger().info("FilePath to check is %s", filePath.c_str());
@@ -83,9 +75,7 @@ bool AsyncAudioClipLoader::loader::load()
         getLogger().info("Stage 1: Running MediaAsyncLoader for FilePath %s", filePath.c_str());
         UsesUWR = false;
         filePathStr = il2cpp_utils::newcsstr(filePath);
-        audioClipTask = GlobalNamespace::MediaAsyncLoader::LoadAudioClipAsync(filePathStr, System::Threading::CancellationToken::get_None());
-        //              ^
-        //      Known crash there
+        audioClipTask = GlobalNamespace::MediaAsyncLoader::New_ctor()->LoadAudioClipFromFilePathAsync(filePathStr);
         ////Stage 2
         auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), this, audioClipCompleted);
         reinterpret_cast<System::Threading::Tasks::Task*>(audioClipTask)->ContinueWith(actionMAL);
@@ -102,13 +92,6 @@ bool AsyncAudioClipLoader::loader::load()
         audioType = getAudioType(filePath);
 
         auto actionUWRM = il2cpp_utils::MakeDelegate<System::Action_1<UnityEngine::AsyncOperation*>*>(classof(System::Action_1<UnityEngine::AsyncOperation*>*), this, audioClipCompleted);
-        //                ^
-        // Got a crash there somehow
-        auto start = std::chrono::high_resolution_clock::now();
-        //GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(AsyncAudioClipLoader::loader::GetAudioClip(actionUWRM, this, audioType, filePathStr))));
-        //GlobalNamespace::SharedCoroutineStarter::get_instance()->StartCoroutine(reinterpret_cast<System::Collections::IEnumerator*>(custom_types::Helpers::CoroutineHelper::New(AsyncAudioClipLoader::loader::GetAudioClip(actionUWRM, this, audioType, filePathStr))));
-        //                                                       ^                                                                  ^
-        //                                            TODO: Why did it crash there                                                or here
         
         audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
         audioClipAsync = audioClipRequest->SendWebRequest();
@@ -118,11 +101,6 @@ bool AsyncAudioClipLoader::loader::load()
             //Stage 2
             audioClipAsync->add_completed(actionUWRM);
         }
-
-        auto end = std::chrono::high_resolution_clock::now();
-        double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-        time_taken *= 1e-9;
-        getLogger().debug("UnityWebRequestMultimedia: Time taken %f", time_taken);
     }
     getLogger().info("Stage 1 done with filepath %s", filePath.c_str());
     return true;
@@ -132,13 +110,17 @@ void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject*
 {
     // Stage 1
     UnityEngine::AudioClip* temporaryClip = nullptr;
-    if (!obj->UsesUWR) temporaryClip = obj->audioClipTask->get_ResultOnSuccess();
+    if (!obj->UsesUWR) {
+        temporaryClip = obj->audioClipTask->get_ResultOnSuccess();
+        il2cpp_functions::GC_free(obj->audioClipTask);
+        obj->audioClipTask = nullptr;
+    }
     else if (obj->UsesUWR) temporaryClip = UnityEngine::Networking::DownloadHandlerAudioClip::GetContent(obj->audioClipRequest); // TODO: This method takes too long
 
     if(temporaryClip != nullptr)
     {  
         if (!obj->audioClipGO) {
-            static auto goName = il2cpp_utils::createcsstr("AudioClipGO", il2cpp_utils::StringType::Manual);
+            static auto goName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("AudioClipGO");
             obj->audioClipGO = GameObject::New_ctor(goName);
             obj->audioSource = obj->audioClipGO->AddComponent<AudioSource*>();
             UnityEngine::Object::DontDestroyOnLoad(obj->audioClipGO);
@@ -174,7 +156,7 @@ void AsyncAudioClipLoader::loader::set_OriginalClip(AudioClip* OriginalAudioClip
     // Stage 1
     if (OriginalAudioClip != nullptr)
     {
-        static auto goName = il2cpp_utils::createcsstr("OrigAudioClipGO", il2cpp_utils::StringType::Manual);
+        static auto goName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("OrigAudioClipGO");
         GameObject* audioClipGO = GameObject::New_ctor(goName);
         OriginalAudioSource = audioClipGO->AddComponent<AudioSource*>();
         OriginalAudioSource->set_playOnAwake(false);
@@ -194,7 +176,7 @@ UnityEngine::AudioClip* AsyncAudioClipLoader::loader::get_OriginalClip()
     }
     else
     {
-        getLogger().debug("nullptr returned: is OriginalAudioSource null: %ld", (long int)OriginalAudioSource);
+        getLogger().debug("nullptr returned: is OriginalAudioSource null: %p", OriginalAudioSource);
         return nullptr;
     }
 }

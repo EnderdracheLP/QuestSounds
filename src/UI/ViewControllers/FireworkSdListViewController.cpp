@@ -46,7 +46,7 @@ namespace QuestSounds::ViewControllers {
     {
         for (UnityEngine::UI::Button* button : FireworkQSlist)
         {
-            if (button->hasSelection)
+            if (button->get_hasSelection())
             {
                 std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
                 QSoundsConfig::Config.firework_filepath = QSoundsConfig::FireworkSoundPath + filename;
@@ -72,7 +72,7 @@ namespace QuestSounds::ViewControllers {
 
     void FireworkRefreshList()
     {
-        if (FireworkListView->listtxtgroup && FireworkListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(FireworkListView->listtxtgroup->get_gameObject());
+        if (FireworkListView->listtxtgroup && FireworkListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(FireworkListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : FireworkQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         FireworkQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::FireworkSoundPath.c_str());

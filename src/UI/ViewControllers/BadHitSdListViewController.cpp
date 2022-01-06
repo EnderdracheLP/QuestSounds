@@ -40,7 +40,7 @@ namespace QuestSounds::ViewControllers {
     {
         for (UnityEngine::UI::Button* button : BadHitQSlist)
         {
-            if (button->hasSelection)
+            if (button->get_hasSelection())
             {
                 std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
                 QSoundsConfig::Config.badHitSound_filepath = QSoundsConfig::BadHitSoundPath + filename;
@@ -67,7 +67,7 @@ namespace QuestSounds::ViewControllers {
 
     void BadHitRefreshList()
     {
-        if (BadHitListView->listtxtgroup && BadHitListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(BadHitListView->listtxtgroup->get_gameObject());
+        if (BadHitListView->listtxtgroup && BadHitListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(BadHitListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : BadHitQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         BadHitQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::BadHitSoundPath.c_str());

@@ -44,7 +44,7 @@ namespace QuestSounds::ViewControllers {
     {
         for (UnityEngine::UI::Button* button : MenuClickQSlist)
         {
-            if (button->hasSelection)
+            if (button->get_hasSelection())
             {
                 std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
                 QSoundsConfig::Config.menuClick_filepath = QSoundsConfig::MenuClickPath + filename;
@@ -69,7 +69,7 @@ namespace QuestSounds::ViewControllers {
 
     void MenuClickRefreshList()
     {
-        if (MenuClickListView->listtxtgroup && MenuClickListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(MenuClickListView->listtxtgroup->get_gameObject());
+        if (MenuClickListView->listtxtgroup && MenuClickListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(MenuClickListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : MenuClickQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         MenuClickQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::MenuClickPath.c_str());
@@ -120,11 +120,11 @@ namespace QuestSounds::ViewControllers {
                     if (AudioClips::menuClickLoader.audioSource) AudioClips::menuClickLoader.audioSource->Stop();
                     if (value && AudioClips::menuClickLoader.loaded) {
                         AudioClips::menuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader);
-                        BUIAM->randomSoundPicker->objects = AudioClips::menuClickArr;
+                        BUIAM->dyn__randomSoundPicker()->dyn__objects() = AudioClips::menuClickArr;
                     }
                     else {
                         AudioClips::origMenuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader, true);
-                        BUIAM->randomSoundPicker->objects = AudioClips::origMenuClickArr;
+                        BUIAM->dyn__randomSoundPicker()->dyn__objects() = AudioClips::origMenuClickArr;
                     }
                 });
             ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Menu ClickSounds");
@@ -150,11 +150,11 @@ namespace QuestSounds::ViewControllers {
         MenuClickQSlist = {};
         if (QSoundsConfig::Config.menuClick_Active && AudioClips::menuClickLoader.loaded) {
             AudioClips::menuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader);
-            BUIAM->randomSoundPicker->objects = AudioClips::menuClickArr;
+            BUIAM->dyn__randomSoundPicker()->dyn__objects() = AudioClips::menuClickArr;
         }
         else {
             AudioClips::origMenuClickArr = AudioClips::createAudioClipArray(AudioClips::menuClickLoader, true);
-            BUIAM->randomSoundPicker->objects = AudioClips::origMenuClickArr;
+            BUIAM->dyn__randomSoundPicker()->dyn__objects() = AudioClips::origMenuClickArr;
         }
     }
 }

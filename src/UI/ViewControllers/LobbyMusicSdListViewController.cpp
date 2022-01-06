@@ -43,7 +43,7 @@ namespace QuestSounds::ViewControllers {
     {
         for (UnityEngine::UI::Button* button : LobbyMusicQSlist)
         {
-            if (button->hasSelection)
+            if (button->get_hasSelection())
             {
                 std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
                 QSoundsConfig::Config.lobbyAmbience_filepath = QSoundsConfig::LobbyMusicPath + filename;
@@ -68,7 +68,7 @@ namespace QuestSounds::ViewControllers {
 
     void LobbyMusicRefreshList()
     {
-        if (LobbyMusicListView->listtxtgroup && LobbyMusicListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(LobbyMusicListView->listtxtgroup->get_gameObject());
+        if (LobbyMusicListView->listtxtgroup && LobbyMusicListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(LobbyMusicListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : LobbyMusicQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         LobbyMusicQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::LobbyMusicPath.c_str());

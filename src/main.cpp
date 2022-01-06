@@ -178,13 +178,13 @@ AsyncAudioClipLoader::loader    hitSoundLoader,     // hitSound
 #ifndef BS__1_13_2
                                 lobbyAmbienceLoader;    // Added for LobbyMusic
 #endif
-Array<UnityEngine::AudioClip*> *hitSoundArr,    // hitSoundArray
-                               *badHitSoundArr, // badHitSoundArray
-                               *menuClickArr,
-                               *fireworkSoundArr;
+Array<UnityEngine::AudioClip*> * hitSoundArr,    // hitSoundArray
+                               * badHitSoundArr, // badHitSoundArray
+                               * menuClickArr,
+                               * fireworkSoundArr;
 
 
-Array<UnityEngine::AudioClip*> *origMenuClickArr;
+Array<UnityEngine::AudioClip*>* origMenuClickArr;
 
     void loadAudioClips()
     {
@@ -219,33 +219,34 @@ Array<UnityEngine::AudioClip*> *origMenuClickArr;
         auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(tempClip);
         //temporaryArray->values[0] = tempClip;
         return temporaryArray;
+        //return ArrayW<UnityEngine::AudioClip*>({ tempClip });
     }
 }
 
 QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     if (firstActivation && addedToHierarchy && !levelClearedLoader.OriginalAudioSource) {
-        levelClearedLoader.set_OriginalClip(self->levelClearedAudioClip);
+        levelClearedLoader.set_OriginalClip(self->dyn__levelClearedAudioClip());
     }
-    if (self->levelCompletionResults->levelEndStateType == LevelCompletionResults::LevelEndStateType::Failed) {
-        self->songPreviewPlayer->StopAllCoroutines();
+    if (self->dyn__levelCompletionResults()->dyn_levelEndStateType() == LevelCompletionResults::LevelEndStateType::Failed) {
+        self->dyn__songPreviewPlayer()->StopAllCoroutines();
         if (levelFailedLoader.loaded && addedToHierarchy && QSoundsConfig::Config.levelFailed_Active) {
             UnityEngine::AudioClip* FailedSound = levelFailedLoader.getClip();
             float length = FailedSound->get_length();
             getLogger().debug("Duration of LevelFailed Sound: %f", length);
             if (length > 7.0f) {
-                getLogger().debug("Long LevelFailedSound");
-                self->songPreviewPlayer->CrossfadeTo(FailedSound, -4.0f, 0.0f, length);
+                getLogger().info("Long LevelFailedSound");
+                self->dyn__songPreviewPlayer()->CrossfadeTo(FailedSound, -4.0f, 0.0f, length, nullptr);
             }
             else {
-                getLogger().debug("Short LevelFailedSound");
-                self->songPreviewPlayer->FadeOut(0.1f);
-                self->songPreviewPlayer->fadeSpeed = self->songPreviewPlayer->fadeInSpeed;
-                getLogger().debug("volume: %f", self->songPreviewPlayer->volume);
-                getLogger().debug("AmbientVolume: %f", self->songPreviewPlayer->ambientVolumeScale);
-                getLogger().debug("Set Volume: %f", self->songPreviewPlayer->volume * self->songPreviewPlayer->ambientVolumeScale);
+                getLogger().info("Short LevelFailedSound");
+                self->dyn__songPreviewPlayer()->FadeOut(0.1f);
+                self->dyn__songPreviewPlayer()->dyn__fadeSpeed() = self->dyn__songPreviewPlayer()->dyn__fadeInSpeed();
+                getLogger().debug("volume: %f", self->dyn__songPreviewPlayer()->dyn__volume());
+                getLogger().debug("AmbientVolume: %f", self->dyn__songPreviewPlayer()->dyn__ambientVolumeScale());
+                getLogger().debug("Set Volume: %f", self->dyn__songPreviewPlayer()->dyn__volume() * self->dyn__songPreviewPlayer()->dyn__ambientVolumeScale());
 
-                levelFailedLoader.audioSource->set_volume(self->songPreviewPlayer->volume * self->songPreviewPlayer->ambientVolumeScale);
-                self->songPreviewPlayer->StartCoroutine(self->songPreviewPlayer->CrossFadeAfterDelayCoroutine(length - 1.2f));
+                levelFailedLoader.audioSource->set_volume(self->dyn__songPreviewPlayer()->dyn__volume() * self->dyn__songPreviewPlayer()->dyn__ambientVolumeScale());
+                self->dyn__songPreviewPlayer()->StartCoroutine(self->dyn__songPreviewPlayer()->CrossFadeAfterDelayCoroutine(length - 1.2f));
                 levelFailedLoader.audioSource->Play();
             }
         }
@@ -254,10 +255,10 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
         if (levelClearedLoader.loaded && addedToHierarchy && QSoundsConfig::Config.levelCleared_Active)
         {
             UnityEngine::AudioClip* audioClip = levelClearedLoader.getClip();
-            self->levelClearedAudioClip = audioClip;
+            self->dyn__levelClearedAudioClip() = audioClip;
         }
         else {
-            self->levelClearedAudioClip = levelClearedLoader.get_OriginalClip();
+            self->dyn__levelClearedAudioClip() = levelClearedLoader.get_OriginalClip();
         }
     }
     ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
@@ -274,17 +275,17 @@ QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, Son
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
 
     if (!menuMusicLoader.OriginalAudioSource) {
-        menuMusicLoader.set_OriginalClip(self->defaultAudioClip);
+        menuMusicLoader.set_OriginalClip(self->dyn__defaultAudioClip());
     }
 
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active)
     {
         UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
         if (audioClip != nullptr)
-            self->defaultAudioClip = audioClip;
+            self->dyn__defaultAudioClip() = audioClip;
     }
     else {
-        self->defaultAudioClip = menuMusicLoader.get_OriginalClip();
+        self->dyn__defaultAudioClip() = menuMusicLoader.get_OriginalClip();
     }
     SongPreviewPlayer_OnEnable(self);
 }
@@ -293,15 +294,15 @@ QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, Son
 QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoordinator::DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
-    if (!lobbyAmbienceLoader.OriginalAudioSource) lobbyAmbienceLoader.set_OriginalClip(self->ambienceAudioClip);
+    if (!lobbyAmbienceLoader.OriginalAudioSource) lobbyAmbienceLoader.set_OriginalClip(self->dyn__ambienceAudioClip());
 
     if (lobbyAmbienceLoader.loaded && QSoundsConfig::Config.lobbyAmbience_Active)
     {
         getLogger().debug("Overwriting LobbyAmbience Audio");
-        self->ambienceAudioClip = lobbyAmbienceLoader.getClip();
+        self->dyn__ambienceAudioClip() = lobbyAmbienceLoader.getClip();
     }
     else {
-        self->ambienceAudioClip = lobbyAmbienceLoader.get_OriginalClip();
+        self->dyn__ambienceAudioClip() = lobbyAmbienceLoader.get_OriginalClip();
     }
     GameServerLobbyFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
@@ -312,10 +313,10 @@ QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFlowC
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
-        self->ambienceAudioClip = menuMusicLoader.getClip();
+        self->dyn__ambienceAudioClip() = menuMusicLoader.getClip();
     }
     else {
-        self->ambienceAudioClip = menuMusicLoader.get_OriginalClip();
+        self->dyn__ambienceAudioClip() = menuMusicLoader.get_OriginalClip();
     }
     GameServerLobbyFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
 }
@@ -326,10 +327,10 @@ QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidActivate, &MultiplayerMo
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
-        self->ambienceAudioClip = menuMusicLoader.getClip();
+        self->dyn__ambienceAudioClip() = menuMusicLoader.getClip();
     }
     else {
-        self->ambienceAudioClip = menuMusicLoader.get_OriginalClip();
+        self->dyn__ambienceAudioClip() = menuMusicLoader.get_OriginalClip();
     }
     MultiplayerModeSelectionFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling); // This has to be ran last, otherwise it will not work correctly
 }
@@ -339,10 +340,10 @@ QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &Multiplayer
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidDeactivate");
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
     {
-        self->ambienceAudioClip = menuMusicLoader.getClip();
+        self->dyn__ambienceAudioClip() = menuMusicLoader.getClip();
     }
     else {
-        self->ambienceAudioClip = menuMusicLoader.get_OriginalClip();
+        self->dyn__ambienceAudioClip() = menuMusicLoader.get_OriginalClip();
     }
 
     MultiplayerModeSelectionFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
@@ -357,36 +358,36 @@ QS_MAKE_HOOK(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start,
     if(hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active)
     {
         hitSoundArr = createAudioClipArray(hitSoundLoader);
-        self->longCutEffectsAudioClips = hitSoundArr;
-        self->shortCutEffectsAudioClips = hitSoundArr;
+        self->dyn__longCutEffectsAudioClips() = hitSoundArr;
+        self->dyn__shortCutEffectsAudioClips() = hitSoundArr;
         getLogger().debug("NoteCutSoundEffectManager_Start: Loaded hitSoundArray");
     }
     else {
         getLogger().debug("NoteCutSoundEffectManager_Start: Loading normally");
     }
-    getLogger().debug("audioSamplesBeatAlignOffset was: %f", self->audioSamplesBeatAlignOffset);
-    self->audioSamplesBeatAlignOffset = QSoundsConfig::Config.hitSound_beatOffSet;
-    getLogger().debug("audioSamplesBeatAlignOffset changed to: %f", self->audioSamplesBeatAlignOffset);
+    getLogger().debug("audioSamplesBeatAlignOffset was: %f", self->dyn__audioSamplesBeatAlignOffset());
+    self->dyn__audioSamplesBeatAlignOffset() = QSoundsConfig::Config.hitSound_beatOffSet;
+    getLogger().debug("audioSamplesBeatAlignOffset changed to: %f", self->dyn__audioSamplesBeatAlignOffset());
     NoteCutSoundEffectManager_Start(self);
-    getLogger().debug("Beatalign offset is: %f", self->beatAlignOffset);
+    getLogger().debug("Beatalign offset is: %f", self->dyn__beatAlignOffset());
 }
 
 QS_MAKE_HOOK(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCutSoundEffect* self) {
     if(badHitSoundLoader.loaded && QSoundsConfig::Config.badHitSound_Active)
     {
         badHitSoundArr = createAudioClipArray(badHitSoundLoader);
-        self->badCutSoundEffectAudioClips = badHitSoundArr;
+        self->dyn__badCutSoundEffectAudioClips() = badHitSoundArr;
     }
     NoteCutSoundEffect_Awake(self);
 }
 
 QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, BasicUIAudioManager* self) {
-    if (!menuClickLoader.OriginalAudioSource) menuClickLoader.set_OriginalClip(self->clickSounds->values[0]);
+    if (!menuClickLoader.OriginalAudioSource) menuClickLoader.set_OriginalClip(self->dyn__clickSounds()[0]);
 
     if(menuClickLoader.loaded && QSoundsConfig::Config.menuClick_Active)
     {
         menuClickArr = createAudioClipArray(menuClickLoader);
-        self->clickSounds = menuClickArr;
+        self->dyn__clickSounds() = menuClickArr;
     }
     BasicUIAudioManager_Start(self);
 }
@@ -410,10 +411,10 @@ QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, Basic
 // Replacing the function here, as replacing the AudioClips proves to be difficult
 QS_MAKE_HOOK(FireworkItemController_PlayExplosionSound, &FireworkItemController::PlayExplosionSound, void, FireworkItemController* self) {
     if (fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active) {
-        self->audioSource->set_clip(fireworkSoundLoader.getClip());
+        self->dyn__audioSource()->set_clip(fireworkSoundLoader.getClip());
         float pitch = 1.2f + (((float)rand()) / (float)RAND_MAX) * (0.8f - 1.2f);
-        self->audioSource->set_pitch(pitch);
-        self->audioSource->Play();
+        self->dyn__audioSource()->set_pitch(pitch);
+        self->dyn__audioSource()->Play();
     }
     else FireworkItemController_PlayExplosionSound(self);
 }

@@ -41,7 +41,7 @@ namespace QuestSounds::ViewControllers {
     {
         for (UnityEngine::UI::Button* button : LevelClearedQSlist)
         {
-            if (button->hasSelection)
+            if (button->get_hasSelection())
             {
                 std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
                 QSoundsConfig::Config.levelCleared_filepath = QSoundsConfig::LevelClearedPath + filename;
@@ -68,7 +68,7 @@ namespace QuestSounds::ViewControllers {
 
     void LevelClearedRefreshList()
     {
-        if (LevelClearedListView->listtxtgroup && LevelClearedListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(LevelClearedListView->listtxtgroup->get_gameObject());
+        if (LevelClearedListView->listtxtgroup && LevelClearedListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(LevelClearedListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : LevelClearedQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         LevelClearedQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::LevelClearedPath.c_str());

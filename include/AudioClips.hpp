@@ -13,12 +13,12 @@ namespace QuestSounds::AudioClips {
 										levelClearedLoader,
 										levelFailedLoader,
 										lobbyAmbienceLoader;    // Added for LobbyMusic
-	extern Array<UnityEngine::AudioClip*>	* hitSoundArr,    // hitSoundArray
-											* badHitSoundArr, // badHitSoundArray
-											* menuClickArr,
-											* fireworkSoundArr;
+	extern Array<UnityEngine::AudioClip*> *	hitSoundArr,    // hitSoundArray
+										  * badHitSoundArr, // badHitSoundArray
+										  * menuClickArr,
+										  * fireworkSoundArr;
 
-	extern Array<UnityEngine::AudioClip*>	*origMenuClickArr;
+	extern Array<UnityEngine::AudioClip*> *	origMenuClickArr;
 	extern void loadAudioClips();
 
 	extern Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader, bool GetOriginalClip = false);
