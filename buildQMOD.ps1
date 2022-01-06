@@ -23,7 +23,7 @@ if ($args[0] -eq "--package") {
     $ModID = $env:module_id
     $BSHook = $env:bs_hook
     $BS_Version = $env:BSVersion
-    $VERSION = $env:VERSION
+    $VERSION = $env:version
 echo "Actions: Packaging QMod with ModID: $ModID and BS-Hook version: $BSHook"
     (Get-Content "./mod.json").replace('{VERSION_NUMBER_PLACEHOLDER}', "$VERSION") | Set-Content "./mod.json"
     (Get-Content "./mod.json").replace('{BS_Hook}', "$BSHook") | Set-Content "./mod.json"

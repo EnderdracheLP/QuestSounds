@@ -24,7 +24,7 @@ $codegen_ver = "0_13_0"
 if ($actions -eq $true) {
     $ModID = $env:module_id
     $BSHook = $env:bs_hook
-    $VERSION = $env:VERSION
+    $VERSION = $env:version
     $codegen_ver = $env:codegen
     if ($env:BSVersion -eq "1.13.2") { $1_13_2build = $true }
 }
