@@ -467,7 +467,7 @@ extern "C" void load()
     custom_types::Register::RegisterType<QuestSounds::LobbyMusicSdListViewController>();
 #endif
 #endif
-    QuestUI::Register::RegisterModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
+    //QuestUI::Register::RegisterModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
     QuestUI::Register::RegisterMainMenuModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
     
     if(!LoadConfig()) SaveConfig();
