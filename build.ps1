@@ -18,6 +18,8 @@ if ($actions -eq $true) {
     $BSHook = $env:bs_hook
     $VERSION = $env:version
     $codegen_ver = $env:codegen
+} else {
+        & qpm-rust package edit --version $VERSION
 }
 if ((Test-Path "./extern/includes/beatsaber-hook/src/inline-hook/And64InlineHook.cpp", "./extern/includes/beatsaber-hook/src/inline-hook/inlineHook.c", "./extern/includes/beatsaber-hook/src/inline-hook/relocate.c") -contains $false) {
     Write-Host "Critical: Missing inline-hook"
@@ -47,8 +49,6 @@ if (($clean.IsPresent) -or (-not (Test-Path -Path "build")))
 {
     $out = new-item -Path build -ItemType Directory
 }
-
-& qpm-rust package edit --version $VERSION
 
 cd build
 & cmake -G "Ninja" -DCMAKE_BUILD_TYPE="RelWithDebInfo" ../
