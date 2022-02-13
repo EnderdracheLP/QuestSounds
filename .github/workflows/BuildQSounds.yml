@@ -144,7 +144,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: debug_${{ steps.libname.outputs.NAME }}
-        path: ./build/debug_${{ steps.libname.outputs.NAME }}
+        path: ./build/debug/${{ steps.libname.outputs.NAME }}
         if-no-files-found: error
 
 
@@ -152,5 +152,5 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ${{ env.module_id }}-(UNZIP-for-QMOD).qmod
-        path: ./${{ env.module_id }}.qmod
+        path: ./${{ env.module_id }}_${{ env.version }}.qmod
         if-no-files-found: warn

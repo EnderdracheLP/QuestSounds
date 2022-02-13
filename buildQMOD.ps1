@@ -41,6 +41,8 @@ if ($args[0] -eq "--package" -or $package -eq $true) {
 echo "Actions: Packaging QMod $qmodName"
     # Compress-Archive -Path "./libs/arm64-v8a/lib$ModID.so", "./libs/arm64-v8a/libbeatsaber-hook_$BSHook.so", ".\Cover.jpg", ".\mod.json" -DestinationPath "./Temp$ModID.zip" -Update
     # Move-Item "./Temp$ModID.zip" "./$ModID.qmod" -Force
+} else {
+    $qmodName += "_$($env:version)"
 }
 if ($? -And $args.Count -eq 0  -or $args[0] -eq "--dev" -or $dev -eq $true) {
 echo "Packaging QMod $qmodName"
