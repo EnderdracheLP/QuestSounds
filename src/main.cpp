@@ -1,9 +1,3 @@
-#if defined(BS__1_16)
-#elif defined(BS_1_13_2)
-#else
-#error Define BS Version
-#endif
-
 #include "main.hpp"
 #include "Utils/AsyncAudiocliploader.hpp"
 #include "QSoundsConfig.hpp"
@@ -54,11 +48,7 @@ using namespace QuestSounds;
 using namespace custom_types;
 
 #if defined(MAKE_HOOK_OFFSETLESS) && !defined(MAKE_HOOK_MATCH)
-#define QS_MAKE_HOOK(name, mPtr, retval, ...) MAKE_HOOK_OFFSETLESS(name, retval, __VA_ARGS__)
-#define QS_INSTALL_HOOK(logger, name, methodInfo) INSTALL_HOOK_OFFSETLESS(logger, name, methodInfo)
 #elif defined(MAKE_HOOK_MATCH)
-#define QS_MAKE_HOOK(name, mPtr, retval, ...) MAKE_HOOK_MATCH(name, mPtr, retval, __VA_ARGS__)
-#define QS_INSTALL_HOOK(logger, name, methodInfo) INSTALL_HOOK(logger, name)
 #else
 #error No Compatible HOOK macro found
 #endif
@@ -79,16 +69,7 @@ Logger& getLogger() {
 }
 
 void makeFolder() 
-{
-    //if(!direxists(soundPath.c_str()))
-    //{
-    //    int makePath = mkpath(soundPath.c_str());
-    //    if(makePath == -1)
-    //    {
-    //        getLogger().debug("Failed to make path!");
-    //    }
-    //}
-    
+{    
     if (!direxists(MenuMusicPath.c_str()))
     {
         int makePath = mkpath(MenuMusicPath.c_str());
@@ -195,9 +176,7 @@ Array<UnityEngine::AudioClip*>* origMenuClickArr;
         fireworkSoundLoader.filePath = Config.firework_filepath;
         levelClearedLoader.filePath = Config.levelCleared_filepath;
         levelFailedLoader.filePath = Config.levelFailed_filepath;
-#ifndef BS__1_13_2
         lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
-#endif
 
         menuMusicLoader.load();
         menuClickLoader.load();
@@ -206,9 +185,7 @@ Array<UnityEngine::AudioClip*>* origMenuClickArr;
         if (Config.firework_Active) fireworkSoundLoader.load();
         if (Config.levelCleared_Active) levelClearedLoader.load();
         if (Config.levelFailed_Active) levelFailedLoader.load();
-#ifndef BS__1_13_2
         if (Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
-#endif
     }
     // Creates an Array, of AudioClips
     Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader, bool GetOriginalClip)
@@ -223,7 +200,7 @@ Array<UnityEngine::AudioClip*>* origMenuClickArr;
     }
 }
 
-QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
+MAKE_HOOK_MATCH(ResultsViewController_DidActivate, &ResultsViewController::DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     if (firstActivation && addedToHierarchy && !levelClearedLoader.OriginalAudioSource) {
         levelClearedLoader.set_OriginalClip(self->dyn__levelClearedAudioClip());
     }
@@ -264,14 +241,14 @@ QS_MAKE_HOOK(ResultsViewController_DidActivate, &ResultsViewController::DidActiv
     ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
-QS_MAKE_HOOK(ResultsViewController_RestartButtonPressed, &ResultsViewController::RestartButtonPressed, void, ResultsViewController* self) {
+MAKE_HOOK_MATCH(ResultsViewController_RestartButtonPressed, &ResultsViewController::RestartButtonPressed, void, ResultsViewController* self) {
     if (levelFailedLoader.loaded && levelFailedLoader.audioSource->get_isPlaying()) {
         levelFailedLoader.audioSource->Stop();
     }
     ResultsViewController_RestartButtonPressed(self);
 }
 
-QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, SongPreviewPlayer* self) {
+MAKE_HOOK_MATCH(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, SongPreviewPlayer* self) {
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
 
     if (!menuMusicLoader.OriginalAudioSource) {
@@ -291,7 +268,7 @@ QS_MAKE_HOOK(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, Son
 }
 
 #ifndef BS__1_13_2
-QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoordinator::DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+MAKE_HOOK_MATCH(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoordinator::DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
     if (!lobbyAmbienceLoader.OriginalAudioSource) lobbyAmbienceLoader.set_OriginalClip(self->dyn__ambienceAudioClip());
@@ -307,7 +284,7 @@ QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoo
     GameServerLobbyFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
 
-QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFlowCoordinator::DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
+MAKE_HOOK_MATCH(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFlowCoordinator::DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
 {
     getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
@@ -321,7 +298,7 @@ QS_MAKE_HOOK(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFlowC
     GameServerLobbyFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
 }
 
-QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidActivate, &MultiplayerModeSelectionFlowCoordinator::DidActivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+MAKE_HOOK_MATCH(MultiplayerModeSelectionFlowCoordinator_DidActivate, &MultiplayerModeSelectionFlowCoordinator::DidActivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidActivate");
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active)
@@ -335,7 +312,7 @@ QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidActivate, &MultiplayerMo
     MultiplayerModeSelectionFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling); // This has to be ran last, otherwise it will not work correctly
 }
 
-QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &MultiplayerModeSelectionFlowCoordinator::DidDeactivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
+MAKE_HOOK_MATCH(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &MultiplayerModeSelectionFlowCoordinator::DidDeactivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
 {
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidDeactivate");
     if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
@@ -350,11 +327,11 @@ QS_MAKE_HOOK(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &Multiplayer
 }
 #endif
 
-QS_MAKE_HOOK(FileHelpers_GetEscapedURLForFilePath, &FileHelpers::GetEscapedURLForFilePath, Il2CppString*, Il2CppString* filePath) {
+MAKE_HOOK_MATCH(FileHelpers_GetEscapedURLForFilePath, &FileHelpers::GetEscapedURLForFilePath, StringW, StringW filePath) {
     return il2cpp_utils::newcsstr(std::u16string(u"file://") + std::u16string(csstrtostr(filePath)));
 }
 
-QS_MAKE_HOOK(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start, void, NoteCutSoundEffectManager* self) {
+MAKE_HOOK_MATCH(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start, void, NoteCutSoundEffectManager* self) {
     if(hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active)
     {
         hitSoundArr = createAudioClipArray(hitSoundLoader);
@@ -372,7 +349,7 @@ QS_MAKE_HOOK(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start,
     getLogger().debug("Beatalign offset is: %f", self->dyn__beatAlignOffset());
 }
 
-QS_MAKE_HOOK(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCutSoundEffect* self) {
+MAKE_HOOK_MATCH(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCutSoundEffect* self) {
     if(badHitSoundLoader.loaded && QSoundsConfig::Config.badHitSound_Active)
     {
         badHitSoundArr = createAudioClipArray(badHitSoundLoader);
@@ -381,7 +358,7 @@ QS_MAKE_HOOK(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCut
     NoteCutSoundEffect_Awake(self);
 }
 
-QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, BasicUIAudioManager* self) {
+MAKE_HOOK_MATCH(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, BasicUIAudioManager* self) {
     if (!menuClickLoader.OriginalAudioSource) menuClickLoader.set_OriginalClip(self->dyn__clickSounds()[0]);
 
     if(menuClickLoader.loaded && QSoundsConfig::Config.menuClick_Active)
@@ -392,7 +369,7 @@ QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, Basic
     BasicUIAudioManager_Start(self);
 }
 
-//QS_MAKE_HOOK(FireworkItemController_Awake, &FireworkItemController::Awake, void, FireworkItemController* self) {
+//MAKE_HOOK_MATCH(FireworkItemController_Awake, &FireworkItemController::Awake, void, FireworkItemController* self) {
 //    if (!origFireworkSoundArr) origFireworkSoundArr = self->explosionClips;
 //    
 //    if(fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active)
@@ -409,7 +386,7 @@ QS_MAKE_HOOK(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, Basic
 //}
 
 // Replacing the function here, as replacing the AudioClips proves to be difficult
-QS_MAKE_HOOK(FireworkItemController_PlayExplosionSound, &FireworkItemController::PlayExplosionSound, void, FireworkItemController* self) {
+MAKE_HOOK_MATCH(FireworkItemController_PlayExplosionSound, &FireworkItemController::PlayExplosionSound, void, FireworkItemController* self) {
     if (fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active) {
         self->dyn__audioSource()->set_clip(fireworkSoundLoader.getClip());
         float pitch = 1.2f + (((float)rand()) / (float)RAND_MAX) * (0.8f - 1.2f);
@@ -419,7 +396,7 @@ QS_MAKE_HOOK(FireworkItemController_PlayExplosionSound, &FireworkItemController:
     else FireworkItemController_PlayExplosionSound(self);
 }
 
-QS_MAKE_HOOK(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_ActiveSceneChanged, void, Scene previousActiveScene, Scene newActiveScene) {
+MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_ActiveSceneChanged, void, Scene previousActiveScene, Scene newActiveScene) {
     SceneManager_Internal_ActiveSceneChanged(previousActiveScene, newActiveScene);
     if (newActiveScene.IsValid()) {
         std::string sceneName = to_utf8(csstrtostr(newActiveScene.get_name()));
@@ -472,29 +449,23 @@ extern "C" void load()
     
     if(!LoadConfig()) SaveConfig();
     makeFolder();
-    //Modloader::getMods()
     getLogger().debug("Installing QuestSounds!");
-    QS_INSTALL_HOOK(hkLog, SceneManager_Internal_ActiveSceneChanged, il2cpp_utils::FindMethodUnsafe("UnityEngine.SceneManagement", "SceneManager", "Internal_ActiveSceneChanged", 2));
-    QS_INSTALL_HOOK(hkLog, SongPreviewPlayer_OnEnable, il2cpp_utils::FindMethodUnsafe("", "SongPreviewPlayer", "OnEnable", 0));
-    QS_INSTALL_HOOK(hkLog, NoteCutSoundEffectManager_Start, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "Start", 0));
-    //INSTALL_HOOK_OFFSETLESS(hkLog, NoteCutSoundEffectManager_HandleNoteWasCut, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffectManager", "HandleNoteWasCut", 2));
-    QS_INSTALL_HOOK(hkLog, NoteCutSoundEffect_Awake, il2cpp_utils::FindMethodUnsafe("", "NoteCutSoundEffect", "Awake", 0));
-    //QS_INSTALL_HOOK(hkLog, FireworkItemController_Awake, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "Awake", 0));
-    QS_INSTALL_HOOK(hkLog, BasicUIAudioManager_Start, il2cpp_utils::FindMethodUnsafe("", "BasicUIAudioManager", "Start", 0));
-    QS_INSTALL_HOOK(hkLog, ResultsViewController_DidActivate, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "DidActivate", 3));
-    QS_INSTALL_HOOK(hkLog, ResultsViewController_RestartButtonPressed, il2cpp_utils::FindMethodUnsafe("", "ResultsViewController", "RestartButtonPressed", 0));
-    QS_INSTALL_HOOK(hkLog, FireworkItemController_PlayExplosionSound, il2cpp_utils::FindMethodUnsafe("", "FireworkItemController", "PlayExplosionSound", 0))
-#ifndef BS__1_13_2
-    QS_INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate, il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidActivate", 3));     // Added for switching out MP Lobby Music
-    QS_INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate, il2cpp_utils::FindMethodUnsafe("", "MultiplayerModeSelectionFlowCoordinator", "DidDeactivate", 2));  // Added for switching out MP Lobby Music
-    QS_INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidActivate, il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidActivate", 3));              // Added for switching out MP Lobby Music
-    QS_INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate, il2cpp_utils::FindMethodUnsafe("", "GameServerLobbyFlowCoordinator", "DidDeactivate", 2));          // Added for switching out MP Lobby Music
-#endif
+    INSTALL_HOOK(hkLog, SceneManager_Internal_ActiveSceneChanged);
+    INSTALL_HOOK(hkLog, SongPreviewPlayer_OnEnable);
+    INSTALL_HOOK(hkLog, NoteCutSoundEffectManager_Start);
+    INSTALL_HOOK(hkLog, NoteCutSoundEffect_Awake);
+    INSTALL_HOOK(hkLog, BasicUIAudioManager_Start);
+    INSTALL_HOOK(hkLog, ResultsViewController_DidActivate);
+    INSTALL_HOOK(hkLog, ResultsViewController_RestartButtonPressed);
+    INSTALL_HOOK(hkLog, FireworkItemController_PlayExplosionSound)
+    INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate);     // Added for switching out MP Lobby Music
+    INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate);  // Added for switching out MP Lobby Music
+    INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidActivate);              // Added for switching out MP Lobby Music
+    INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate);          // Added for switching out MP Lobby Music
     auto ModList = Modloader::getMods();
     if (ModList.find("SongLoader") == ModList.end()) {
         getLogger().info("SongLoader missing, installing FilePath check");
-        QS_INSTALL_HOOK(hkLog, FileHelpers_GetEscapedURLForFilePath, il2cpp_utils::FindMethodUnsafe("", "FileHelpers", "GetEscapedURLForFilePath", 1));
+        INSTALL_HOOK(hkLog, FileHelpers_GetEscapedURLForFilePath);
     }
-
     getLogger().debug("Installed QuestSounds!");
 }

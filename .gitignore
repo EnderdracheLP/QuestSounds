@@ -60,3 +60,7 @@ extern/
 *.log
 crash.txt
 /log_timestamp
+/CMakeSettings.json
+*.cmake
+/build
+*.qmod

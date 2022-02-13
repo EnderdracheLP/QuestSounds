@@ -1,6 +1,6 @@
 # QuestSounds
 
-Beat Saber mod for Oculus Quest 1 and 2.   
+Beat Saber mod for Meta Quest 1 and 2.   
 Quest sounds allows the users to change the sound effects to their own sounds,
 drop them into specified folder Path!
 

@@ -1,19 +1,35 @@
 {
   "_QPVersion": "0.1.1",
+  "name": "QuestSounds",
   "id": "QuestSounds",
-  "name": "Quest Sounds",
-  "version": "1.0.4-Dev",
   "author": "Rugtveit, EnderdracheLP",
+  "version": "1.1.0-Dev",
   "packageId": "com.beatgames.beatsaber",
   "packageVersion": "1.19.0",
   "description": "Allows users to change their sfx sounds and in-game music easily!",
-  "coverImage": "Cover.jpg",
+  "dependencies": [
+    {
+      "version": "^0.15.6",
+      "id": "custom-types",
+      "downloadIfMissing": "https://github.com/sc2ad/Il2CppQuestTypePatching/releases/download/v0.15.6/CustomTypes.qmod"
+    },
+    {
+      "version": "^0.19.3",
+      "id": "codegen",
+      "downloadIfMissing": "https://github.com/sc2ad/BeatSaber-Quest-Codegen/releases/download/v0.19.3/Codegen.qmod"
+    },
+    {
+      "version": "^0.13.1",
+      "id": "questui",
+      "downloadIfMissing": "https://github.com/darknight1050/questui/releases/download/v0.13.1/QuestUI.qmod"
+    }
+  ],
   "modFiles": [
     "libQuestSounds.so"
   ],
   "libraryFiles": [
-    "libbeatsaber-hook_3_4_4.so"
+    "libbeatsaber-hook_3_6_7.so"
   ],
-  "dependencies": [],
-  "fileCopies": []
+  "fileCopies": [],
+  "copyExtensions": []
 }

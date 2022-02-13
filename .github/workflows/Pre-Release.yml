@@ -5,11 +5,8 @@ on:
 
 env:
      module_id: QuestSounds
-     version: 1.0.3-rc.1
-     BSVersion: 1.17.1
-     bs_hook: 2_3_0
-     codegen: 0_14_0
-     ndkname: android-ndk-r22
+     version: 1.1.0-rc.1
+     ndkname: android-ndk-r24
 
 
 jobs:

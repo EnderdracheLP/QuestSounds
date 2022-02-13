@@ -1,3 +1,6 @@
+echo "No longer supported!"
+exit 1
+
 # Builds a .zip file for loading with BMBF
 & $PSScriptRoot/build.ps1 --1_13_2
 

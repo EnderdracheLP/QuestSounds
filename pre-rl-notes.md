@@ -5,12 +5,7 @@ QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sound
 just drop them into the Folder and select them in-game!
 
 __**Changelog:**__ 
-- Changed Locations for sound files now in folders
-- Added In-Game Menu for Settings and Sound File selection
-- Added toogle to turn Custom Sounds on or off in-game
-- Added Option to set BeatOffset for HitSounds
-- Added LevelFailed Sound
-- Added LobbyMusic
+- Quick bump to Beat Saber 1.19.0
 
 Features:
   NEW: In-Game Menu for selecting sound files and enabling/disabling custom sounds.

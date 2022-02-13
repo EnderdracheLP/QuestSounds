@@ -1,4 +1,4 @@
-__**QuestSounds 1.0.3 for Beat Saber 1.17.1**__
+__**QuestSounds 1.1.0 for Beat Saber 1.19.0**__
 
 **READ ENTIRE POST BEFORE OPENING AN ISSUE**
 Description:
@@ -6,7 +6,7 @@ QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sound
 just drop them into the Folder and select them in-game!
 
 __**Changelog:**__ 
-- Updated for 1.17.1
+- Updated for Beat Saber version 1.19.0
 
 Features:
   In-Game Menu for selecting sound files and enabling/disabling custom sounds.
