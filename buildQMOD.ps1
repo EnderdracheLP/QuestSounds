@@ -5,10 +5,10 @@ Param(
     [Switch] $clean,
 
     [Parameter(Mandatory=$false)]
-    [Switch] $help
+    [Switch] $help,
 
     [Parameter(Mandatory=$false)]
-    [Switch] $package
+    [Switch] $package,
 
     [Parameter(Mandatory=$false)]
     [Switch] $dev
