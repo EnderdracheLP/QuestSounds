@@ -129,7 +129,7 @@ jobs:
     - name: Package QMOD
       run: |
         cd ${GITHUB_WORKSPACE}
-        pwsh -Command ./buildQMOD.ps1 --package
+        pwsh -Command ./buildQMOD.ps1 -package
 
 
     - name: Upload non-debug artifact
