@@ -36,15 +36,15 @@ if ($qmodName -eq "")
     exit
 }
 
-if ($args[0] -eq "--package" -or $package -eq $true) {
-    $qmodName = "$($env:mod_id)_$($env:version)"
+if ($package -eq $true) {
+    $qmodName = "$($env:module_id)_$($env:version)"
 echo "Actions: Packaging QMod $qmodName"
     # Compress-Archive -Path "./libs/arm64-v8a/lib$ModID.so", "./libs/arm64-v8a/libbeatsaber-hook_$BSHook.so", ".\Cover.jpg", ".\mod.json" -DestinationPath "./Temp$ModID.zip" -Update
     # Move-Item "./Temp$ModID.zip" "./$ModID.qmod" -Force
 } else {
     $qmodName += "_$($env:version)"
 }
-if ($? -And $args.Count -eq 0  -or $args[0] -eq "--dev" -or $dev -eq $true) {
+if (($args.Count -eq 0 -or $dev -eq $true) -And $package -eq $false) {
 echo "Packaging QMod $qmodName"
     & $PSScriptRoot/build.ps1 -clean:$clean
 

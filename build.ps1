@@ -35,7 +35,7 @@ if ((Test-Path "./extern/includes/beatsaber-hook/src/inline-hook/And64InlineHook
     Write-Host "Task Failed"
     exit 1;
 }
-echo "Building mod with ModID: $ModID version: $VERSION, BS-Hook version: $BSHook"
+echo "Building mod with ModID: $ModID version: $VERSION"
 
 if ($clean.IsPresent)
 {
