@@ -4,7 +4,7 @@
   "info": {
     "name": "QuestSounds",
     "id": "QuestSounds",
-    "version": "1.0.4",
+    "version": "1.0.5-Dev",
     "url": null,
     "additionalData": {
       "overrideSoName": "libQuestSounds.so"
@@ -22,17 +22,17 @@
     },
     {
       "id": "questui",
-      "versionRange": "=0.13.2",
+      "versionRange": "^0.13.3",
       "additionalData": {}
     },
     {
       "id": "codegen",
-      "versionRange": "^0.20.0",
+      "versionRange": "^0.21.0",
       "additionalData": {}
     },
     {
       "id": "custom-types",
-      "versionRange": "^0.15.7",
+      "versionRange": "^0.15.8",
       "additionalData": {}
     },
     {

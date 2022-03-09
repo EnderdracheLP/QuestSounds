@@ -1,4 +1,4 @@
-__**QuestSounds 1.0.4 for Beat Saber 1.19.1**__
+__**QuestSounds 1.0.5 for Beat Saber 1.20.0**__
 
 **READ ENTIRE POST BEFORE OPENING AN ISSUE**
 Description:

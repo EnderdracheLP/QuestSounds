@@ -88,6 +88,8 @@ jobs:
     - name: Build
       run: |
         cd ${GITHUB_WORKSPACE}
+        ./QPM/qpm-rust package edit --version ${{ env.version }}
+        ./QPM/qpm-rust qmod build
         pwsh -Command ./build.ps1 --actions
     - name: Get Library Name
       id: libname
@@ -99,7 +101,7 @@ jobs:
     - name: Package QMOD
       run: |
         cd ${GITHUB_WORKSPACE}
-        pwsh -Command ./buildQMOD.ps1 --package
+        pwsh -Command ./buildQMOD.ps1 -package
     - name: Create Release
       id: create_pre-release
       uses: actions/create-release@v1
