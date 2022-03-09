@@ -9,7 +9,6 @@ on:
 
 env:
      module_id: QuestSounds
-     version: 1.0.4
      BSVersion: 1.19.1
      ndkname: android-ndk-r24
 
