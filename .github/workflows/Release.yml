@@ -119,7 +119,7 @@ jobs:
     - name: Package QMOD
       run: |
         cd ${GITHUB_WORKSPACE}
-        pwsh -Command ./buildQMOD.ps1 --package
+        pwsh -Command ./buildQMOD.ps1 -package
 
     - name: Release
       uses: softprops/action-gh-release@v1
