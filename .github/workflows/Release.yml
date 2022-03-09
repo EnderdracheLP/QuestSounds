@@ -9,7 +9,8 @@ on:
 
 env:
      module_id: QuestSounds
-     BSVersion: 1.19.0
+     version: 1.0.4
+     BSVersion: 1.19.1
      ndkname: android-ndk-r24
 
 jobs:
@@ -102,6 +103,7 @@ jobs:
     - name: Build
       run: |
         cd ${GITHUB_WORKSPACE}
+        ./QPM/qpm-rust package edit --version ${{ env.version }}
         ./QPM/qpm-rust qmod build
         pwsh -Command ./build.ps1 --actions
 
@@ -126,7 +128,7 @@ jobs:
             Examples/FNF-SoundPack/FNF-SoundPack.qmod
             Examples/Bandoot-SoundPack.qmod
             Examples/Osu-SoundPack.qmod
-            ./${{ env.module_id }}.qmod
+            ./${{ env.module_id }}_${{ env.version }}.qmod
           body_path: ./rl-notes.md
           draft: true
 

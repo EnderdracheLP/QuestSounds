@@ -21,7 +21,7 @@ on:
 
 env:
      module_id: QuestSounds
-     version: 1.1.0-Dev.${{ github.run_number }}
+     version: 1.0.4-Dev.${{ github.run_number }}
      BSVersion: 1.19.0
 #     ndkname: android-ndk-r24
     

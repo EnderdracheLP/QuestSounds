@@ -36,14 +36,6 @@ if ($qmodName -eq "")
     exit
 }
 
-if ($package -eq $true) {
-    $qmodName = "$($env:module_id)_$($env:version)"
-echo "Actions: Packaging QMod $qmodName"
-    # Compress-Archive -Path "./libs/arm64-v8a/lib$ModID.so", "./libs/arm64-v8a/libbeatsaber-hook_$BSHook.so", ".\Cover.jpg", ".\mod.json" -DestinationPath "./Temp$ModID.zip" -Update
-    # Move-Item "./Temp$ModID.zip" "./$ModID.qmod" -Force
-} else {
-    $qmodName += "_$($env:version)"
-}
 if (($args.Count -eq 0 -or $dev -eq $true) -And $package -eq $false) {
 echo "Packaging QMod $qmodName"
     & $PSScriptRoot/build.ps1 -clean:$clean
@@ -72,6 +64,16 @@ if ((-not ($cover -eq "./")) -and (Test-Path $cover))
 } else {
     echo "No cover Image found"
 }
+
+if ($package -eq $true) {
+    $qmodName = "$($env:module_id)_$($env:version)"
+echo "Actions: Packaging QMod $qmodName"
+    # Compress-Archive -Path "./libs/arm64-v8a/lib$ModID.so", "./libs/arm64-v8a/libbeatsaber-hook_$BSHook.so", ".\Cover.jpg", ".\mod.json" -DestinationPath "./Temp$ModID.zip" -Update
+    # Move-Item "./Temp$ModID.zip" "./$ModID.qmod" -Force
+} else {
+    $qmodName += "_$($modJson.version)"
+}
+
 
 foreach ($mod in $modJson.modFiles)
 {
