@@ -65,11 +65,14 @@ if ((-not ($cover -eq "./")) -and (Test-Path $cover))
     echo "No cover Image found"
 }
 
-if ($package -eq $true) {
+if ($package -eq $true -And $env:version.Contains('-Dev')) {
     $qmodName = "$($env:module_id)_$($env:version)"
 echo "Actions: Packaging QMod $qmodName"
     # Compress-Archive -Path "./libs/arm64-v8a/lib$ModID.so", "./libs/arm64-v8a/libbeatsaber-hook_$BSHook.so", ".\Cover.jpg", ".\mod.json" -DestinationPath "./Temp$ModID.zip" -Update
     # Move-Item "./Temp$ModID.zip" "./$ModID.qmod" -Force
+} else if ($package -eq $true) {
+        $qmodName = "$($env:module_id)"
+echo "Actions: Packaging QMod $qmodName"
 } else {
     $qmodName += "_$($modJson.version)"
 }

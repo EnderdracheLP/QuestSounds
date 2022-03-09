@@ -129,7 +129,7 @@ jobs:
             Examples/FNF-SoundPack/FNF-SoundPack.qmod
             Examples/Bandoot-SoundPack.qmod
             Examples/Osu-SoundPack.qmod
-            ./${{ env.module_id }}_${{ env.version }}.qmod
+            ./${{ env.module_id }}.qmod
           body_path: ./rl-notes.md
           draft: true
 
