@@ -7,7 +7,7 @@ just drop them into the Folder and select them in-game!
 
 __**Changelog:**__ 
 - Removed from Mod Settings Menu, access via Main Menu Mod Settings only now
-- Updated for Beat Saber version 1.19.1
+- Updated for Beat Saber version 1.20.0
 
 Features:
   In-Game Menu for selecting sound files and enabling/disabling custom sounds.
