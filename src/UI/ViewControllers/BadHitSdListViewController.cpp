@@ -55,7 +55,7 @@ namespace QuestSounds::ViewControllers {
                         return;
                     }
                     if (AudioClips::badHitSoundLoader.audioSource != nullptr) {
-                        AudioClips::badHitSoundLoader.audioSource->set_volume(0.6f);
+                        AudioClips::badHitSoundLoader.audioSource->set_volume(0.6f + QSoundsConfig::Config.badHitSound_audioVolumeOffset);
                         return AudioClips::badHitSoundLoader.audioSource->Play();
                     }
                     });
@@ -88,7 +88,7 @@ namespace QuestSounds::ViewControllers {
         if (BadHitQSlist.size() < 1)
         {
             BadHitListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(BadHitListView->SDlistscroll->get_transform());
-            QuestUI::BeatSaberUI::CreateText(BadHitListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n"+ QSoundsConfig::BadHitSoundPath +"\nto continue.", false)->set_enableWordWrapping(true);
+            QuestUI::BeatSaberUI::CreateText(BadHitListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n<size=80%>"+ QSoundsConfig::BadHitSoundPath +"\n<size=100%>to continue.", false)->set_enableWordWrapping(true);
         }
         (void)closedir(sounddir);
     }
@@ -112,12 +112,27 @@ namespace QuestSounds::ViewControllers {
             //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom BadHitSounds", &QSoundsConfig::Config.badHitSound_Active, this, "Activates or deactivates Custom BadHitSounds");
             auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Bad Hit Sounds", QSoundsConfig::Config.badHitSound_Active,
                 [&](bool value) {
+                    if (value) BadHitRefreshList();
                     QSoundsConfig::Config.badHitSound_Active = value;
                     this->SDlistscroll->get_gameObject()->SetActive(value);
                     if (AudioClips::badHitSoundLoader.audioSource != nullptr) AudioClips::badHitSoundLoader.audioSource->Stop();
                 });
             ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Bad Hit Sounds");
 
+            // AudioVolumeOffset Slider
+            QuestUI::SliderSetting* volumeSlider = ::QuestUI::BeatSaberUI::CreateSliderSetting(QSconfigcontainer->get_rectTransform(), "Volume Offset", 0.01f, QSoundsConfig::Config.badHitSound_audioVolumeOffset, -1.0f, 1.0f, 0.5f, [](float volume) {
+                // Checks for safety
+                QSoundsConfig::Config.badHitSound_audioVolumeOffset = volume;
+                if (AudioClips::badHitSoundLoader.loaded) {
+                    if (AudioClips::badHitSoundLoader.audioSource->get_isPlaying()) AudioClips::badHitSoundLoader.audioSource->Stop();
+                    AudioClips::badHitSoundLoader.audioSource->set_volume(1.0f + volume);
+                    AudioClips::badHitSoundLoader.audioSource->Play();
+                }
+                //std::thread PlayAudio([&]() {
+                //    usleep(100);
+                //});
+            });
+            QuestUI::BeatSaberUI::AddHoverHint(volumeSlider->get_gameObject(), "Lets you select a Volume Offset that is applied to the sound (Preview volume does not necessarily match volume played in-map)");
 
             // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)
             this->SDlistscroll = QuestUI::BeatSaberUI::CreateScrollView(container->get_rectTransform());

@@ -89,7 +89,7 @@ namespace QuestSounds::ViewControllers {
         if (LevelClearedQSlist.size() < 1)
         {
             LevelClearedListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(LevelClearedListView->SDlistscroll->get_transform());
-            QuestUI::BeatSaberUI::CreateText(LevelClearedListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n" + QSoundsConfig::LevelClearedPath + "\nto continue.", false)->set_enableWordWrapping(true);
+            QuestUI::BeatSaberUI::CreateText(LevelClearedListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n<size=80%>" + QSoundsConfig::LevelClearedPath + "\n<size=100%>to continue.", false)->set_enableWordWrapping(true);
         }
         (void)closedir(sounddir);
     }
@@ -113,6 +113,7 @@ namespace QuestSounds::ViewControllers {
             //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelClearedSounds", &QSoundsConfig::Config.levelCleared_Active, this, "Activates or deactivates Custom LevelClearedSounds");
             auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelCleared Sounds", QSoundsConfig::Config.levelCleared_Active,
                 [&](bool value) {
+                    if (value) LevelClearedRefreshList();
                     QSoundsConfig::Config.levelCleared_Active = value;
                     this->SDlistscroll->get_gameObject()->SetActive(value);
                     if (AudioClips::levelClearedLoader.audioSource != nullptr) AudioClips::levelClearedLoader.audioSource->Stop();

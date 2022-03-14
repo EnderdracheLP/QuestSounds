@@ -55,7 +55,7 @@ namespace QuestSounds::ViewControllers {
                         return;
                     }
                     if (AudioClips::hitSoundLoader.audioSource != nullptr) {
-                        AudioClips::hitSoundLoader.audioSource->set_volume(0.6f);
+                        AudioClips::hitSoundLoader.audioSource->set_volume(0.6f + QSoundsConfig::Config.hitSound_audioVolumeOffset);
                         return AudioClips::hitSoundLoader.audioSource->Play();
                     }
                     });
@@ -88,7 +88,7 @@ namespace QuestSounds::ViewControllers {
         if (HitQSlist.size() < 1)
         {
             HitListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(HitListView->SDlistscroll->get_transform());
-            QuestUI::BeatSaberUI::CreateText(HitListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n" + QSoundsConfig::HitSoundPath + "\nto continue.", false)->set_enableWordWrapping(true);
+            QuestUI::BeatSaberUI::CreateText(HitListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n<size=80%>" + QSoundsConfig::HitSoundPath + "\n<size=100%>to continue.", false)->set_enableWordWrapping(true);
         }
         (void)closedir(sounddir);
     }
@@ -112,11 +112,23 @@ namespace QuestSounds::ViewControllers {
             //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom HitSounds", &QSoundsConfig::Config.hitSound_Active, this, "Activates or deactivates Custom HitSounds");
             auto HSToggle = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Hit Sounds", QSoundsConfig::Config.hitSound_Active,
                 [&](bool value) {
+                    if (value) HitRefreshList();
                     QSoundsConfig::Config.hitSound_Active = value;
                     this->SDlistscroll->get_gameObject()->SetActive(value);
                     if (AudioClips::hitSoundLoader.audioSource != nullptr) AudioClips::hitSoundLoader.audioSource->Stop();
                 });
             QuestUI::BeatSaberUI::AddHoverHint(HSToggle->get_gameObject(), "Activates or deactivates Custom Hit Sounds");
+
+            QuestUI::SliderSetting* volumeSlider = ::QuestUI::BeatSaberUI::CreateSliderSetting(QSconfigcontainer->get_rectTransform(), "Volume Offset", 0.01f, QSoundsConfig::Config.hitSound_audioVolumeOffset, -1.0f, 1.0f, 0.5f, [](float volume) {
+                // Checks for safety
+                QSoundsConfig::Config.hitSound_audioVolumeOffset = volume;
+                if (AudioClips::hitSoundLoader.loaded) {
+                    if (AudioClips::hitSoundLoader.audioSource->get_isPlaying()) AudioClips::hitSoundLoader.audioSource->Stop();
+                    AudioClips::hitSoundLoader.audioSource->set_volume(0.6f + volume);
+                    AudioClips::hitSoundLoader.audioSource->Play();
+                }
+            });
+            QuestUI::BeatSaberUI::AddHoverHint(volumeSlider->get_gameObject(), "Lets you select a Volume Offset that is applied to the sound (Preview volume does not necessarily match volume played in-map)");
 
             auto HSOffSet = ::QuestUI::BeatSaberUI::CreateIncrementSetting(QSconfigcontainer->get_rectTransform(), "Hit Sound OffSet (ms)", 3, 0.005f, QSoundsConfig::Config.hitSound_beatOffSet, 0.0f, 0.25f,
                 [&](float value) {

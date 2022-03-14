@@ -89,7 +89,7 @@ namespace QuestSounds::ViewControllers {
         if (LobbyMusicQSlist.size() < 1)
         {
             LobbyMusicListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(LobbyMusicListView->SDlistscroll->get_transform());
-            QuestUI::BeatSaberUI::CreateText(LobbyMusicListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n" + QSoundsConfig::LobbyMusicPath + "\nto continue.", false)->set_enableWordWrapping(true);
+            QuestUI::BeatSaberUI::CreateText(LobbyMusicListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n<size=80%>" + QSoundsConfig::LobbyMusicPath + "\n<size=100%>to continue.", false)->set_enableWordWrapping(true);
         }
         (void)closedir(sounddir);
     }
@@ -116,6 +116,7 @@ namespace QuestSounds::ViewControllers {
             //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom Lobby Music", &QSoundsConfig::Config.lobbyAmbience_Active, this, "Activates or deactivates Custom Lobby Music");
             auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Lobby Music", QSoundsConfig::Config.lobbyAmbience_Active,
                 [&](bool value) {
+                    if (value) LobbyMusicRefreshList();
                     QSoundsConfig::Config.lobbyAmbience_Active = value;
                     this->SDlistscroll->get_gameObject()->SetActive(value);
                     if (AudioClips::lobbyAmbienceLoader.audioSource != nullptr) AudioClips::lobbyAmbienceLoader.audioSource->Stop();

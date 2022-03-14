@@ -7,6 +7,7 @@ namespace QuestSounds::AudioClips {
 	//extern audioClipLoader::loader
 	extern AsyncAudioClipLoader::loader	hitSoundLoader,     // hitSound
 										badHitSoundLoader,  // badHitSound
+										noteMissedSoundLoader,
 										menuMusicLoader,    // menuMusic
 										menuClickLoader,
 										fireworkSoundLoader,

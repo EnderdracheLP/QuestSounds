@@ -93,7 +93,7 @@ namespace QuestSounds::ViewControllers {
         if (FireworkQSlist.size() < 1)
         {
             FireworkListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(FireworkListView->SDlistscroll->get_transform());
-            QuestUI::BeatSaberUI::CreateText(FireworkListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n" + QSoundsConfig::FireworkSoundPath + "\nto continue.", false)->set_enableWordWrapping(true);
+            QuestUI::BeatSaberUI::CreateText(FireworkListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n<size=80%>" + QSoundsConfig::FireworkSoundPath + "\n<size=100%>to continue.", false)->set_enableWordWrapping(true);
         }
         (void)closedir(sounddir);
     }
@@ -119,6 +119,7 @@ namespace QuestSounds::ViewControllers {
             //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom FireworkSounds", &QSoundsConfig::Config.firework_Active, this, "Activates or deactivates Custom FireworkSounds");
             auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Firework Sounds", QSoundsConfig::Config.firework_Active,
                 [&](bool value) {
+                    if (value) FireworkRefreshList();
                     QSoundsConfig::Config.firework_Active = value;
                     this->SDlistscroll->get_gameObject()->SetActive(value);
                     if (AudioClips::fireworkSoundLoader.audioSource != nullptr) AudioClips::fireworkSoundLoader.audioSource->Stop();

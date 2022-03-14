@@ -52,12 +52,7 @@ namespace QuestSounds::ViewControllers {
             GameObject* mainLayout = GameObject::New_ctor();
             RectTransform* parent = mainLayout->AddComponent<RectTransform*>();
             parent->SetParent(get_transform(), false);
-            if (QSoundsConfig::LegacyConfig) {
-                parent->set_localPosition({ 38.0f, 5.0f, 0.0f });
-            }
-            else {
-                parent->set_localPosition({38.0f, 0.0f, 0.0f });
-            }
+            parent->set_localPosition({38.0f, 3.0f, 0.0f });
 
             VerticalLayoutGroup* settingsLayout = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(parent);
             RectTransform* settingsLayoutTransform = settingsLayout->GetComponent<RectTransform*>();
@@ -69,59 +64,61 @@ namespace QuestSounds::ViewControllers {
             contentSizeFitter->set_horizontalFit(ContentSizeFitter::FitMode::PreferredSize);
             contentSizeFitter->set_verticalFit(ContentSizeFitter::FitMode::PreferredSize);
 
-            if (QSoundsConfig::LegacyConfig) QuestUI::BeatSaberUI::CreateText(settingsLayoutTransform, "Legacy Config Detected,\nplease move your files into the new folders,\nfor selection in-game", false);
+            QuestUI::BeatSaberUI::CreateText(settingsLayoutTransform, "<line-height=130%><b>Quest Sounds</b>", false)->set_alignment(TMPro::TextAlignmentOptions::Center);
 
-            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "MenuMusic",
+            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "Menu Music",
                 [&]() {
                     getLogger().debug("MenuMusic Button pressed!");
                     this->callback(1);
                 })->get_transform()->GetParent()->GetComponent<LayoutElement*>()->set_preferredWidth(50.0f);
 
-            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "MenuClickSounds",
+            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "Menu Click Sounds",
                 [&]() {
                     getLogger().debug("MenuClickSounds Button pressed!");
                     this->callback(3);
                 })->get_transform()->GetParent()->GetComponent<LayoutElement*>()->set_preferredWidth(50.0f);
 
 
-            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "HitSounds",
+            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "Hit Sounds",
                 [&]() {
                     getLogger().debug("HitSounds Button pressed!");
                     this->callback(2);
                 })->get_transform()->GetParent()->GetComponent<LayoutElement*>()->set_preferredWidth(50.0f);
 
-            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "BadHitSounds",
+            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "Bad Hit Sounds",
                 [&]() {
                     getLogger().debug("BadHitSounds Button pressed!");
                     this->callback(4);
                 })->get_transform()->GetParent()->GetComponent<LayoutElement*>()->set_preferredWidth(50.0f);
 
-            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "FireworkSounds",
+            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "Note Missed Sounds",
                 [&]() {
-                    getLogger().debug("FireworkSounds Button pressed!");
+                    getLogger().debug("NoteMissedSounds Button pressed!");
                     this->callback(5);
                 })->get_transform()->GetParent()->GetComponent<LayoutElement*>()->set_preferredWidth(50.0f);
 
-            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "LevelClearedSounds",
+            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "Firework Sounds",
                 [&]() {
-                    getLogger().debug("LevelClearedSounds Button pressed!");
+                    getLogger().debug("FireworkSounds Button pressed!");
                     this->callback(6);
                 })->get_transform()->GetParent()->GetComponent<LayoutElement*>()->set_preferredWidth(50.0f);
 
-            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "LevelFailedSounds",
+            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "Level Cleared Sounds",
                 [&]() {
-                    getLogger().debug("LevelFailedSounds Button pressed!");
+                    getLogger().debug("LevelClearedSounds Button pressed!");
                     this->callback(7);
                 })->get_transform()->GetParent()->GetComponent<LayoutElement*>()->set_preferredWidth(50.0f);
 
-
-    #ifndef BS__1_13_2
-            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "LobbyMusic",
+            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "Level Failed Sounds",
                 [&]() {
-                    getLogger().debug("LobbyMusic Button pressed!");
+                    getLogger().debug("LevelFailedSounds Button pressed!");
                     this->callback(8);
                 })->get_transform()->GetParent()->GetComponent<LayoutElement*>()->set_preferredWidth(50.0f);
-    #endif
+            BeatSaberUI::CreateUIButton(settingsLayoutTransform, "Lobby Music",
+                [&]() {
+                    getLogger().debug("LobbyMusic Button pressed!");
+                    this->callback(9);
+                })->get_transform()->GetParent()->GetComponent<LayoutElement*>()->set_preferredWidth(50.0f);
         }
     }
 

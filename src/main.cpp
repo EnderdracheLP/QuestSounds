@@ -9,10 +9,14 @@ using namespace QuestSounds::AudioClips;
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
 #include "GlobalNamespace/NoteCutSoundEffectManager.hpp"
 #include "GlobalNamespace/NoteCutSoundEffect.hpp"
+#include "GlobalNamespace/NoteController.hpp"
+#include "GlobalNamespace/NoteData.hpp"
 #include "GlobalNamespace/BasicUIAudioManager.hpp"
 #include "GlobalNamespace/FireworkItemController.hpp"
 #include "GlobalNamespace/GameServerLobbyFlowCoordinator.hpp"
 #include "GlobalNamespace/MultiplayerModeSelectionFlowCoordinator.hpp"
+#include "GlobalNamespace/BeatmapObjectManager.hpp"
+#include "GlobalNamespace/PauseMenuManager.hpp"
 
 #include "GlobalNamespace/FileHelpers.hpp"
 
@@ -95,7 +99,16 @@ void makeFolder()
             {
                 getLogger().error("Failed to make BadHitSound Folder path!");
             }
-    }    
+    }
+
+    if (!direxists(NoteMissedSoundPath.c_str()))
+    {
+        int makePath = mkpath(NoteMissedSoundPath.c_str());
+        if (makePath == -1)
+        {
+            getLogger().error("Failed to make NoteMissedSound Folder path!");
+        }
+    }
 
     if (!direxists(MenuClickPath.c_str()))
     {
@@ -151,6 +164,7 @@ namespace QuestSounds::AudioClips {
 /*audioClipLoader::loader*/
 AsyncAudioClipLoader::loader    hitSoundLoader,     // hitSound
                                 badHitSoundLoader,  // badHitSound
+                                noteMissedSoundLoader,
                                 menuMusicLoader,    // menuMusic
                                 menuClickLoader,
                                 fireworkSoundLoader,
@@ -171,6 +185,7 @@ Array<UnityEngine::AudioClip*>* origMenuClickArr;
     {
         hitSoundLoader.filePath = Config.hitSound_filepath;
         badHitSoundLoader.filePath = Config.badHitSound_filepath;
+        noteMissedSoundLoader.filePath = Config.noteMissedSound_filepath;
         menuMusicLoader.filePath = Config.menuMusic_filepath;
         menuClickLoader.filePath = Config.menuClick_filepath;
         fireworkSoundLoader.filePath = Config.firework_filepath;
@@ -182,6 +197,7 @@ Array<UnityEngine::AudioClip*>* origMenuClickArr;
         menuClickLoader.load();
         if (Config.hitSound_Active) hitSoundLoader.load();
         if (Config.badHitSound_Active) badHitSoundLoader.load();
+        if (Config.noteMissedSound_Active) noteMissedSoundLoader.load();
         if (Config.firework_Active) fireworkSoundLoader.load();
         if (Config.levelCleared_Active) levelClearedLoader.load();
         if (Config.levelFailed_Active) levelFailedLoader.load();
@@ -350,12 +366,30 @@ MAKE_HOOK_MATCH(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Sta
 }
 
 MAKE_HOOK_MATCH(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCutSoundEffect* self) {
+    if (hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active) {
+        self->dyn__goodCutVolume() += QSoundsConfig::Config.hitSound_audioVolumeOffset;
+    }
+
     if(badHitSoundLoader.loaded && QSoundsConfig::Config.badHitSound_Active)
     {
         badHitSoundArr = createAudioClipArray(badHitSoundLoader);
         self->dyn__badCutSoundEffectAudioClips() = badHitSoundArr;
+        self->dyn__badCutVolume() += QSoundsConfig::Config.badHitSound_audioVolumeOffset;
     }
     NoteCutSoundEffect_Awake(self);
+}
+
+MAKE_HOOK_MATCH(BeatmapObjectManager_HandleNoteWasMissed, &BeatmapObjectManager::HandleNoteControllerNoteWasMissed, void, BeatmapObjectManager* self, NoteController* noteController) {
+    BeatmapObjectManager_HandleNoteWasMissed(self, noteController);
+    if (noteMissedSoundLoader.loaded && 
+        QSoundsConfig::Config.noteMissedSound_Active &&
+        noteController->get_noteData()->get_scoringType() != NoteData::ScoringType::Ignore &&
+        noteController->get_noteData()->get_gameplayType() != NoteData::GameplayType::Bomb) {
+        //getLogger().debug("Playing note missed sound");
+        noteMissedSoundLoader.audioSource->set_volume(0.5f + QSoundsConfig::Config.noteMissedSound_audioVolumeOffset);
+        noteMissedSoundLoader.audioSource->Play();
+        //noteMissedSoundLoader.audioSource->PlayOneShot(noteMissedSoundLoader.audioSource->get_clip(), 1.0f + QSoundsConfig::Config.noteMissedSound_audioVolumeOffset);
+    }
 }
 
 MAKE_HOOK_MATCH(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, BasicUIAudioManager* self) {
@@ -396,6 +430,15 @@ MAKE_HOOK_MATCH(FireworkItemController_PlayExplosionSound, &FireworkItemControll
     else FireworkItemController_PlayExplosionSound(self);
 }
 
+MAKE_HOOK_MATCH(PauseMenuManager_MenuButtonPressed, &PauseMenuManager::MenuButtonPressed, void, PauseMenuManager* self) {
+    if (noteMissedSoundLoader.loaded &&
+        QSoundsConfig::Config.noteMissedSound_Active) {
+        if (noteMissedSoundLoader.audioSource) noteMissedSoundLoader.audioSource->Stop();
+        //noteMissedSoundLoader.audioSource->PlayOneShot(noteMissedSoundLoader.audioSource->get_clip(), 1.0f + QSoundsConfig::Config.noteMissedSound_audioVolumeOffset);
+    }
+    PauseMenuManager_MenuButtonPressed(self);
+}
+
 MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_ActiveSceneChanged, void, Scene previousActiveScene, Scene newActiveScene) {
     SceneManager_Internal_ActiveSceneChanged(previousActiveScene, newActiveScene);
     if (newActiveScene.IsValid()) {
@@ -409,7 +452,7 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Interna
 
 extern "C" void setup(ModInfo &info)
 {
-    info.id = ID;
+    info.id = MOD_ID;
     info.version = VERSION;
     modInfo = info;
 
@@ -451,9 +494,11 @@ extern "C" void load()
     makeFolder();
     getLogger().debug("Installing QuestSounds!");
     INSTALL_HOOK(hkLog, SceneManager_Internal_ActiveSceneChanged);
+    INSTALL_HOOK(hkLog, PauseMenuManager_MenuButtonPressed);
     INSTALL_HOOK(hkLog, SongPreviewPlayer_OnEnable);
     INSTALL_HOOK(hkLog, NoteCutSoundEffectManager_Start);
     INSTALL_HOOK(hkLog, NoteCutSoundEffect_Awake);
+    INSTALL_HOOK(hkLog, BeatmapObjectManager_HandleNoteWasMissed);
     INSTALL_HOOK(hkLog, BasicUIAudioManager_Start);
     INSTALL_HOOK(hkLog, ResultsViewController_DidActivate);
     INSTALL_HOOK(hkLog, ResultsViewController_RestartButtonPressed);

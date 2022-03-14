@@ -7,9 +7,11 @@
 #include <regex>
 #include <list>
 #include <unistd.h>
+#include <chrono>
 
 #include "questui/shared/BeatSaberUI.hpp"
 #include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
+#include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
 
 #include "UnityEngine/Object.hpp"
 #include "UnityEngine/GameObject.hpp"
@@ -96,7 +98,7 @@ namespace QuestSounds::ViewControllers {
         if (MenuQSlist.size() < 1)
         {
             MenuListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(MenuListView->SDlistscroll->get_transform());
-            QuestUI::BeatSaberUI::CreateText(MenuListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n"+ QSoundsConfig::MenuMusicPath +"\nto continue.", false)->set_enableWordWrapping(true);
+            QuestUI::BeatSaberUI::CreateText(MenuListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n<size=80%>"+ QSoundsConfig::MenuMusicPath +"\n<size=100%>to continue.", false)->set_enableWordWrapping(true);
         }
         (void)closedir(sounddir);
     }
@@ -122,15 +124,44 @@ namespace QuestSounds::ViewControllers {
             //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu Music", &QSoundsConfig::Config.menuMusic_Active, SDlistscroll, "Activates or deactivates Custom Menu Music");
             auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu Music", QSoundsConfig::Config.menuMusic_Active,
                 [&](bool value) {
+                    if (value) MenuRefreshList();
                     QSoundsConfig::Config.menuMusic_Active = value;
                     this->SDlistscroll->get_gameObject()->SetActive(value);
-                    if (AudioClips::menuMusicLoader.loaded && value) SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
+                    if (AudioClips::menuMusicLoader.loaded && value) {
+                        SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.getClip());
+                    }
                     else {
                         if (AudioClips::menuMusicLoader.OriginalAudioSource) SPP->CrossfadeToNewDefault(AudioClips::menuMusicLoader.get_OriginalClip());
                     }
                 });
             ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom Menu Music");
 
+
+            //if (QSoundsConfig::LegacyConfig) QuestUI::BeatSaberUI::CreateText(settingsLayoutTransform, "Legacy Config Detected,\nplease move your files into the new folders,\nfor selection in-game", false);
+            if (QSoundsConfig::LegacyConfig) {
+                modal = QuestUI::BeatSaberUI::CreateModal(get_transform(), {40, 35}, nullptr);
+
+                auto wrapper = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(modal->get_transform());
+                auto container = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(wrapper->get_transform());
+                container->set_childAlignment(UnityEngine::TextAnchor::MiddleCenter);
+
+                QuestUI::BeatSaberUI::CreateText(container->get_transform(), "<line-height=130%><b>Legacy Config Detected</b>\n<line-height=80%><size=80%>please move your files\ninto the new folders,\nfor selection in-game\n\n", false)->set_alignment(TMPro::TextAlignmentOptions::Center);
+
+                auto horizon = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(container->get_transform());
+
+                QuestUI::BeatSaberUI::CreateUIButton(horizon->get_transform(), "<size=80%>Close", UnityEngine::Vector2(0, -3), { 10, 7 }, [this]() -> void {
+                    modal->Hide(true, nullptr);
+                    });
+
+                std::thread showModal([&]() {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+                    QuestUI::MainThreadScheduler::Schedule([this]() {
+                        modal->Show(true, true, nullptr);
+                        });
+                    });
+                showModal.detach();
+            }
 
 
             //QSconfigcontainer->set_childForceExpandHeight(false);

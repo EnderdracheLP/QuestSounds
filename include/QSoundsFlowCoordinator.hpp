@@ -16,6 +16,7 @@ DECLARE_CLASS_CODEGEN(QuestSounds, QSoundsFlowCoordinator, HMUI::FlowCoordinator
     DECLARE_INSTANCE_FIELD(HMUI::ViewController*, QSHitSoundListView);
     DECLARE_INSTANCE_FIELD(HMUI::ViewController*, QSMenuClickSoundListView);
     DECLARE_INSTANCE_FIELD(HMUI::ViewController*, QSBadHitSoundListView);
+    DECLARE_INSTANCE_FIELD(HMUI::ViewController*, QSNoteMissedSoundListView);
     DECLARE_INSTANCE_FIELD(HMUI::ViewController*, QSFireworkSoundListView);
     DECLARE_INSTANCE_FIELD(HMUI::ViewController*, QSLevelClearedSoundListView);
     DECLARE_INSTANCE_FIELD(HMUI::ViewController*, QSLevelFailedSoundListView);

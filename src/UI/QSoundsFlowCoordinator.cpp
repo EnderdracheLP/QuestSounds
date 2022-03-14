@@ -4,6 +4,7 @@
 #include "ViewControllers/HitSdListViewController.hpp"
 #include "ViewControllers/MenuClickSdListViewController.hpp"
 #include "ViewControllers/BadHitSdListViewController.hpp"
+#include "ViewControllers/NoteMissedSdListViewController.hpp"
 #include "ViewControllers/FireworkSdListViewController.hpp"
 #include "ViewControllers/LevelClearedSdListViewController.hpp"
 #include "ViewControllers/LevelFailedSdListViewController.hpp"
@@ -61,6 +62,7 @@ void QSoundsFlowCoordinator::DidActivate(bool firstActivation, bool addedToHiera
         if (!this->QSMenuSoundListView) this->QSMenuSoundListView = QuestUI::BeatSaberUI::CreateViewController<MenuSdListViewController*>();
         if (!this->QSHitSoundListView) this->QSHitSoundListView = QuestUI::BeatSaberUI::CreateViewController<HitSdListViewController*>();
         if (!this->QSBadHitSoundListView) this->QSBadHitSoundListView = QuestUI::BeatSaberUI::CreateViewController<BadHitSdListViewController*>();
+        if (!this->QSNoteMissedSoundListView) this->QSNoteMissedSoundListView = QuestUI::BeatSaberUI::CreateViewController<NoteMissedSdListViewController*>();
         if (!this->QSMenuClickSoundListView) this->QSMenuClickSoundListView = QuestUI::BeatSaberUI::CreateViewController<MenuClickSdListViewController*>();
         if (!this->QSFireworkSoundListView) this->QSFireworkSoundListView = QuestUI::BeatSaberUI::CreateViewController<FireworkSdListViewController*>();
         if (!this->QSLevelClearedSoundListView) this->QSLevelClearedSoundListView = QuestUI::BeatSaberUI::CreateViewController<LevelClearedSdListViewController*>();
@@ -87,57 +89,64 @@ void QSoundsFlowCoordinator::SubMenuButtonWasPressed(int VCtype) {
     case 1:
         if (!this->QSMenuSoundListView) this->QSMenuSoundListView = QuestUI::BeatSaberUI::CreateViewController<MenuSdListViewController*>();
         if (!this->QSMenuSoundListView) break;
-        this->SetTitle(il2cpp_utils::newcsstr("QuestSounds MenuMusic"), HMUI::ViewController::AnimationType::In);
+        this->SetTitle("Menu Music", HMUI::ViewController::AnimationType::In);
         this->ReplaceTopViewController(this->QSMenuSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
         CurrentActive = VCtype;
         break;
     case 2:
         if (!this->QSHitSoundListView) this->QSHitSoundListView = QuestUI::BeatSaberUI::CreateViewController<HitSdListViewController*>();
         if (!this->QSHitSoundListView) break;
-        this->SetTitle(il2cpp_utils::newcsstr("QuestSounds HitSounds"), HMUI::ViewController::AnimationType::In);
+        this->SetTitle("Hit Sounds", HMUI::ViewController::AnimationType::In);
         this->ReplaceTopViewController(this->QSHitSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
         CurrentActive = VCtype;
         break;
     case 3:
         if (!this->QSMenuClickSoundListView) this->QSMenuClickSoundListView = QuestUI::BeatSaberUI::CreateViewController<MenuClickSdListViewController*>();
         if (!this->QSMenuClickSoundListView || this->providedMainViewController == this->QSMenuClickSoundListView) break;
-        this->SetTitle(il2cpp_utils::newcsstr("QuestSounds MenuClicks"), HMUI::ViewController::AnimationType::In);
+        this->SetTitle("Menu Clicks", HMUI::ViewController::AnimationType::In);
         this->ReplaceTopViewController(this->QSMenuClickSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
         CurrentActive = VCtype;
         break;
     case 4:
         if (!this->QSBadHitSoundListView) this->QSBadHitSoundListView = QuestUI::BeatSaberUI::CreateViewController<BadHitSdListViewController*>();
         if (!this->QSBadHitSoundListView || this->providedMainViewController == this->QSBadHitSoundListView) break;
-        this->SetTitle(il2cpp_utils::newcsstr("QuestSounds BadHitSounds"), HMUI::ViewController::AnimationType::In);
+        this->SetTitle("Bad Hit Sounds", HMUI::ViewController::AnimationType::In);
         this->ReplaceTopViewController(this->QSBadHitSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
         CurrentActive = VCtype;
         break;
     case 5:
-        if (!this->QSFireworkSoundListView) this->QSFireworkSoundListView = QuestUI::BeatSaberUI::CreateViewController<FireworkSdListViewController*>();
-        if (!this->QSFireworkSoundListView || this->providedMainViewController == this->QSFireworkSoundListView) break;
-        this->SetTitle(il2cpp_utils::newcsstr("QuestSounds FireworkSounds"), HMUI::ViewController::AnimationType::In);
-        this->ReplaceTopViewController(this->QSFireworkSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
+        if (!this->QSNoteMissedSoundListView) this->QSNoteMissedSoundListView = QuestUI::BeatSaberUI::CreateViewController<NoteMissedSdListViewController*>();
+        if (!this->QSNoteMissedSoundListView || this->providedMainViewController == this->QSNoteMissedSoundListView) break;
+        this->SetTitle("Note Missed Sounds", HMUI::ViewController::AnimationType::In);
+        this->ReplaceTopViewController(this->QSNoteMissedSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
         CurrentActive = VCtype;
         break;
     case 6:
-        if (!this->QSLevelClearedSoundListView) this->QSLevelClearedSoundListView = QuestUI::BeatSaberUI::CreateViewController<LevelClearedSdListViewController*>();
-        if (!this->QSLevelClearedSoundListView || this->providedMainViewController == this->QSLevelClearedSoundListView) break;
-        this->SetTitle(il2cpp_utils::newcsstr("QuestSounds LevelClearedSounds"), HMUI::ViewController::AnimationType::In);
-        this->ReplaceTopViewController(this->QSLevelClearedSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
+        if (!this->QSFireworkSoundListView) this->QSFireworkSoundListView = QuestUI::BeatSaberUI::CreateViewController<FireworkSdListViewController*>();
+        if (!this->QSFireworkSoundListView || this->providedMainViewController == this->QSFireworkSoundListView) break;
+        this->SetTitle("Firework Sounds", HMUI::ViewController::AnimationType::In);
+        this->ReplaceTopViewController(this->QSFireworkSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
         CurrentActive = VCtype;
         break;
     case 7:
+        if (!this->QSLevelClearedSoundListView) this->QSLevelClearedSoundListView = QuestUI::BeatSaberUI::CreateViewController<LevelClearedSdListViewController*>();
+        if (!this->QSLevelClearedSoundListView || this->providedMainViewController == this->QSLevelClearedSoundListView) break;
+        this->SetTitle("Level Cleared Sounds", HMUI::ViewController::AnimationType::In);
+        this->ReplaceTopViewController(this->QSLevelClearedSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
+        CurrentActive = VCtype;
+        break;
+    case 8:
         if (!this->QSLevelFailedSoundListView) this->QSLevelFailedSoundListView = QuestUI::BeatSaberUI::CreateViewController<LevelFailedSdListViewController*>();
         if (!this->QSLevelFailedSoundListView || this->providedMainViewController == this->QSLevelFailedSoundListView) break;
-        this->SetTitle(il2cpp_utils::newcsstr("QuestSounds LevelFailedSounds"), HMUI::ViewController::AnimationType::In);
+        this->SetTitle("Level Failed Sounds", HMUI::ViewController::AnimationType::In);
         this->ReplaceTopViewController(this->QSLevelFailedSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
         CurrentActive = VCtype;
         break;
 #ifndef BS__1_13_2
-    case 8:
+    case 9:
         if (!this->QSLobbyMusicSoundListView) this->QSLobbyMusicSoundListView = QuestUI::BeatSaberUI::CreateViewController<LobbyMusicSdListViewController*>();
         if (!this->QSLobbyMusicSoundListView || this->providedMainViewController == this->QSLobbyMusicSoundListView) break;
-        this->SetTitle(il2cpp_utils::newcsstr("QuestSounds LobbyMusic"), HMUI::ViewController::AnimationType::In);
+        this->SetTitle("LobbyMusic", HMUI::ViewController::AnimationType::In);
         this->ReplaceTopViewController(this->QSLobbyMusicSoundListView, this, this, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
         CurrentActive = VCtype;
         break;

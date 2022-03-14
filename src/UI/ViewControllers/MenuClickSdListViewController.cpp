@@ -90,7 +90,7 @@ namespace QuestSounds::ViewControllers {
         if (MenuClickQSlist.size() < 1)
         {
             MenuClickListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(MenuClickListView->SDlistscroll->get_transform());
-            QuestUI::BeatSaberUI::CreateText(MenuClickListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n" + QSoundsConfig::MenuClickPath + "\nto continue.", false)->set_enableWordWrapping(true);
+            QuestUI::BeatSaberUI::CreateText(MenuClickListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n<size=80%>" + QSoundsConfig::MenuClickPath + "\n<size=100%>to continue.", false)->set_enableWordWrapping(true);
         }
         (void)closedir(sounddir);
     }
@@ -115,6 +115,7 @@ namespace QuestSounds::ViewControllers {
             //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom MenuClickSounds", &QSoundsConfig::Config.menuClick_Active, SDlistscroll, "Activates or deactivates Custom MenuClickSounds");
             auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom Menu ClickSounds", QSoundsConfig::Config.menuClick_Active,
                 [&](bool value) {
+                    if (value) MenuClickRefreshList();
                     QSoundsConfig::Config.menuClick_Active = value;
                     this->SDlistscroll->get_gameObject()->SetActive(value);
                     if (AudioClips::menuClickLoader.audioSource) AudioClips::menuClickLoader.audioSource->Stop();

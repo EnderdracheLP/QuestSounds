@@ -43,7 +43,7 @@ namespace QuestSounds::ViewControllers {
         {
             if (button->get_hasSelection())
             {
-                std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
+                std::string filename = static_cast<std::string>(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text());
                 QSoundsConfig::Config.levelFailed_filepath = QSoundsConfig::LevelFailedPath + filename;
                 QuestSounds::AudioClips::levelFailedLoader.filePath = QSoundsConfig::Config.levelFailed_filepath;
                 if (AudioClips::levelFailedLoader.audioSource != nullptr) AudioClips::levelFailedLoader.audioSource->Stop();
@@ -56,7 +56,8 @@ namespace QuestSounds::ViewControllers {
                         return;
                     }
                     AudioClips::levelFailedLoader.audioSource->Stop();
-                    AudioClips::levelFailedLoader.audioSource->set_volume(0.6f);
+                    float defaultVolume = QuestSounds::ObjectInstances::SPP ? QuestSounds::ObjectInstances::SPP->dyn__volume() * QuestSounds::ObjectInstances::SPP->dyn__ambientVolumeScale() : 0.6f;
+                    AudioClips::levelFailedLoader.audioSource->set_volume(defaultVolume + QSoundsConfig::Config.levelFailed_audioVolumeOffset);
                     return AudioClips::levelFailedLoader.audioSource->Play();
                     });
                 PlayAudio.detach();
@@ -88,7 +89,7 @@ namespace QuestSounds::ViewControllers {
         if (LevelFailedQSlist.size() < 1)
         {
             LevelFailedListView->listtxtgroup = QuestUI::BeatSaberUI::CreateHorizontalLayoutGroup(LevelFailedListView->SDlistscroll->get_transform());
-            QuestUI::BeatSaberUI::CreateText(LevelFailedListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n"+ QSoundsConfig::LevelFailedPath +"\nto continue.", false)->set_enableWordWrapping(true);
+            QuestUI::BeatSaberUI::CreateText(LevelFailedListView->listtxtgroup->get_rectTransform(), "No sound files were found!\nPlease add a sound file into\n<size=80%>"+ QSoundsConfig::LevelFailedPath +"\n<size=100%>to continue.", false)->set_enableWordWrapping(true);
         }
         (void)closedir(sounddir);
     }
@@ -112,12 +113,24 @@ namespace QuestSounds::ViewControllers {
             //QSoundsConfig::QSAddConfigValueToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelFailedSounds", &QSoundsConfig::Config.levelFailed_Active, this, "Activates or deactivates Custom LevelFailedSounds");
             auto object = ::QuestUI::BeatSaberUI::CreateToggle(QSconfigcontainer->get_rectTransform(), "Custom LevelFailed Sounds", QSoundsConfig::Config.levelFailed_Active,
                 [&](bool value) {
+                    if (value) LevelFailedRefreshList();
                     QSoundsConfig::Config.levelFailed_Active = value;
                     this->SDlistscroll->get_gameObject()->SetActive(value);
                     if (AudioClips::levelFailedLoader.audioSource != nullptr) AudioClips::levelFailedLoader.audioSource->Stop();
                 });
             ::QuestUI::BeatSaberUI::AddHoverHint(object->get_gameObject(), "Activates or deactivates Custom LevelFailed Sounds");
 
+            QuestUI::SliderSetting* volumeSlider = ::QuestUI::BeatSaberUI::CreateSliderSetting(QSconfigcontainer->get_rectTransform(), "Volume Offset", 0.01f, QSoundsConfig::Config.levelFailed_audioVolumeOffset, -1.0f, 1.0f, 0.5f, [](float volume) {
+                // Checks for safety
+                QSoundsConfig::Config.levelFailed_audioVolumeOffset = volume;
+                if (AudioClips::levelFailedLoader.loaded) {
+                    if (AudioClips::levelFailedLoader.audioSource->get_isPlaying()) AudioClips::levelFailedLoader.audioSource->Stop();
+                    float defaultVolume = QuestSounds::ObjectInstances::SPP ? QuestSounds::ObjectInstances::SPP->dyn__volume() * QuestSounds::ObjectInstances::SPP->dyn__ambientVolumeScale() : 0.6f;
+                    AudioClips::levelFailedLoader.audioSource->set_volume(defaultVolume + volume);
+                    AudioClips::levelFailedLoader.audioSource->Play();
+                }
+                });
+            QuestUI::BeatSaberUI::AddHoverHint(volumeSlider->get_gameObject(), "Lets you select a Volume Offset that is applied to the sound");
 
             // Sound List (recursively adds buttons as ListView isn't an easy type to deal with)
             this->SDlistscroll = QuestUI::BeatSaberUI::CreateScrollView(container->get_rectTransform());
