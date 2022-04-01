@@ -1,0 +1,30 @@
+{
+	"_QPVersion": "0.1.1",
+	"id": "Bandoot-SoundPack",
+	"name": "Bandoot SoundPack",
+	"version": "1.0.5",
+	"author": "EnderdracheLP",
+	"packageId": "com.beatgames.beatsaber",
+	"packageVersion": "1.20.0",
+	"description": "The Bandoot Sound Pack contains Sounds used by Bandoot.",
+	"coverImage": "logo.png",
+	"modFiles": [],
+	"libraryFiles": [],
+	"dependencies": [
+		{
+			"id": "QuestSounds",
+			"version": "1.*",
+			"downloadIfMissing": "https://github.com/EnderdracheLP/QuestSounds/releases/download/1.0.5/QuestSounds.qmod"
+		}
+	],
+	"fileCopies": [
+		{
+			"name": "HitSound.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSounds/Bandoot HitSound.ogg"
+		},
+		{
+			"name": "BadHitSound.ogg",
+			"destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/Bandoot BadHitSound.ogg"
+		}
+	]
+}

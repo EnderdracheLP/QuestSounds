@@ -5,12 +5,61 @@
   "author": "Rugtveit, EnderdracheLP",
   "version": "${version}",
   "packageId": "com.beatgames.beatsaber",
-  "packageVersion": "1.20.0",
+  "packageVersion": "1.21.0",
   "description": "Allows users to change their sfx sounds and in-game music easily!",
   "coverImage": "Cover.jpg",
   "dependencies": [],
   "modFiles": [],
   "libraryFiles": [],
-  "fileCopies": [],
+  "fileCopies": [
+    {
+      "name": "Bandoot HitSound.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSounds/Bandoot HitSound.ogg"
+    },
+    {
+      "name": "Bandoot BadHitSound.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/Bandoot BadHitSound.ogg"
+    },
+    {
+      "name": "freshIntro.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSounds/FNF freshIntro Sound.ogg"
+    },
+    {
+      "name": "missnote1.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/FNF MissNote.ogg"
+    },
+    {
+      "name": "freakyMenu.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic/FNF Freaky Menu.ogg"
+    },
+    {
+      "name": "scrollMenu.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuClicks/FNF scrollMenu.ogg"
+    },
+    {
+      "name": "confirmMenu.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Fireworks/FNF confirmMenu.ogg"
+    },
+    {
+      "name": "gameOverEnd.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared/FNF gameOverEnd.ogg"
+    },
+    {
+      "name": "LoseGameOver.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared/FNF LoseGameOver.ogg"
+    },
+    {
+      "name": "gameOver-pixel.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic/FNF gameOverPixel.ogg"
+    },
+    {
+      "name": "OsuClick.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSounds/Osu Click.ogg"
+    },
+    {
+      "name": "OsuMiss.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/Osu Miss.ogg"
+    }
+  ],
   "copyExtensions": []
 }
