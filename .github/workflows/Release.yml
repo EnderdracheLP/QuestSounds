@@ -126,9 +126,6 @@ jobs:
       with:
           name: ${{ env.module_id }} ${{ env.version }} for Beat Saber ${{ env.BSVersion }}
           files: |
-            Examples/FNF-SoundPack/FNF-SoundPack.qmod
-            Examples/Bandoot-SoundPack.qmod
-            Examples/Osu-SoundPack.qmod
             ./${{ env.module_id }}.qmod
           body_path: ./rl-notes.md
           draft: true
