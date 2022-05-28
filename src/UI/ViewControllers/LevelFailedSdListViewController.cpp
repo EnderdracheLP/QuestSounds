@@ -56,7 +56,7 @@ namespace QuestSounds::ViewControllers {
                         return;
                     }
                     AudioClips::levelFailedLoader.audioSource->Stop();
-                    float defaultVolume = QuestSounds::ObjectInstances::SPP ? QuestSounds::ObjectInstances::SPP->dyn__volume() * QuestSounds::ObjectInstances::SPP->dyn__ambientVolumeScale() : 0.6f;
+                    float defaultVolume = QuestSounds::ObjectInstances::SPP ? QuestSounds::ObjectInstances::SPP->volume * QuestSounds::ObjectInstances::SPP->ambientVolumeScale : 0.6f;
                     AudioClips::levelFailedLoader.audioSource->set_volume(defaultVolume + QSoundsConfig::Config.levelFailed_audioVolumeOffset);
                     return AudioClips::levelFailedLoader.audioSource->Play();
                     });
@@ -68,7 +68,7 @@ namespace QuestSounds::ViewControllers {
 
     void LevelFailedRefreshList()
     {
-        if (LevelFailedListView->listtxtgroup && LevelFailedListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(LevelFailedListView->listtxtgroup->get_gameObject());
+        if (LevelFailedListView->listtxtgroup && LevelFailedListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(LevelFailedListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : LevelFailedQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         LevelFailedQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::LevelFailedPath.c_str());
@@ -125,7 +125,7 @@ namespace QuestSounds::ViewControllers {
                 QSoundsConfig::Config.levelFailed_audioVolumeOffset = volume;
                 if (AudioClips::levelFailedLoader.loaded) {
                     if (AudioClips::levelFailedLoader.audioSource->get_isPlaying()) AudioClips::levelFailedLoader.audioSource->Stop();
-                    float defaultVolume = QuestSounds::ObjectInstances::SPP ? QuestSounds::ObjectInstances::SPP->dyn__volume() * QuestSounds::ObjectInstances::SPP->dyn__ambientVolumeScale() : 0.6f;
+                    float defaultVolume = QuestSounds::ObjectInstances::SPP ? QuestSounds::ObjectInstances::SPP->volume * QuestSounds::ObjectInstances::SPP->ambientVolumeScale : 0.6f;
                     AudioClips::levelFailedLoader.audioSource->set_volume(defaultVolume + volume);
                     AudioClips::levelFailedLoader.audioSource->Play();
                 }

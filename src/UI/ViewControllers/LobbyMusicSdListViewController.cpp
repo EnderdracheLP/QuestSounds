@@ -68,7 +68,7 @@ namespace QuestSounds::ViewControllers {
 
     void LobbyMusicRefreshList()
     {
-        if (LobbyMusicListView->listtxtgroup && LobbyMusicListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(LobbyMusicListView->listtxtgroup->get_gameObject());
+        if (LobbyMusicListView->listtxtgroup && LobbyMusicListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(LobbyMusicListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : LobbyMusicQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         LobbyMusicQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::LobbyMusicPath.c_str());

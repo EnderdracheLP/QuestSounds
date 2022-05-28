@@ -67,7 +67,7 @@ namespace QuestSounds::ViewControllers {
 
     void HitRefreshList()
     {
-        if (HitListView->listtxtgroup && HitListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(HitListView->listtxtgroup->get_gameObject());
+        if (HitListView->listtxtgroup && HitListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(HitListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : HitQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         HitQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::HitSoundPath.c_str());

@@ -77,7 +77,7 @@ namespace QuestSounds::ViewControllers {
 
     void MenuRefreshList()
     {
-        if (MenuListView->listtxtgroup && MenuListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(MenuListView->listtxtgroup->get_gameObject());
+        if (MenuListView->listtxtgroup && MenuListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(MenuListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : MenuQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         MenuQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::MenuMusicPath.c_str());

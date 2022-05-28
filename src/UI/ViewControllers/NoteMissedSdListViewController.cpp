@@ -67,7 +67,7 @@ namespace QuestSounds::ViewControllers {
 
     void NoteMissedRefreshList()
     {
-        if (NoteMissedListView->listtxtgroup && NoteMissedListView->listtxtgroup->dyn_m_CachedPtr().m_value) UnityEngine::GameObject::Destroy(NoteMissedListView->listtxtgroup->get_gameObject());
+        if (NoteMissedListView->listtxtgroup && NoteMissedListView->listtxtgroup->m_CachedPtr.m_value) UnityEngine::GameObject::Destroy(NoteMissedListView->listtxtgroup->get_gameObject());
         for (UnityEngine::UI::Button* button : NoteMissedQSlist) UnityEngine::Object::Destroy(button->get_transform()->get_parent()->get_gameObject());
         NoteMissedQSlist = {};
         DIR* sounddir = opendir(QSoundsConfig::NoteMissedSoundPath.c_str());
