@@ -344,9 +344,11 @@ MAKE_HOOK_MATCH(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &Multipla
 }
 #endif
 
+#ifdef DEBUG
 MAKE_HOOK_MATCH(FileHelpers_GetEscapedURLForFilePath, &FileHelpers::GetEscapedURLForFilePath, StringW, StringW filePath) {
     return il2cpp_utils::newcsstr(std::u16string(u"file://") + std::u16string(csstrtostr(filePath)));
 }
+#endif
 
 MAKE_HOOK_MATCH(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start, void, NoteCutSoundEffectManager* self) {
     if(hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active)
@@ -472,22 +474,7 @@ extern "C" void load()
     Logger& hkLog = getLogger();
 
     //custom_types::Register::RegisterType<QuestSounds::QSoundsFlowCoordinator>();
-#ifndef REGISTER_FUNCTION
     custom_types::Register::AutoRegister();
-#else
-    custom_types::Register::RegisterTypes<
-        QuestSounds::QSoundsFlowCoordinator,
-        QuestSounds::ConfigViewController,
-        QuestSounds::MenuSdListViewController,
-        QuestSounds::HitSdListViewController,
-        QuestSounds::MenuClickSdListViewController,
-        QuestSounds::BadHitSdListViewController,
-        QuestSounds::FireworkSdListViewController,
-        QuestSounds::LevelClearedSdListViewController>();
-#ifndef BS__1_13_2
-    custom_types::Register::RegisterType<QuestSounds::LobbyMusicSdListViewController>();
-#endif
-#endif
     //QuestUI::Register::RegisterModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
     QuestUI::Register::RegisterMainMenuModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
     
@@ -508,10 +495,12 @@ extern "C" void load()
     INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate);  // Added for switching out MP Lobby Music
     INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidActivate);              // Added for switching out MP Lobby Music
     INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate);          // Added for switching out MP Lobby Music
+    #ifdef DEBUG
     auto ModList = Modloader::getMods();
     if (ModList.find("SongLoader") == ModList.end()) {
         getLogger().info("SongLoader missing, installing FilePath check");
         INSTALL_HOOK(hkLog, FileHelpers_GetEscapedURLForFilePath);
     }
+    #endif
     getLogger().debug("Installed QuestSounds!");
 }

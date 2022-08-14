@@ -50,7 +50,7 @@ namespace QSoundsConfig {
                 getLogger().error("ERROR: Parsing, %s, parent HasMember bool: %d, Member IsObject bool: %d", soundName.data(), parent.HasMember(soundName.data()), parent[soundName.data()].IsObject());
                 return false;
             }
-            ConfigValue value = parent[soundName.data()].GetObject();
+            ConfigValue value = static_cast<ConfigValue>(parent[soundName.data()].GetObject());
             bool success = true;
             if (value.HasMember("activated") && value["activated"].IsBool()) {
                 active = value["activated"].GetBool();
@@ -87,7 +87,7 @@ namespace QSoundsConfig {
             getLogger().error("ERROR: Parsing, %s, parent HasMember bool: %d, Member IsObject bool: %d", soundName.data(), parent.HasMember(soundName.data()), parent[soundName.data()].IsObject());
             return false;
         }
-        ConfigValue value = parent[soundName.data()].GetObject();
+        ConfigValue value = static_cast<ConfigValue>(parent[soundName.data()].GetObject());
         bool success = true;
         if (value.HasMember("activated") && value["activated"].IsBool()) {
             active = value["activated"].GetBool();
@@ -132,7 +132,7 @@ namespace QSoundsConfig {
             getLogger().error("ERROR: Parsing, %s, parent HasMember bool: %d, Member IsObject bool: %d", soundName.data(), parent.HasMember(soundName.data()), parent[soundName.data()].IsObject());
             return false;
         }
-        ConfigValue value = parent[soundName.data()].GetObject();
+        ConfigValue value = static_cast<ConfigValue>(parent[soundName.data()].GetObject());
         bool success = true;
         if (value.HasMember("activated") && value["activated"].IsBool()) {
             active = value["activated"].GetBool();
@@ -168,7 +168,7 @@ namespace QSoundsConfig {
             getLogger().error("ERROR: Parsing, %s, parent HasMember bool: %d, Member IsObject bool: %d", soundName.data(), parent.HasMember(soundName.data()), parent[soundName.data()].IsObject());
             return false;
         }
-        ConfigValue value = parent[soundName.data()].GetObject();
+        ConfigValue value = static_cast<ConfigValue>(parent[soundName.data()].GetObject());
         bool success = true;
         if (value.HasMember("activated") && value["activated"].IsBool()) {
             active = value["activated"].GetBool();
@@ -220,7 +220,7 @@ namespace QSoundsConfig {
         getLogger().debug("PreCheck: parseError currentValue: %d will be returned as: %d", parseError, !parseError);
         if (getConfig().config.HasMember(CONFIG_VERSION) && getConfig().config[CONFIG_VERSION].IsObject())
         {
-            ConfigValue soundsValue = getConfig().config[CONFIG_VERSION].GetObject();
+            ConfigValue soundsValue = static_cast<ConfigValue>(getConfig().config[CONFIG_VERSION].GetObject());
             parseError |= !TryParseSound(Config.hitSound_Active, Config.hitSound_filepath, Config.hitSound_beatOffSet, Config.hitSound_audioVolumeOffset, soundsValue, "HitSound");
             parseError |= !TryParseSound(Config.badHitSound_Active, Config.badHitSound_filepath, Config.badHitSound_audioVolumeOffset, soundsValue, "BadHitSound");
             parseError |= !TryParseSound(Config.noteMissedSound_Active, Config.noteMissedSound_filepath, Config.noteMissedSound_audioVolumeOffset, soundsValue, "NoteMissedSound");
@@ -236,7 +236,7 @@ namespace QSoundsConfig {
         }
         else if (getConfig().config.HasMember(CONFIG_VERSION_PRE_1_20) && getConfig().config[CONFIG_VERSION_PRE_1_20].IsObject())
         {
-            ConfigValue soundsValue = getConfig().config[CONFIG_VERSION_PRE_1_20].GetObject();
+            ConfigValue soundsValue = static_cast<ConfigValue>(getConfig().config[CONFIG_VERSION_PRE_1_20].GetObject());
             parseError |= !Legacy::TryParseSound(Config.hitSound_Active, Config.hitSound_filepath, Config.hitSound_beatOffSet, soundsValue, "HitSound");
             parseError |= !TryParseSound(Config.badHitSound_Active, Config.badHitSound_filepath, soundsValue, "BadHitSound");
             parseError |= !TryParseSound(Config.menuMusic_Active, Config.menuMusic_filepath, soundsValue, "MenuMusic");
@@ -247,7 +247,7 @@ namespace QSoundsConfig {
             parseError |= !TryParseSound(Config.lobbyAmbience_Active, Config.lobbyAmbience_filepath, soundsValue, "LobbyMusic");
         }
         else if (getConfig().config.HasMember(CONFIG_VERSION_LEGACY) && getConfig().config[CONFIG_VERSION_LEGACY].IsObject()) {
-            ConfigValue soundsValue = getConfig().config[CONFIG_VERSION_LEGACY].GetObject();
+            ConfigValue soundsValue = static_cast<ConfigValue>(getConfig().config[CONFIG_VERSION_LEGACY].GetObject());
             parseError |= !TryParseSound(Config.hitSound_Active, Config.hitSound_filepath, soundsValue, "HitSound");
             parseError |= !TryParseSound(Config.badHitSound_Active, Config.badHitSound_filepath, soundsValue, "BadHitSound");
             parseError |= !TryParseSound(Config.menuMusic_Active, Config.menuMusic_filepath, soundsValue, "MenuMusic");
@@ -257,7 +257,7 @@ namespace QSoundsConfig {
             LegacyConfig = true;
         }
         else if (getConfig().config.HasMember(CONFIG_VERSION_PRE_R) && getConfig().config[CONFIG_VERSION_PRE_R].IsObject()) {
-            ConfigValue soundsValue = getConfig().config[CONFIG_VERSION_PRE_R].GetObject();
+            ConfigValue  soundsValue = static_cast<ConfigValue>(getConfig().config[CONFIG_VERSION_PRE_R].GetObject());
             parseError |= !TryParseSound(Config.hitSound_Active, Config.hitSound_filepath, soundsValue, "HitSound");
             parseError |= !TryParseSound(Config.badHitSound_Active, Config.badHitSound_filepath, soundsValue, "BadHitSound");
             parseError |= !TryParseSound(Config.menuMusic_Active, Config.menuMusic_filepath, soundsValue, "MenuMusic");

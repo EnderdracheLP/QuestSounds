@@ -6,7 +6,7 @@ echo "Arg $($i) is $($args[$i])"
 }
 if ($args.Count -eq 0 -or $actions -ne $true) {
 $ModID = "QuestSounds"
-$VERSION = "1.1.1"
+$VERSION = "1.2.0"
     if ($release -ne $true) {
         $VERSION += "-Dev"
     }
