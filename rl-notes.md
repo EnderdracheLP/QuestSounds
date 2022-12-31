@@ -1,12 +1,10 @@
-__**QuestSounds 1.2.0 for Beat Saber 1.24.0**__
-
 **READ ENTIRE POST BEFORE OPENING AN ISSUE**
 Description:
 QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sounds as well as adding new sounds, 
 just drop them into the folder and select them in-game!
 
 __**Changelog:**__ 
-- Updated for Beat Saber version 1.24.0
+- Updated for Beat Saber version 1.27.0_3631150051
 
 Features:
   In-Game Menu for selecting sound files and enabling/disabling custom sounds.
@@ -27,6 +25,3 @@ Sounds you can change and their default folder Path:
 -  LevelCleared:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared/
 -  LevelFailed:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelFailed/
 -  LobbyMusic:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic/
-
-
-__**Download**__
