@@ -106,7 +106,7 @@ jobs:
         cd ${GITHUB_WORKSPACE}
         ./QPM/qpm-rust package edit --version ${{ env.version }}
         ./QPM/qpm-rust qmod build
-        pwsh -Command ./build.ps1 --actions
+        pwsh -Command ./build.ps1 -actions
 
     - name: Get Library Name
       id: libname

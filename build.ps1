@@ -13,11 +13,11 @@ Param(
 )
 
 $NDKPath = Get-Content $PSScriptRoot/ndkpath.txt
-for ($i = 0; $i -le $args.Length-1; $i++) {
-echo "Arg $($i) is $($args[$i])"
-    if ($args[$i] -eq "--actions") { $actions = $true }
-    elseif ($args[$i] -eq "--release") { $release = $true }
-}
+# for ($i = 0; $i -le $args.Length-1; $i++) {
+# echo "Arg $($i) is $($args[$i])"
+#     if ($args[$i] -eq "--actions") { $actions = $true }
+#     elseif ($args[$i] -eq "--release") { $release = $true }
+# }
 
 $qpm = "./qpm.json"
 $qpmJson = Get-Content $qpm -Raw | ConvertFrom-Json
