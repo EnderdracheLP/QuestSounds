@@ -1,23 +1,41 @@
+Param(
+    [Parameter(Mandatory=$false)]
+    [Switch] $clean,
+
+    # [Parameter(Mandatory=$false)]
+    # [Switch] $help,
+
+    [Parameter(Mandatory=$false)]
+    [Switch] $actions,
+
+    [Parameter(Mandatory=$false)]
+    [Switch] $release
+)
+
 $NDKPath = Get-Content $PSScriptRoot/ndkpath.txt
 for ($i = 0; $i -le $args.Length-1; $i++) {
 echo "Arg $($i) is $($args[$i])"
     if ($args[$i] -eq "--actions") { $actions = $true }
     elseif ($args[$i] -eq "--release") { $release = $true }
 }
+
+$qpm = "./qpm.json"
+$qpmJson = Get-Content $qpm -Raw | ConvertFrom-Json
+
 if ($args.Count -eq 0 -or $actions -ne $true) {
-$ModID = "QuestSounds"
-$VERSION = "1.4.0"
+$ModID = $qpmJson.info.id
+$VERSION = $qpmJson.info.version
     if ($release -ne $true) {
         $VERSION += "-Dev"
+    } elseif ($release -eq $true -and $VERSION.Contains("-Dev")) {
+        $VERSION.Replace("-Dev", "")
     }
 }
 
 
 if ($actions -eq $true) {
     $ModID = $env:module_id
-    $BSHook = $env:bs_hook
     $VERSION = $env:version
-    $codegen_ver = $env:codegen
 } else {
         & qpm-rust package edit --version $VERSION
 }

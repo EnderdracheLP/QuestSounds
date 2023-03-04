@@ -11,7 +11,10 @@ Param(
     [Switch] $package,
 
     [Parameter(Mandatory=$false)]
-    [Switch] $dev
+    [Switch] $dev,
+
+    [Parameter(Mandatory=$false)]
+    [Switch] $release = $false
 )
 
 # Builds a .qmod file for loading with QP or BMBF
@@ -38,7 +41,7 @@ if ($qmodName -eq "")
 
 if (($args.Count -eq 0 -or $dev -eq $true) -And $package -eq $false) {
 echo "Packaging QMod $qmodName"
-    & $PSScriptRoot/build.ps1 -clean:$clean
+    & $PSScriptRoot/build.ps1 -clean:$clean -release:$release
 
     if ($LASTEXITCODE -ne 0) {
         echo "Failed to build, exiting..."
@@ -65,7 +68,7 @@ if ((-not ($cover -eq "./")) -and (Test-Path $cover))
     echo "No cover Image found"
 }
 
-if ($package -eq $true -And $env:version.Contains('-Dev')) {
+if ($package -eq $true -And $env:version.Contains('-Dev') -Or $release -eq $false) {
     $qmodName = "$($env:module_id)_$($env:version)"
 echo "Actions: Packaging QMod $qmodName"
     # Compress-Archive -Path "./libs/arm64-v8a/lib$ModID.so", "./libs/arm64-v8a/libbeatsaber-hook_$BSHook.so", ".\Cover.jpg", ".\mod.json" -DestinationPath "./Temp$ModID.zip" -Update
