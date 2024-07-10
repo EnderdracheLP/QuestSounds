@@ -33,9 +33,7 @@ using namespace GlobalNamespace;
 #include "UnityEngine/Time.hpp"
 using namespace UnityEngine::SceneManagement;
 
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/QuestUI.hpp"
-using namespace QuestUI;
+// TODO BSML
 
 #include "ViewControllers/MenuSdListViewController.hpp"
 #include "ViewControllers/HitSdListViewController.hpp"
@@ -51,26 +49,19 @@ using namespace QuestSounds;
 #include "custom-types/shared/register.hpp"
 using namespace custom_types;
 
-#if defined(MAKE_HOOK_OFFSETLESS) && !defined(MAKE_HOOK_MATCH)
-#error Incompatible hook macro
-#elif defined(MAKE_HOOK_MATCH)
-#else
-#error No Compatible HOOK macro found
-#endif
-
 #define RAPIDJSON_HAS_STDSTRING 1
 
-ModInfo modInfo;
+inline modloader::ModInfo modInfo = {MOD_ID, VERSION, 0}; // Stores the ID and version of our mod, and is sent to the modloader upon startup
 
 Configuration& getConfig() {
     static Configuration config(modInfo);
-    //config.Load();
     return config;
 }
 
-Logger& getLogger() {
-    static auto logger = new Logger(modInfo, LoggerOptions(false, true));
-    return *logger;
+// TODO: Proper paper logging
+Paper::ConstLoggerContext<9UL>& getLogger() {
+    static auto fastContext = Paper::Logger::WithContext<MOD_ID>();
+    return fastContext;
 }
 
 void makeFolder() 
@@ -171,9 +162,7 @@ AsyncAudioClipLoader::loader    hitSoundLoader,     // hitSound
                                 fireworkSoundLoader,
                                 levelClearedLoader,
                                 levelFailedLoader,  // For LevelFailed sound
-#ifndef BS__1_13_2
                                 lobbyAmbienceLoader;    // Added for LobbyMusic
-#endif
 Array<UnityEngine::AudioClip*> * hitSoundArr,    // hitSoundArray
                                * badHitSoundArr, // badHitSoundArray
                                * menuClickArr,
@@ -284,7 +273,6 @@ MAKE_HOOK_MATCH(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, 
     SongPreviewPlayer_OnEnable(self);
 }
 
-#ifndef BS__1_13_2
 MAKE_HOOK_MATCH(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoordinator::DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
@@ -342,11 +330,10 @@ MAKE_HOOK_MATCH(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &Multipla
 
     MultiplayerModeSelectionFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
 }
-#endif
 
 #ifdef DEBUG
 MAKE_HOOK_MATCH(FileHelpers_GetEscapedURLForFilePath, &FileHelpers::GetEscapedURLForFilePath, StringW, StringW filePath) {
-    return il2cpp_utils::newcsstr(std::u16string(u"file://") + std::u16string(csstrtostr(filePath)));
+    return StringW("file://" + filePath);
 }
 #endif
 
@@ -445,7 +432,7 @@ MAKE_HOOK_MATCH(PauseMenuManager_MenuButtonPressed, &PauseMenuManager::MenuButto
 MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_ActiveSceneChanged, void, Scene previousActiveScene, Scene newActiveScene) {
     SceneManager_Internal_ActiveSceneChanged(previousActiveScene, newActiveScene);
     if (newActiveScene.IsValid()) {
-        std::string sceneName = to_utf8(csstrtostr(newActiveScene.get_name()));
+        std::string sceneName = newActiveScene.get_name();
         getLogger().info("Scene found: %s", sceneName.data());
 
         std::string questInit = "QuestInit";
@@ -453,11 +440,14 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Interna
     }
 }
 
-extern "C" void setup(ModInfo &info)
-{
+QS_EXPORT void setup(CModInfo *info) {
+    *info = modInfo.to_c();
+
     info.id = MOD_ID;
     info.version = VERSION;
     modInfo = info;
+
+    Paper::Logger::RegisterFileContextId(getLogger().tag);
 
     getLogger().info("Modloader name: %s", Modloader::getInfo().name.c_str());
     getLogger().debug("Config Path is: %s", getConfig().getConfigFilePath(modInfo).c_str());
@@ -466,17 +456,14 @@ extern "C" void setup(ModInfo &info)
     getLogger().info("Completed setup!");
 }  
 
-extern "C" void load()
+QS_EXPORT void late_load()
 {
     il2cpp_functions::Init();
-    QuestUI::Init();
 
     Logger& hkLog = getLogger();
 
     //custom_types::Register::RegisterType<QuestSounds::QSoundsFlowCoordinator>();
     custom_types::Register::AutoRegister();
-    //QuestUI::Register::RegisterModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
-    QuestUI::Register::RegisterMainMenuModSettingsFlowCoordinator<QuestSounds::QSoundsFlowCoordinator*>(modInfo);
     
     if(!LoadConfig()) SaveConfig();
     makeFolder();
@@ -495,12 +482,12 @@ extern "C" void load()
     INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate);  // Added for switching out MP Lobby Music
     INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidActivate);              // Added for switching out MP Lobby Music
     INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate);          // Added for switching out MP Lobby Music
-    #ifdef DEBUG
-    auto ModList = Modloader::getMods();
-    if (ModList.find("SongLoader") == ModList.end()) {
-        getLogger().info("SongLoader missing, installing FilePath check");
-        INSTALL_HOOK(hkLog, FileHelpers_GetEscapedURLForFilePath);
-    }
-    #endif
+    // #ifdef DEBUG
+    // auto ModList = Modloader::getMods();
+    // if (ModList.find("SongLoader") == ModList.end()) {
+    //     getLogger().info("SongLoader missing, installing FilePath check");
+    //     INSTALL_HOOK(hkLog, FileHelpers_GetEscapedURLForFilePath);
+    // }
+    // #endif
     getLogger().debug("Installed QuestSounds!");
 }

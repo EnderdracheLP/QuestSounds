@@ -19,6 +19,6 @@
 
 // Define these functions here so that we can easily read configuration and log information from other files
 Configuration& getConfig();
-Paper::ConstLoggerContext<9UL> getLogger();
+Paper::ConstLoggerContext<9UL>& getLogger();
 
 #define QS_EXPORT extern "C" __attribute__((visibility("default")))
