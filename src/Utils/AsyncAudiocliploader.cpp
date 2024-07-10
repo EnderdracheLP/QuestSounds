@@ -52,7 +52,7 @@ bool AsyncAudioClipLoader::loader::load()
     bool fileError;
     getLogger().info("Starting Stage 0");
     getLogger().info("FilePath to check is %s", filePath.c_str());
-    Il2CppString* filePathStr;
+    StringW filePathStr;
     if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
         getLogger().info("Filepath is URL, skipping file checks and try loading it");
         fileError = true;
@@ -74,7 +74,7 @@ bool AsyncAudioClipLoader::loader::load()
     if (!(filePath == QSoundsConfig::Config.hitSound_filepath) && filePath.ends_with(".ogg")) {
         getLogger().info("Stage 1: Running MediaAsyncLoader for FilePath %s", filePath.c_str());
         UsesUWR = false;
-        filePathStr = il2cpp_utils::newcsstr(filePath);
+        filePathStr = filePath;
         audioClipTask = GlobalNamespace::MediaAsyncLoader::New_ctor()->LoadAudioClipFromFilePathAsync(filePathStr);
         ////Stage 2
         auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), this, audioClipCompleted);
@@ -84,10 +84,10 @@ bool AsyncAudioClipLoader::loader::load()
         getLogger().info("Stage 1: Running UnityWebRequestMultimedia for FilePath %s", filePath.c_str());
         UsesUWR = true;
         if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
-            filePathStr = il2cpp_utils::newcsstr(filePath);
+            filePathStr = filePath;
         }
         else {
-            filePathStr = il2cpp_utils::newcsstr("file:///" + filePath);
+            filePathStr = "file:///" + filePath;
         }
         audioType = getAudioType(filePath);
 
@@ -120,7 +120,7 @@ void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject*
     if(temporaryClip != nullptr)
     {  
         if (!obj->audioClipGO) {
-            static auto goName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("AudioClipGO");
+            static auto goName = "AudioClipGO";
             obj->audioClipGO = GameObject::New_ctor(goName);
             obj->audioSource = obj->audioClipGO->AddComponent<AudioSource*>();
             UnityEngine::Object::DontDestroyOnLoad(obj->audioClipGO);
@@ -156,7 +156,7 @@ void AsyncAudioClipLoader::loader::set_OriginalClip(AudioClip* OriginalAudioClip
     // Stage 1
     if (OriginalAudioClip != nullptr)
     {
-        static auto goName = il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("OrigAudioClipGO");
+        static auto goName = "OrigAudioClipGO";
         GameObject* audioClipGO = GameObject::New_ctor(goName);
         OriginalAudioSource = audioClipGO->AddComponent<AudioSource*>();
         OriginalAudioSource->set_playOnAwake(false);

@@ -17,6 +17,7 @@
 
 namespace AsyncAudioClipLoader
 {
+    // TODO: CustomTypes/Zenject?
     class loader : public Il2CppObject
     {
     public:
@@ -33,7 +34,7 @@ namespace AsyncAudioClipLoader
     private:
         UnityEngine::GameObject* audioClipGO;
         static void audioClipCompleted(loader* obj, Il2CppObject* asyncOp);
-        Il2CppString* path;
+        StringW path;
         bool UsesUWR = false;
         System::Threading::Tasks::Task_1<UnityEngine::AudioClip*>* audioClipTask;
 

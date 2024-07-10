@@ -55,7 +55,7 @@ void QSoundsFlowCoordinator::DidActivate(bool firstActivation, bool addedToHiera
     CurrentActive = 1;
     if (firstActivation)
     {
-        this->SetTitle(il2cpp_utils::newcsstr<il2cpp_utils::CreationType::Manual>("QuestSounds MenuMusic"), HMUI::ViewController::AnimationDirection::Vertical);
+        this->SetTitle("QuestSounds MenuMusic", HMUI::ViewController::AnimationDirection::Vertical);
         this->showBackButton = true;
 
         if (!this->QSConfigView) this->QSConfigView = QuestUI::BeatSaberUI::CreateViewController<ConfigViewController*>();

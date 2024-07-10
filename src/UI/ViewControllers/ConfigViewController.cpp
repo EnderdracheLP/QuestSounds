@@ -56,7 +56,7 @@ namespace QuestSounds::ViewControllers {
 
             VerticalLayoutGroup* settingsLayout = QuestUI::BeatSaberUI::CreateVerticalLayoutGroup(parent);
             RectTransform* settingsLayoutTransform = settingsLayout->GetComponent<RectTransform*>();
-            settingsLayout->get_gameObject()->AddComponent<Backgroundable*>()->ApplyBackground(il2cpp_utils::newcsstr("round-rect-panel"));
+            settingsLayout->get_gameObject()->AddComponent<Backgroundable*>()->ApplyBackground("round-rect-panel");
             settingsLayout->set_spacing(1.2f);
             settingsLayout->set_padding(UnityEngine::RectOffset::New_ctor(3, 3, 2, 2));
 
