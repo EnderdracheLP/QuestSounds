@@ -19,12 +19,12 @@ $NDKPath = Get-Content $PSScriptRoot/ndkpath.txt
 #     elseif ($args[$i] -eq "--release") { $release = $true }
 # }
 
-$qpm = "./qpm.json"
+$qpm = "./qpm.shared.json"
 $qpmJson = Get-Content $qpm -Raw | ConvertFrom-Json
 
 if ($args.Count -eq 0 -or $actions -ne $true) {
-$ModID = $qpmJson.info.id
-$VERSION = $qpmJson.info.version
+    $ModID = $qpmJson.config.info.id
+    $VERSION = $qpmJson.config.info.version
     if ($release -ne $true) {
         $VERSION += "-Dev"
     } elseif ($release -eq $true -and $VERSION.Contains("-Dev")) {
@@ -36,19 +36,24 @@ $VERSION = $qpmJson.info.version
 if ($actions -eq $true) {
     $ModID = $env:module_id
     $VERSION = $env:version
+    if ([string]::IsNullOrEmpty($VERSION)) {
+        $qpmsharedJson = Get-Content $qpmshared -Raw | ConvertFrom-Json
+        $VERSION = $qpmsharedJson.config.info.version.replace("-Dev", "")
+    }
 } else {
-        & qpm-rust package edit --version $VERSION
+        & qpm package edit --version $VERSION
 }
-if ((Test-Path "./extern/includes/beatsaber-hook/src/inline-hook/And64InlineHook.cpp", "./extern/includes/beatsaber-hook/src/inline-hook/inlineHook.c", "./extern/includes/beatsaber-hook/src/inline-hook/relocate.c") -contains $false) {
+
+if ((Test-Path "./extern/includes/beatsaber-hook/shared/inline-hook/And64InlineHook.cpp", "./extern/includes/beatsaber-hook/shared/inline-hook/inlineHook.c", "./extern/includes/beatsaber-hook/shared/inline-hook/relocate.c") -contains $false) {
     Write-Host "Critical: Missing inline-hook"
-    if (!(Test-Path "./extern/includes/beatsaber-hook/src/inline-hook/And64InlineHook.cpp")) {
-        Write-Host "./extern/includes/beatsaber-hook/src/inline-hook/And64InlineHook.cpp"
+    if (!(Test-Path "./extern/includes/beatsaber-hook/shared/inline-hook/And64InlineHook.cpp")) {
+        Write-Host "./extern/includes/beatsaber-hook/shared/inline-hook/And64InlineHook.cpp"
     }
-    if (!(Test-Path "./extern/includes/beatsaber-hook/src/inline-hook/inlineHook.c")) {
-        Write-Host "./extern/includes/beatsaber-hook/src/inline-hook/inlineHook.c"
+    if (!(Test-Path "./extern/includes/beatsaber-hook/shared/inline-hook/inlineHook.c")) {
+        Write-Host "./extern/includes/beatsaber-hook/shared/inline-hook/inlineHook.c"
     }
-        if (!(Test-Path "./extern/includes/beatsaber-hook/inline-hook/src/relocate.c")) {
-        Write-Host "./extern/includes/beatsaber-hook/src/inline-hook/relocate.c"
+        if (!(Test-Path "./extern/includes/beatsaber-hook/inline-hook/shared/relocate.c")) {
+        Write-Host "./extern/includes/beatsaber-hook/shared/inline-hook/relocate.c"
     }
     Write-Host "Task Failed"
     exit 1;

@@ -40,83 +40,35 @@ if ($qmodName -eq "")
 }
 
 if (($args.Count -eq 0 -or $dev -eq $true) -And $package -eq $false) {
-echo "Packaging QMod $qmodName"
+    echo "Packaging QMod $qmodName"
     & $PSScriptRoot/build.ps1 -clean:$clean -release:$release
 
     if ($LASTEXITCODE -ne 0) {
         echo "Failed to build, exiting..."
         exit $LASTEXITCODE
     }
-
-    qpm-rust qmod build
-    # Compress-Archive -Path "./libs/arm64-v8a/lib$ModID.so", "./libs/arm64-v8a/libbeatsaber-hook_$BSHook.so", ".\Cover.jpg", ".\mod.json" -DestinationPath "./Temp$ModID.zip" -Update
-    # Move-Item "./Temp$ModID.zip" "./$ModID.qmod" -Force
 }
 
-echo "Creating qmod from mod.json"
+$qpmsharedJson = Get-Content "./qpm.shared.json" -Raw | ConvertFrom-Json
 
-$mod = "./mod.json"
-$modJson = Get-Content $mod -Raw | ConvertFrom-Json
-
-$filelist = @($mod)
-
-$cover = "./" + $modJson.coverImage
-if ((-not ($cover -eq "./")) -and (Test-Path $cover))
-{ 
-    $filelist += ,$cover
-} else {
-    echo "No cover Image found"
-}
-
-if ($package -eq $true -And $env:version.Contains('-Dev') -Or $release -eq $false) {
+if ($package -eq $true) {
     $qmodName = "$($env:module_id)_$($env:version)"
-echo "Actions: Packaging QMod $qmodName"
-    # Compress-Archive -Path "./libs/arm64-v8a/lib$ModID.so", "./libs/arm64-v8a/libbeatsaber-hook_$BSHook.so", ".\Cover.jpg", ".\mod.json" -DestinationPath "./Temp$ModID.zip" -Update
-    # Move-Item "./Temp$ModID.zip" "./$ModID.qmod" -Force
-} elseif ($package -eq $true) {
-        $qmodName = "$($env:module_id)"
-echo "Actions: Packaging QMod $qmodName"
+    echo "Actions: Packaging QMod $qmodName"
 } else {
-    $qmodName += "_$($modJson.version)"
+    $qmodName += "_$($qpmsharedJson.config.info.version)"
 }
 
-
-foreach ($mod in $modJson.modFiles)
-{
-    $path = "./build/" + $mod
-    if (-not (Test-Path $path))
-    {
-        $path = "./extern/libs/" + $mod
-    }
-    $filelist += $path
-}
-
-foreach ($lib in $modJson.libraryFiles)
-{
-    $path = "./extern/libs/" + $lib
-    if (-not (Test-Path $path))
-    {
-        $path = "./build/" + $lib
-    }
-    $filelist += $path
-}
-
-foreach ($file in $modJson.fileCopies)
-{
-    $path = "./Examples/" + $file.name
-    $filelist += $path
-}
-
-$zip = $qmodName + ".zip"
 $qmod = $qmodName + ".qmod"
 
-if ((-not ($clean.IsPresent)) -and (Test-Path $qmod))
-{
-    echo "Making Clean Qmod"
-    Move-Item $qmod $zip -Force
-}
+# if ((-not ($clean.IsPresent)) -and (Test-Path $qmod))
+# {
+#     echo "Making Clean Qmod"
+#     Move-Item $qmod $zip -Force
+# }
 
-Compress-Archive -Path $filelist -DestinationPath $zip -Update
-Move-Item $zip $qmod -Force
+qpm qmod zip -i ./build/ -i ./extern/libs/ $qmod
+
+# Compress-Archive -Path $filelist -DestinationPath $zip -Update
+# Move-Item $zip $qmod -Force
 
 echo "Task Completed"
