@@ -1,7 +1,7 @@
 #pragma once
 
 // Logging
-#include "paper/shared/Logger.hpp"
+#include "paper/shared/logger.hpp"
 
 // Include the modloader header, which allows us to tell the modloader which mod this is, and the version etc.
 #include "scotland2/shared/loader.hpp"
