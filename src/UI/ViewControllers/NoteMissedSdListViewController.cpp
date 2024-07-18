@@ -7,8 +7,8 @@
 #include <regex>
 #include <list>
 
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
+
+
 
 #include "UnityEngine/Object.hpp"
 #include "UnityEngine/GameObject.hpp"

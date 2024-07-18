@@ -9,8 +9,8 @@
 #include <unistd.h>
 #include <chrono>
 
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
+
+
 #include "questui/shared/CustomTypes/Components/MainThreadScheduler.hpp"
 
 #include "UnityEngine/Object.hpp"
@@ -52,7 +52,7 @@ namespace QuestSounds::ViewControllers {
         {
             if (button->get_hasSelection())
             {
-                std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
+                std::string filename = button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text();
                 QSoundsConfig::Config.menuMusic_filepath = QSoundsConfig::MenuMusicPath + filename;
                 QuestSounds::AudioClips::menuMusicLoader.filePath = QSoundsConfig::Config.menuMusic_filepath;
                 AudioClips::menuMusicLoader.loaded = false;

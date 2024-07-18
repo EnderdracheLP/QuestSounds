@@ -3,7 +3,7 @@
 #include "ViewControllers/ConfigViewController.hpp"
 #include "main.hpp"
 
-#include "questui/shared/BeatSaberUI.hpp"
+
 #include "questui/shared/CustomTypes/Components/Backgroundable.hpp"
 #include "questui/shared/QuestUI.hpp"
 

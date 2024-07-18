@@ -7,7 +7,7 @@
 #define CONFIG_VERSION_PRE_R "SoundsConfig_v1"
 #define CONFIG_VERSION_LEGACY "Sounds"
 #include "UnityEngine/UI/Toggle.hpp"
-#include "questui/shared/BeatSaberUI.hpp"
+
 
 namespace QSoundsConfig {
     static std::string soundPath = string_format(SOUND_PATH_FORMAT, Modloader::getApplicationId().c_str());;
@@ -20,9 +20,7 @@ namespace QSoundsConfig {
     static std::string FireworkSoundPath = soundPath + "Fireworks/";
     static std::string LevelClearedPath = soundPath + "LevelCleared/";
     static std::string LevelFailedPath = soundPath + "LevelFailed/";
-#ifndef BS__1_13_2
     static std::string LobbyMusicPath = soundPath + "LobbyMusic/";
-#endif
 
     extern bool LegacyConfig;
 

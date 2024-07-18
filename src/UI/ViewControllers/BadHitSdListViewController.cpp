@@ -7,8 +7,6 @@
 #include <regex>
 #include <list>
 
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
 
 #include "UnityEngine/Object.hpp"
 #include "UnityEngine/GameObject.hpp"
@@ -21,15 +19,10 @@
 #include "UnityEngine/Events/UnityAction.hpp"
 #include "TMPro/TextMeshProUGUI.hpp"
 
+#include "bsml/shared/BSML-Lite.hpp"
 using namespace QuestSounds;
 
-#ifndef REGISTER_FUNCTION
 DEFINE_TYPE(QuestSounds::ViewControllers, BadHitSdListViewController);
-#elif defined(DEFINE_TYPE)
-DEFINE_TYPE(QuestSounds::ViewControllers::BadHitSdListViewController);
-#elif defined(DEFINE_CLASS)
-DEFINE_CLASS(QuestSounds::ViewControllers::BadHitSdListViewController);
-#endif
 
 namespace QuestSounds::ViewControllers {
 
@@ -42,11 +35,12 @@ namespace QuestSounds::ViewControllers {
         {
             if (button->get_hasSelection())
             {
-                std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
+                std::string filename = button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text();
                 QSoundsConfig::Config.badHitSound_filepath = QSoundsConfig::BadHitSoundPath + filename;
                 AudioClips::badHitSoundLoader.filePath = QSoundsConfig::Config.badHitSound_filepath;
                 if (AudioClips::badHitSoundLoader.audioSource != nullptr) AudioClips::badHitSoundLoader.audioSource->Stop();
                 AudioClips::badHitSoundLoader.load();
+                // TODO: Proper thread handling
                 std::thread PlayAudio([&]() {
                     while (!AudioClips::badHitSoundLoader.loaded && QSoundsConfig::Config.badHitSound_Active) {
                         usleep(100);

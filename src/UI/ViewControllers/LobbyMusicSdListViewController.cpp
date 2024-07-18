@@ -8,8 +8,8 @@
 #include <regex>
 #include <list>
 
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/CustomTypes/Components/ExternalComponents.hpp"
+
+
 
 #include "UnityEngine/Object.hpp"
 #include "UnityEngine/GameObject.hpp"
@@ -45,7 +45,7 @@ namespace QuestSounds::ViewControllers {
         {
             if (button->get_hasSelection())
             {
-                std::string filename = to_utf8(csstrtostr(button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text()));
+                std::string filename = button->GetComponentInChildren<TMPro::TextMeshProUGUI*>()->get_text();
                 QSoundsConfig::Config.lobbyAmbience_filepath = QSoundsConfig::LobbyMusicPath + filename;
                 QuestSounds::AudioClips::lobbyAmbienceLoader.filePath = QSoundsConfig::Config.lobbyAmbience_filepath;
                 if (AudioClips::lobbyAmbienceLoader.audioSource != nullptr) AudioClips::lobbyAmbienceLoader.audioSource->Stop();

@@ -17,8 +17,8 @@
 #include "AudioClips.hpp"
 #include "ObjectInstances.hpp"
 
-#include "questui/shared/BeatSaberUI.hpp"
-#include "questui/shared/QuestUI.hpp"
+
+#include "bsml/shared/BSML-Lite.hpp"
 
 #include "HMUI/ViewController.hpp"
 #include "HMUI/ViewController_AnimationType.hpp"
@@ -27,26 +27,7 @@
 using namespace QuestSounds;
 using namespace QuestSounds::ViewControllers;
 
-#ifndef REGISTER_FUNCTION
 DEFINE_TYPE(QuestSounds, QSoundsFlowCoordinator);
-#elif defined(DEFINE_TYPE)
-DEFINE_TYPE(QSoundsFlowCoordinator);
-#elif defined(DEFINE_CLASS)
-DEFINE_CLASS(QSoundsFlowCoordinator);
-#else
-#error Unsupported Custom-Types version!
-#endif
-
-//void FindViewControllers(QuestSounds::QSoundsFlowCoordinator* self)
-//{
-//    //self->QSMenuSoundListView = UnityUtils::GetFirstObjectOfType<QuestSounds::QSoundsMenuSdListViewController*>();
-//
-//    //self->QSHitSoundListView = UnityUtils::GetFirstObjectOfType<QuestSounds::QSoundsHitSdListViewController*>();
-//
-//    //self->WallSwitcherViewController = UnityUtils::GetFirstObjectOfType<Qosmetics::WallSwitcherViewController*>();
-//
-//    //self->QosmeticsViewController = UnityUtils::GetFirstObjectOfType<Qosmetics::QosmeticsViewController*>();
-//}
 
 int CurrentActive;
 
@@ -67,9 +48,7 @@ void QSoundsFlowCoordinator::DidActivate(bool firstActivation, bool addedToHiera
         if (!this->QSFireworkSoundListView) this->QSFireworkSoundListView = QuestUI::BeatSaberUI::CreateViewController<FireworkSdListViewController*>();
         if (!this->QSLevelClearedSoundListView) this->QSLevelClearedSoundListView = QuestUI::BeatSaberUI::CreateViewController<LevelClearedSdListViewController*>();
         if (!this->QSLevelFailedSoundListView) this->QSLevelFailedSoundListView = QuestUI::BeatSaberUI::CreateViewController<LevelFailedSdListViewController*>();
-#ifndef BS__1_13_2
         if (!this->QSLobbyMusicSoundListView) this->QSLobbyMusicSoundListView = QuestUI::BeatSaberUI::CreateViewController<LobbyMusicSdListViewController*>();
-#endif
 
         QSConfigViewController = reinterpret_cast<QuestSounds::ViewControllers::ConfigViewController*>(QSConfigView);
         
