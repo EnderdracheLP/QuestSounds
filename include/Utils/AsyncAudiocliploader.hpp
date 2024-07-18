@@ -17,7 +17,7 @@
 
 namespace AsyncAudioClipLoader
 {
-    // TODO: CustomTypes/Zenject?
+    // TODO: CustomTypes/Zenject or just a cpp class?
     class loader : public Il2CppObject
     {
     public:
