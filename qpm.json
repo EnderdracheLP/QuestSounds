@@ -55,6 +55,11 @@
       "id": "paper",
       "versionRange": "^3.6.4",
       "additionalData": {}
+    },
+    {
+      "id": "rapidjson-macros",
+      "versionRange": "^1.2.1",
+      "additionalData": {}
     }
   ]
 }

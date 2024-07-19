@@ -56,6 +56,11 @@
         "id": "paper",
         "versionRange": "^3.6.4",
         "additionalData": {}
+      },
+      {
+        "id": "rapidjson-macros",
+        "versionRange": "^1.2.1",
+        "additionalData": {}
       }
     ]
   },
@@ -82,6 +87,18 @@
     },
     {
       "dependency": {
+        "id": "rapidjson-macros",
+        "versionRange": "=1.2.1",
+        "additionalData": {
+          "headersOnly": true,
+          "branchName": "version/v1_2_1",
+          "cmake": true
+        }
+      },
+      "version": "1.2.1"
+    },
+    {
+      "dependency": {
         "id": "bsml",
         "versionRange": "=0.4.43",
         "additionalData": {
@@ -94,17 +111,6 @@
         }
       },
       "version": "0.4.43"
-    },
-    {
-      "dependency": {
-        "id": "libil2cpp",
-        "versionRange": "=0.3.2",
-        "additionalData": {
-          "headersOnly": true,
-          "cmake": false
-        }
-      },
-      "version": "0.3.2"
     },
     {
       "dependency": {
@@ -142,15 +148,14 @@
     },
     {
       "dependency": {
-        "id": "rapidjson-macros",
-        "versionRange": "=1.2.1",
+        "id": "libil2cpp",
+        "versionRange": "=0.3.2",
         "additionalData": {
           "headersOnly": true,
-          "branchName": "version/v1_2_1",
-          "cmake": true
+          "cmake": false
         }
       },
-      "version": "1.2.1"
+      "version": "0.3.2"
     },
     {
       "dependency": {
