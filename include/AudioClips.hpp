@@ -1,11 +1,11 @@
 #pragma once
 //#include "main.hpp"
 //#include "audiocliploader.hpp"
-#include "Utils/AsyncAudiocliploader.hpp"
+#include "Utils/AsyncAudioClipLoader.hpp"
 
 namespace QuestSounds::AudioClips {
 	//extern audioClipLoader::loader
-	extern AsyncAudioClipLoader::loader	hitSoundLoader,     // hitSound
+	extern QuestSounds::Utils::AsyncAudioClipLoader	hitSoundLoader,     // hitSound
 										badHitSoundLoader,  // badHitSound
 										noteMissedSoundLoader,
 										menuMusicLoader,    // menuMusic
@@ -22,5 +22,5 @@ namespace QuestSounds::AudioClips {
 	extern Array<UnityEngine::AudioClip*> *	origMenuClickArr;
 	extern void loadAudioClips();
 
-	extern Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader, bool GetOriginalClip = false);
+	extern Array<UnityEngine::AudioClip*>* createAudioClipArray(QuestSounds::Utils::AsyncAudioClipLoader clipLoader, bool GetOriginalClip = false);
 }

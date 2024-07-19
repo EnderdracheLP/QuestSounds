@@ -1,7 +1,6 @@
 #include "main.hpp"
-#include "Utils/AsyncAudiocliploader.hpp"
-#include "QSoundsConfig.hpp"
-using namespace QSoundsConfig;
+#include "Utils/AsyncAudioClipLoader.hpp"
+#include "Config.hpp"
 #include "AudioClips.hpp"
 using namespace QuestSounds::AudioClips;
 
@@ -21,7 +20,6 @@ using namespace QuestSounds::AudioClips;
 #include "GlobalNamespace/FileHelpers.hpp"
 
 #include "GlobalNamespace/LevelCompletionResults.hpp"
-#include "GlobalNamespace/SongPreviewPlayer_AudioSourceVolumeController.hpp"
 using namespace GlobalNamespace;
 
 #include "System/Action.hpp"
@@ -35,19 +33,19 @@ using namespace UnityEngine::SceneManagement;
 
 // TODO BSML
 
-#include "ViewControllers/MenuSdListViewController.hpp"
-#include "ViewControllers/HitSdListViewController.hpp"
-#include "ViewControllers/MenuClickSdListViewController.hpp"
-#include "ViewControllers/BadHitSdListViewController.hpp"
-#include "ViewControllers/FireworkSdListViewController.hpp"
-#include "ViewControllers/LevelClearedSdListViewController.hpp"
-#include "ViewControllers/LobbyMusicSdListViewController.hpp"
-#include "ViewControllers/ConfigViewController.hpp"
-#include "QSoundsFlowCoordinator.hpp"
+// #include "ViewControllers/MenuSdListViewController.hpp"
+// #include "ViewControllers/HitSdListViewController.hpp"
+// #include "ViewControllers/MenuClickSdListViewController.hpp"
+// #include "ViewControllers/BadHitSdListViewController.hpp"
+// #include "ViewControllers/FireworkSdListViewController.hpp"
+// #include "ViewControllers/LevelClearedSdListViewController.hpp"
+// #include "ViewControllers/LobbyMusicSdListViewController.hpp"
+// #include "ViewControllers/ConfigViewController.hpp"
+// #include "QSoundsFlowCoordinator.hpp"
 using namespace QuestSounds;
 
-#include "custom-types/shared/register.hpp"
-using namespace custom_types;
+// #include "custom-types/shared/register.hpp"
+// using namespace custom_types;
 
 #define RAPIDJSON_HAS_STDSTRING 1
 
@@ -59,102 +57,100 @@ Configuration& getConfig() {
 }
 
 // TODO: Proper paper logging
-Paper::ConstLoggerContext<9UL>& getLogger() {
+Paper::ConstLoggerContext<12UL>& getLogger() {
     static auto fastContext = Paper::Logger::WithContext<MOD_ID>();
     return fastContext;
 }
 
 void makeFolder() 
 {    
-    if (!direxists(MenuMusicPath.c_str()))
+    if (!direxists(Config.Sounds.MenuMusic.FolderPath.c_str()))
     {
-        int makePath = mkpath(MenuMusicPath.c_str());
+        int makePath = mkpath(Config.Sounds.MenuMusic.FolderPath.c_str());
         if (makePath == -1)
         {
             getLogger().error("Failed to make MenuMusic Folder path!");
         }
     }
 
-    if (!direxists(HitSoundPath.c_str()))
+    if (!direxists(Config.Sounds.HitSound.FolderPath.c_str()))
     {
-        int makePath = mkpath(HitSoundPath.c_str());
+        int makePath = mkpath(Config.Sounds.HitSound.FolderPath.c_str());
         if (makePath == -1)
         {
             getLogger().error("Failed to make HitSound Folder path!");
         }
     }
 
-    if (!direxists(BadHitSoundPath.c_str()))
+    if (!direxists(Config.Sounds.BadHitSound.FolderPath.c_str()))
     {
-        int makePath = mkpath(BadHitSoundPath.c_str());
+        int makePath = mkpath(Config.Sounds.BadHitSound.FolderPath.c_str());
             if (makePath == -1)
             {
                 getLogger().error("Failed to make BadHitSound Folder path!");
             }
     }
 
-    if (!direxists(NoteMissedSoundPath.c_str()))
+    if (!direxists(Config.Sounds.NoteMissedSound.FolderPath.c_str()))
     {
-        int makePath = mkpath(NoteMissedSoundPath.c_str());
+        int makePath = mkpath(Config.Sounds.NoteMissedSound.FolderPath.c_str());
         if (makePath == -1)
         {
             getLogger().error("Failed to make NoteMissedSound Folder path!");
         }
     }
 
-    if (!direxists(MenuClickPath.c_str()))
+    if (!direxists(Config.Sounds.MenuClick.FolderPath.c_str()))
     {
-        int makePath = mkpath(MenuClickPath.c_str());
+        int makePath = mkpath(Config.Sounds.MenuClick.FolderPath.c_str());
         if (makePath == -1)
         {
             getLogger().error("Failed to make MenuClick Folder path!");
         }
     }
 
-    if (!direxists(FireworkSoundPath.c_str()))
+    if (!direxists(Config.Sounds.Firework.FolderPath.c_str()))
     {
-        int makePath = mkpath(FireworkSoundPath.c_str());
+        int makePath = mkpath(Config.Sounds.Firework.FolderPath.c_str());
         if (makePath == -1)
         {
             getLogger().error("Failed to make FireworkSound Folder path!");
         }
     }
 
-    if (!direxists(LevelClearedPath.c_str()))
+    if (!direxists(Config.Sounds.LevelCleared.FolderPath.c_str()))
     {
-        int makePath = mkpath(LevelClearedPath.c_str());
+        int makePath = mkpath(Config.Sounds.LevelCleared.FolderPath.c_str());
         if (makePath == -1)
         {
             getLogger().error("Failed to make LevelCleared Folder path!");
         }
     }
 
-    if (!direxists(LevelFailedPath.c_str()))
+    if (!direxists(Config.Sounds.LevelFailed.FolderPath.c_str()))
     {
-        int makePath = mkpath(LevelFailedPath.c_str());
+        int makePath = mkpath(Config.Sounds.LevelFailed.FolderPath.c_str());
         if (makePath == -1)
         {
             getLogger().error("Failed to make LevelFailed Folder path!");
         }
     }
 
-#ifndef BS__1_13_2
-    if (!direxists(LobbyMusicPath.c_str()))
+    if (!direxists(Config.Sounds.LobbyMusic.FolderPath.c_str()))
     {
-        int makePath = mkpath(LobbyMusicPath.c_str());
+        int makePath = mkpath(Config.Sounds.LobbyMusic.FolderPath.c_str());
         if (makePath == -1)
         {
             getLogger().error("Failed to make LobbyMusic Folder path!");
         }
     }
-#endif
 }
 
 
 
 namespace QuestSounds::AudioClips {
 /*audioClipLoader::loader*/
-AsyncAudioClipLoader::loader    hitSoundLoader,     // hitSound
+QuestSounds::Utils::AsyncAudioClipLoader    hitSoundLoader,     // hitSound
                                 badHitSoundLoader,  // badHitSound
                                 noteMissedSoundLoader,
                                 menuMusicLoader,    // menuMusic
@@ -173,28 +169,28 @@ Array<UnityEngine::AudioClip*>* origMenuClickArr;
 
     void loadAudioClips()
     {
-        hitSoundLoader.filePath = Config.hitSound_filepath;
-        badHitSoundLoader.filePath = Config.badHitSound_filepath;
-        noteMissedSoundLoader.filePath = Config.noteMissedSound_filepath;
-        menuMusicLoader.filePath = Config.menuMusic_filepath;
-        menuClickLoader.filePath = Config.menuClick_filepath;
-        fireworkSoundLoader.filePath = Config.firework_filepath;
-        levelClearedLoader.filePath = Config.levelCleared_filepath;
-        levelFailedLoader.filePath = Config.levelFailed_filepath;
-        lobbyAmbienceLoader.filePath = Config.lobbyAmbience_filepath; // Added for LobbyMusic
+        hitSoundLoader.filePath = Config.Sounds.HitSound.FilePath;
+        badHitSoundLoader.filePath = Config.Sounds.BadHitSound.FilePath;
+        noteMissedSoundLoader.filePath = Config.Sounds.NoteMissedSound.FilePath;
+        menuMusicLoader.filePath = Config.Sounds.MenuMusic.FilePath;
+        menuClickLoader.filePath = Config.Sounds.MenuClick.FilePath;
+        fireworkSoundLoader.filePath = Config.Sounds.Firework.FilePath;
+        levelClearedLoader.filePath = Config.Sounds.LevelCleared.FilePath;
+        levelFailedLoader.filePath = Config.Sounds.LevelFailed.FilePath;
+        lobbyAmbienceLoader.filePath = Config.Sounds.LobbyMusic.FilePath; // Added for LobbyMusic
 
         menuMusicLoader.load();
         menuClickLoader.load();
-        if (Config.hitSound_Active) hitSoundLoader.load();
-        if (Config.badHitSound_Active) badHitSoundLoader.load();
-        if (Config.noteMissedSound_Active) noteMissedSoundLoader.load();
-        if (Config.firework_Active) fireworkSoundLoader.load();
-        if (Config.levelCleared_Active) levelClearedLoader.load();
-        if (Config.levelFailed_Active) levelFailedLoader.load();
-        if (Config.lobbyAmbience_Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
+        if (Config.Sounds.HitSound.Active) hitSoundLoader.load();
+        if (Config.Sounds.BadHitSound.Active) badHitSoundLoader.load();
+        if (Config.Sounds.NoteMissedSound.Active) noteMissedSoundLoader.load();
+        if (Config.Sounds.Firework.Active) fireworkSoundLoader.load();
+        if (Config.Sounds.LevelCleared.Active) levelClearedLoader.load();
+        if (Config.Sounds.LevelFailed.Active) levelFailedLoader.load();
+        if (Config.Sounds.LobbyMusic.Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
     }
     // Creates an Array, of AudioClips
-    Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader, bool GetOriginalClip)
+    Array<UnityEngine::AudioClip*>* createAudioClipArray(QuestSounds::Utils::AsyncAudioClipLoader clipLoader, bool GetOriginalClip)
     {
         UnityEngine::AudioClip* tempClip;
         if (!GetOriginalClip) tempClip = clipLoader.getClip();
@@ -208,40 +204,40 @@ Array<UnityEngine::AudioClip*>* origMenuClickArr;
 
 MAKE_HOOK_MATCH(ResultsViewController_DidActivate, &ResultsViewController::DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
     if (firstActivation && addedToHierarchy && !levelClearedLoader.OriginalAudioSource) {
-        levelClearedLoader.set_OriginalClip(self->levelClearedAudioClip);
+        levelClearedLoader.set_OriginalClip(self->_levelClearedAudioClip);
     }
-    if (self->levelCompletionResults->levelEndStateType == LevelCompletionResults::LevelEndStateType::Failed) {
-        self->songPreviewPlayer->StopAllCoroutines();
-        if (levelFailedLoader.loaded && addedToHierarchy && QSoundsConfig::Config.levelFailed_Active) {
+    if (self->_levelCompletionResults->levelEndStateType == LevelCompletionResults::LevelEndStateType::Failed) {
+        self->_songPreviewPlayer->StopAllCoroutines();
+        if (levelFailedLoader.loaded && addedToHierarchy && Config.Sounds.LevelFailed.Active) {
             UnityEngine::AudioClip* FailedSound = levelFailedLoader.getClip();
             float length = FailedSound->get_length();
-            getLogger().debug("Duration of LevelFailed Sound: %f", length);
+            getLogger().debug("Duration of LevelFailed Sound: {}", length);
             if (length > 7.0f) {
                 getLogger().info("Long LevelFailedSound");
-                self->songPreviewPlayer->CrossfadeTo(FailedSound, -4.0f, 0.0f, length, nullptr);
+                self->_songPreviewPlayer->CrossfadeTo(FailedSound, -4.0f, 0.0f, length, nullptr);
             }
             else {
                 getLogger().info("Short LevelFailedSound");
-                self->songPreviewPlayer->FadeOut(0.1f);
-                self->songPreviewPlayer->fadeSpeed = self->songPreviewPlayer->fadeInSpeed;
-                getLogger().debug("volume: %f", self->songPreviewPlayer->volume);
-                getLogger().debug("AmbientVolume: %f", self->songPreviewPlayer->ambientVolumeScale);
-                getLogger().debug("Set Volume: %f", self->songPreviewPlayer->volume * self->songPreviewPlayer->ambientVolumeScale);
+                self->_songPreviewPlayer->FadeOut(0.1f);
+                self->_songPreviewPlayer->_fadeSpeed = self->_songPreviewPlayer->_fadeInSpeed;
+                getLogger().debug("volume: {}", self->_songPreviewPlayer->_volume);
+                getLogger().debug("AmbientVolume: {}", self->_songPreviewPlayer->_ambientVolumeScale);
+                getLogger().debug("Set Volume: {}", self->_songPreviewPlayer->_volume * self->_songPreviewPlayer->_ambientVolumeScale);
 
-                levelFailedLoader.audioSource->set_volume(self->songPreviewPlayer->volume * self->songPreviewPlayer->ambientVolumeScale);
-                self->songPreviewPlayer->StartCoroutine(self->songPreviewPlayer->CrossFadeAfterDelayCoroutine(length - 1.2f));
+                levelFailedLoader.audioSource->set_volume(self->_songPreviewPlayer->_volume * self->_songPreviewPlayer->_ambientVolumeScale);
+                self->_songPreviewPlayer->StartCoroutine(self->_songPreviewPlayer->CrossFadeAfterDelayCoroutine(length - 1.2f));
                 levelFailedLoader.audioSource->Play();
             }
         }
     }
     else {
-        if (levelClearedLoader.loaded && addedToHierarchy && QSoundsConfig::Config.levelCleared_Active)
+        if (levelClearedLoader.loaded && addedToHierarchy && Config.Sounds.LevelCleared.Active)
         {
             UnityEngine::AudioClip* audioClip = levelClearedLoader.getClip();
-            self->levelClearedAudioClip = audioClip;
+            self->_levelClearedAudioClip = audioClip;
         }
         else {
-            self->levelClearedAudioClip = levelClearedLoader.get_OriginalClip();
+            self->_levelClearedAudioClip = levelClearedLoader.get_OriginalClip();
         }
     }
     ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
@@ -258,17 +254,19 @@ MAKE_HOOK_MATCH(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, 
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
 
     if (!menuMusicLoader.OriginalAudioSource) {
-        menuMusicLoader.set_OriginalClip(self->defaultAudioClip);
+        menuMusicLoader.set_OriginalClip(self->_defaultAudioClip);
     }
 
-    if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active)
+    if (menuMusicLoader.loaded && Config.Sounds.MenuMusic.Active)
     {
+        getLogger().debug("Overriding MenuMusic Audio");
         UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
         if (audioClip != nullptr)
-            self->defaultAudioClip = audioClip;
+            self->_defaultAudioClip = audioClip;
     }
     else {
-        self->defaultAudioClip = menuMusicLoader.get_OriginalClip();
+        getLogger().debug("Loading MenuMusic Audio normally: isLoaded='{}' isActive='{}'", menuMusicLoader.loaded, Config.Sounds.MenuMusic.Active);
+        self->_defaultAudioClip = menuMusicLoader.get_OriginalClip();
     }
     SongPreviewPlayer_OnEnable(self);
 }
@@ -276,15 +274,15 @@ MAKE_HOOK_MATCH(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, 
 MAKE_HOOK_MATCH(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoordinator::DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
-    if (!lobbyAmbienceLoader.OriginalAudioSource) lobbyAmbienceLoader.set_OriginalClip(self->ambienceAudioClip);
+    if (!lobbyAmbienceLoader.OriginalAudioSource) lobbyAmbienceLoader.set_OriginalClip(self->_ambienceAudioClip);
 
-    if (lobbyAmbienceLoader.loaded && QSoundsConfig::Config.lobbyAmbience_Active)
+    if (lobbyAmbienceLoader.loaded && Config.Sounds.LobbyMusic.Active)
     {
         getLogger().debug("Overwriting LobbyAmbience Audio");
-        self->ambienceAudioClip = lobbyAmbienceLoader.getClip();
+        self->_ambienceAudioClip = lobbyAmbienceLoader.getClip();
     }
     else {
-        self->ambienceAudioClip = lobbyAmbienceLoader.get_OriginalClip();
+        self->_ambienceAudioClip = lobbyAmbienceLoader.get_OriginalClip();
     }
     GameServerLobbyFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
 }
@@ -292,13 +290,13 @@ MAKE_HOOK_MATCH(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlow
 MAKE_HOOK_MATCH(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFlowCoordinator::DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
 {
     getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
-    if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
+    if (menuMusicLoader.loaded && Config.Sounds.MenuMusic.Active && removedFromHierarchy)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
-        self->ambienceAudioClip = menuMusicLoader.getClip();
+        self->_ambienceAudioClip = menuMusicLoader.getClip();
     }
     else {
-        self->ambienceAudioClip = menuMusicLoader.get_OriginalClip();
+        self->_ambienceAudioClip = menuMusicLoader.get_OriginalClip();
     }
     GameServerLobbyFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
 }
@@ -306,13 +304,13 @@ MAKE_HOOK_MATCH(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFl
 MAKE_HOOK_MATCH(MultiplayerModeSelectionFlowCoordinator_DidActivate, &MultiplayerModeSelectionFlowCoordinator::DidActivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
 {
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidActivate");
-    if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active)
+    if (menuMusicLoader.loaded && Config.Sounds.MenuMusic.Active)
     {
         getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
-        self->ambienceAudioClip = menuMusicLoader.getClip();
+        self->_ambienceAudioClip = menuMusicLoader.getClip();
     }
     else {
-        self->ambienceAudioClip = menuMusicLoader.get_OriginalClip();
+        self->_ambienceAudioClip = menuMusicLoader.get_OriginalClip();
     }
     MultiplayerModeSelectionFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling); // This has to be ran last, otherwise it will not work correctly
 }
@@ -320,12 +318,12 @@ MAKE_HOOK_MATCH(MultiplayerModeSelectionFlowCoordinator_DidActivate, &Multiplaye
 MAKE_HOOK_MATCH(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &MultiplayerModeSelectionFlowCoordinator::DidDeactivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
 {
     getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidDeactivate");
-    if (menuMusicLoader.loaded && QSoundsConfig::Config.menuMusic_Active && removedFromHierarchy)
+    if (menuMusicLoader.loaded && Config.Sounds.MenuMusic.Active && removedFromHierarchy)
     {
-        self->ambienceAudioClip = menuMusicLoader.getClip();
+        self->_ambienceAudioClip = menuMusicLoader.getClip();
     }
     else {
-        self->ambienceAudioClip = menuMusicLoader.get_OriginalClip();
+        self->_ambienceAudioClip = menuMusicLoader.get_OriginalClip();
     }
 
     MultiplayerModeSelectionFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
@@ -338,33 +336,34 @@ MAKE_HOOK_MATCH(FileHelpers_GetEscapedURLForFilePath, &FileHelpers::GetEscapedUR
 #endif
 
 MAKE_HOOK_MATCH(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start, void, NoteCutSoundEffectManager* self) {
-    if(hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active)
+    if(hitSoundLoader.loaded && Config.Sounds.HitSound.Active)
     {
         hitSoundArr = createAudioClipArray(hitSoundLoader);
-        self->longCutEffectsAudioClips = hitSoundArr;
-        self->shortCutEffectsAudioClips = hitSoundArr;
+        self->_longCutEffectsAudioClips = hitSoundArr;
+        self->_shortCutEffectsAudioClips = hitSoundArr;
         getLogger().debug("NoteCutSoundEffectManager_Start: Loaded hitSoundArray");
     }
     else {
         getLogger().debug("NoteCutSoundEffectManager_Start: Loading normally");
     }
-    getLogger().debug("audioSamplesBeatAlignOffset was: %f", self->audioSamplesBeatAlignOffset);
-    self->audioSamplesBeatAlignOffset = QSoundsConfig::Config.hitSound_beatOffSet;
-    getLogger().debug("audioSamplesBeatAlignOffset changed to: %f", self->audioSamplesBeatAlignOffset);
+    getLogger().debug("audioSamplesBeatAlignOffset was: {}", self->_audioSamplesBeatAlignOffset);
+    if (Config.Sounds.HitSound.BeatOffset.has_value())
+        self->_audioSamplesBeatAlignOffset = Config.Sounds.HitSound.BeatOffset.value();
+    getLogger().debug("audioSamplesBeatAlignOffset changed to: {}", self->_audioSamplesBeatAlignOffset);
     NoteCutSoundEffectManager_Start(self);
-    getLogger().debug("Beatalign offset is: %f", self->beatAlignOffset);
+    getLogger().debug("Beatalign offset is: {}", self->_beatAlignOffset);
 }
 
 MAKE_HOOK_MATCH(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCutSoundEffect* self) {
-    if (hitSoundLoader.loaded && QSoundsConfig::Config.hitSound_Active) {
-        self->goodCutVolume += QSoundsConfig::Config.hitSound_audioVolumeOffset;
+    if (hitSoundLoader.loaded && Config.Sounds.HitSound.Active) {
+        self->_goodCutVolume += Config.Sounds.HitSound.VolumeOffset.value_or(0.0f);
     }
 
-    if(badHitSoundLoader.loaded && QSoundsConfig::Config.badHitSound_Active)
+    if(badHitSoundLoader.loaded && Config.Sounds.BadHitSound.Active)
     {
         badHitSoundArr = createAudioClipArray(badHitSoundLoader);
-        self->badCutSoundEffectAudioClips = badHitSoundArr;
-        self->badCutVolume += QSoundsConfig::Config.badHitSound_audioVolumeOffset;
+        self->_badCutSoundEffectAudioClips = badHitSoundArr;
+        self->_badCutVolume += Config.Sounds.BadHitSound.VolumeOffset.value_or(0.0f);
     }
     NoteCutSoundEffect_Awake(self);
 }
@@ -372,59 +371,40 @@ MAKE_HOOK_MATCH(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, Note
 MAKE_HOOK_MATCH(BeatmapObjectManager_HandleNoteWasMissed, &BeatmapObjectManager::HandleNoteControllerNoteWasMissed, void, BeatmapObjectManager* self, NoteController* noteController) {
     BeatmapObjectManager_HandleNoteWasMissed(self, noteController);
     if (noteMissedSoundLoader.loaded && 
-        QSoundsConfig::Config.noteMissedSound_Active &&
+        Config.Sounds.NoteMissedSound.Active &&
         noteController->get_noteData()->get_scoringType() != NoteData::ScoringType::Ignore &&
         noteController->get_noteData()->get_gameplayType() != NoteData::GameplayType::Bomb) {
-        //getLogger().debug("Playing note missed sound");
-        noteMissedSoundLoader.audioSource->set_volume(0.5f + QSoundsConfig::Config.noteMissedSound_audioVolumeOffset);
+        noteMissedSoundLoader.audioSource->set_volume(0.5f + Config.Sounds.NoteMissedSound.VolumeOffset.value_or(0.0f));
         noteMissedSoundLoader.audioSource->Play();
-        //noteMissedSoundLoader.audioSource->PlayOneShot(noteMissedSoundLoader.audioSource->get_clip(), 1.0f + QSoundsConfig::Config.noteMissedSound_audioVolumeOffset);
     }
 }
 
 MAKE_HOOK_MATCH(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, BasicUIAudioManager* self) {
-    if (!menuClickLoader.OriginalAudioSource) menuClickLoader.set_OriginalClip(self->clickSounds[0]);
+    if (!menuClickLoader.OriginalAudioSource) menuClickLoader.set_OriginalClip(self->_clickSounds[0]);
 
-    if(menuClickLoader.loaded && QSoundsConfig::Config.menuClick_Active)
+    if(menuClickLoader.loaded && Config.Sounds.MenuClick.Active)
     {
         menuClickArr = createAudioClipArray(menuClickLoader);
-        self->clickSounds = menuClickArr;
+        self->_clickSounds = menuClickArr;
     }
     BasicUIAudioManager_Start(self);
 }
 
-//MAKE_HOOK_MATCH(FireworkItemController_Awake, &FireworkItemController::Awake, void, FireworkItemController* self) {
-//    if (!origFireworkSoundArr) origFireworkSoundArr = self->explosionClips;
-//    
-//    if(fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active)
-//    {
-//        getLogger().debug("Setting custom Fireworks Sounds");
-//        fireworkSoundArr = createAudioClipArray(fireworkSoundLoader);
-//        self->explosionClips = fireworkSoundArr;
-//    }
-//    else {
-//        getLogger().debug("Return default Fireworks Sounds");
-//        self->explosionClips = origFireworkSoundArr;
-//    }
-//    FireworkItemController_Awake(self);
-//}
-
 // Replacing the function here, as replacing the AudioClips proves to be difficult
 MAKE_HOOK_MATCH(FireworkItemController_PlayExplosionSound, &FireworkItemController::PlayExplosionSound, void, FireworkItemController* self) {
-    if (fireworkSoundLoader.loaded && QSoundsConfig::Config.firework_Active) {
-        self->audioSource->set_clip(fireworkSoundLoader.getClip());
+    if (fireworkSoundLoader.loaded && Config.Sounds.Firework.Active) {
+        self->_audioSource->set_clip(fireworkSoundLoader.getClip());
         float pitch = 1.2f + (((float)rand()) / (float)RAND_MAX) * (0.8f - 1.2f);
-        self->audioSource->set_pitch(pitch);
-        self->audioSource->Play();
+        self->_audioSource->set_pitch(pitch);
+        self->_audioSource->Play();
     }
     else FireworkItemController_PlayExplosionSound(self);
 }
 
 MAKE_HOOK_MATCH(PauseMenuManager_MenuButtonPressed, &PauseMenuManager::MenuButtonPressed, void, PauseMenuManager* self) {
     if (noteMissedSoundLoader.loaded &&
-        QSoundsConfig::Config.noteMissedSound_Active) {
+        Config.Sounds.NoteMissedSound.Active) {
         if (noteMissedSoundLoader.audioSource) noteMissedSoundLoader.audioSource->Stop();
-        //noteMissedSoundLoader.audioSource->PlayOneShot(noteMissedSoundLoader.audioSource->get_clip(), 1.0f + QSoundsConfig::Config.noteMissedSound_audioVolumeOffset);
     }
     PauseMenuManager_MenuButtonPressed(self);
 }
@@ -433,24 +413,34 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Interna
     SceneManager_Internal_ActiveSceneChanged(previousActiveScene, newActiveScene);
     if (newActiveScene.IsValid()) {
         std::string sceneName = newActiveScene.get_name();
-        getLogger().info("Scene found: %s", sceneName.data());
+        getLogger().info("Scene found: {}", sceneName.data());
 
         std::string questInit = "QuestInit";
-        if(sceneName == questInit) QuestSounds::AudioClips::loadAudioClips();
+        if(sceneName == questInit) {
+            try { 
+                QuestSounds::AudioClips::loadAudioClips();
+            }
+            catch (const std::exception& e) {
+                getLogger().error("Failed to load AudioClips: {}", e.what());
+            }
+        }
     }
 }
 
-QS_EXPORT void setup(CModInfo *info) {
-    *info = modInfo.to_c();
+std::string& GetConfigPath() {
+    static std::string configPath = Configuration::getConfigFilePath(modInfo);
+    return configPath;
+}
 
-    info.id = MOD_ID;
-    info.version = VERSION;
-    modInfo = info;
+QS_EXPORT void setup(CModInfo *info) {
+    info->id = MOD_ID;
+    info->version = VERSION;
+
 
     Paper::Logger::RegisterFileContextId(getLogger().tag);
 
-    getLogger().info("Modloader name: %s", Modloader::getInfo().name.c_str());
-    getLogger().debug("Config Path is: %s", getConfig().getConfigFilePath(modInfo).c_str());
+    getLogger().info("Modloader: {}", modloader::get_modloader_path().c_str());
+    getLogger().debug("Config Path is: {}", getConfig().getConfigFilePath(modInfo).c_str());
     getLogger().info("Loading Config");
     getConfig();
     getLogger().info("Completed setup!");
@@ -460,12 +450,25 @@ QS_EXPORT void late_load()
 {
     il2cpp_functions::Init();
 
-    Logger& hkLog = getLogger();
+    auto& hkLog = getLogger();
 
     //custom_types::Register::RegisterType<QuestSounds::QSoundsFlowCoordinator>();
-    custom_types::Register::AutoRegister();
+    // custom_types::Register::AutoRegister();
     
-    if(!LoadConfig()) SaveConfig();
+    getLogger().info("Loading Config from file {}", GetConfigPath());
+
+    if(!fileexists(GetConfigPath())) {
+        if(!WriteToFile(GetConfigPath(), Config))
+            getLogger().error("Failed to write config file!");
+    }
+
+    try {
+        ReadFromFile(GetConfigPath(), Config);
+    } catch(const std::exception& e) {
+        getLogger().error("Failed to read config: {}", e.what());
+    }
+
+    // if(!LoadConfig()) SaveConfig();
     makeFolder();
     getLogger().debug("Installing QuestSounds!");
     INSTALL_HOOK(hkLog, SceneManager_Internal_ActiveSceneChanged);

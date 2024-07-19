@@ -1,12 +1,17 @@
-#include "QSoundsConfig.hpp"
-#include "Utils/AsyncAudiocliploader.hpp"
+// #include "QSoundsConfig.hpp"
+#include "Utils/AsyncAudioClipLoader.hpp"
 #include "main.hpp"
+#include "Config.hpp"
 #include "ObjectInstances.hpp"
 
 #include <dirent.h>
 #include <regex>
 
 #include <chrono>
+
+#include "custom-types/shared/delegate.hpp"
+#include "bsml/shared/BSML/MainThreadScheduler.hpp"
+#include "bsml/shared/BSML/SharedCoroutineStarter.hpp"
 
 #include "UnityEngine/Networking/DownloadHandlerAudioClip.hpp"
 #include "UnityEngine/Networking/UnityWebRequestMultimedia.hpp"
@@ -18,6 +23,7 @@ using namespace UnityEngine::Networking;
 #include "System/Action_1.hpp"
 using namespace System;
 
+#include "UnityEngine/AudioType.hpp"
 #include "UnityEngine/AsyncOperation.hpp"
 #include "UnityEngine/GameObject.hpp"
 using namespace UnityEngine;
@@ -25,19 +31,19 @@ using namespace UnityEngine;
 int getAudioType(std::string path) {
     if (path.ends_with(".ogg")) {
         getLogger().debug("File is OGGVORBIS");
-        return 0xE;
+        return (int)UnityEngine::AudioType::OGGVORBIS;
     }
     else if (path.ends_with(".mp3") || path.ends_with(".mp2")) {
         getLogger().debug("File is MPEG");
-        return 0xD;
+        return (int)UnityEngine::AudioType::MPEG;
     }
     else if (path.ends_with(".wav")) {
         getLogger().debug("File is WAV");
-        return 0x14;
+        return (int)UnityEngine::AudioType::WAV;
     }
     else if (path.ends_with(".aiff") || path.ends_with(".aif")) {
         getLogger().debug("File is AIFF");
-        return 2;
+        return (int)UnityEngine::AudioType::AIFF;
     }
     return 0;
 }
@@ -45,14 +51,13 @@ int getAudioType(std::string path) {
 System::Threading::Tasks::Task_1<UnityEngine::AudioClip*>* audioClipTask;
 //bool NeedReload = false;
 
-bool AsyncAudioClipLoader::loader::load()
+bool QuestSounds::Utils::AsyncAudioClipLoader::load()
 {
     loaded = false;
     //Stage 0 
     bool fileError;
     getLogger().info("Starting Stage 0");
-    getLogger().info("FilePath to check is %s", filePath.c_str());
-    StringW filePathStr;
+    getLogger().info("FilePath to check is {}", filePath.c_str());
     if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
         getLogger().info("Filepath is URL, skipping file checks and try loading it");
         fileError = true;
@@ -60,85 +65,109 @@ bool AsyncAudioClipLoader::loader::load()
     else {
         // Checks if the given File in the config exists and
         fileError = fileexists(filePath);
-        getLogger().info("File error is %d", fileError);
+        getLogger().info("File error is {}", fileError);
         if (!fileError)
         {
-            getLogger().error("File %s not found", filePath.c_str());
+            getLogger().error("File {} not found", filePath.c_str());
             getLogger().error("Stage 0 Failed");
             return false;
         }
-        else { getLogger().info("Stage 0 Done with %s", filePath.c_str()); }
+        else { getLogger().info("Stage 0 Done with {}", filePath.c_str()); }
     }
 
     //Stage 1
-    if (!(filePath == QSoundsConfig::Config.hitSound_filepath) && filePath.ends_with(".ogg")) {
-        getLogger().info("Stage 1: Running MediaAsyncLoader for FilePath %s", filePath.c_str());
+    if (!(filePath == QuestSounds::Config.Sounds.HitSound.FilePath) && filePath.ends_with(".ogg")) {
+        getLogger().info("Stage 1: Running MediaAsyncLoader for FilePath {}", filePath.c_str());
         UsesUWR = false;
-        filePathStr = filePath;
-        audioClipTask = GlobalNamespace::MediaAsyncLoader::New_ctor()->LoadAudioClipFromFilePathAsync(filePathStr);
-        ////Stage 2
-        auto actionMAL = il2cpp_utils::MakeDelegate<System::Action_1<System::Threading::Tasks::Task*>*>(classof(System::Action_1<System::Threading::Tasks::Task*>*), this, audioClipCompleted);
-        reinterpret_cast<System::Threading::Tasks::Task*>(audioClipTask)->ContinueWith(actionMAL);
+        loadPath = filePath;
+        if (!classof(GlobalNamespace::MediaAsyncLoader*)->initialized) il2cpp_functions::Class_Init(classof(GlobalNamespace::MediaAsyncLoader*));
+        // if (!mediaAsyncLoader) mediaAsyncLoader = ::il2cpp_utils::NewSpecific<::GlobalNamespace::MediaAsyncLoader*, il2cpp_utils::CreationType::Manual>();
+        audioClipTask = GlobalNamespace::MediaAsyncLoader::New_ctor()->LoadAudioClipFromFilePathAsync(loadPath);
+
+        audioClipTask->GetAwaiter().OnCompleted(custom_types::MakeDelegate<System::Action*>(std::function([this]()
+        { 
+            audioClipCompleted(); 
+        })));
     }
     else {
-        getLogger().info("Stage 1: Running UnityWebRequestMultimedia for FilePath %s", filePath.c_str());
+        getLogger().info("Stage 1: Running UnityWebRequestMultimedia for FilePath {}", filePath.c_str());
         UsesUWR = true;
         if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
-            filePathStr = filePath;
+            loadPath = filePath;
         }
         else {
-            filePathStr = "file:///" + filePath;
+            // EscapeURL but also replaces spaces with %20 since the UnityWebRequest replaces spaces with + which causes unitys curl call to fail
+            loadPath = "file:///" + UnityEngine::Networking::UnityWebRequest::EscapeURL(std::regex_replace(filePath, std::regex(" "), "%20"));
         }
         audioType = getAudioType(filePath);
 
-        auto actionUWRM = il2cpp_utils::MakeDelegate<System::Action_1<UnityEngine::AsyncOperation*>*>(classof(System::Action_1<UnityEngine::AsyncOperation*>*), this, audioClipCompleted);
-        
-        audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(filePathStr, audioType);
-        audioClipAsync = audioClipRequest->SendWebRequest();
-        audioClipAsync->set_allowSceneActivation(false);
-
-        if (!audioClipRequest->get_isHttpError() || !audioClipRequest->get_isNetworkError()) {
-            //Stage 2
-            audioClipAsync->add_completed(actionUWRM);
-        }
+        BSML::SharedCoroutineStarter::get_instance()->StartCoroutine(custom_types::Helpers::CoroutineHelper::New(LoadAudioClip()));
     }
-    getLogger().info("Stage 1 done with filepath %s", filePath.c_str());
+    getLogger().info("Stage 1 done with filepath {}", filePath.c_str());
     return true;
 }
 
-void AsyncAudioClipLoader::loader::audioClipCompleted(loader* obj, Il2CppObject* asyncOp)
+custom_types::Helpers::Coroutine QuestSounds::Utils::AsyncAudioClipLoader::LoadAudioClip()
 {
-    // Stage 1
-    UnityEngine::AudioClip* temporaryClip = nullptr;
-    if (!obj->UsesUWR) {
-        temporaryClip = obj->audioClipTask->get_ResultOnSuccess();
-        il2cpp_functions::GC_free(obj->audioClipTask);
-        obj->audioClipTask = nullptr;
+    getLogger().info("Stage 1: Running UnityWebRequestMultimedia for LoadPath {}", loadPath);
+    audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(loadPath, audioType);
+    audioClipAsync = audioClipRequest->SendWebRequest();
+    audioClipAsync->allowSceneActivation = false;
+    co_yield reinterpret_cast<System::Collections::IEnumerator *>(audioClipAsync);
+
+    if (audioClipRequest->GetError() != UnityEngine::Networking::UnityWebRequest::UnityWebRequestError::OK) {
+        getLogger().error("UnityWebRequestMultimedia for file '{}' failed with error {}", loadPath, (int)audioClipRequest->GetError());
+        co_return;
     }
-    else if (obj->UsesUWR) temporaryClip = UnityEngine::Networking::DownloadHandlerAudioClip::GetContent(obj->audioClipRequest); // TODO: This method takes too long
+    else {
+        while (!audioClipRequest->isDone);
+        audioClipCompleted();
+    }
+    co_return;
+}
+
+void QuestSounds::Utils::AsyncAudioClipLoader::audioClipCompleted()
+{
+    // Stage 2
+    getLogger().info("Starting Stage 2");
+    UnityEngine::AudioClip* temporaryClip = nullptr;
+    if (!this->UsesUWR) {
+        getLogger().info("UsesUWR is false, getting result from audioClipTask");
+        getLogger().debug("Is Task null? {}", fmt::ptr(audioClipTask));
+        getLogger().debug("Task Status is {}", (int)audioClipTask->get_Status());
+        temporaryClip = this->audioClipTask->get_ResultOnSuccess();
+        // gc_free_specific(this->audioClipTask);
+        // this->audioClipTask = nullptr;
+    }
+    else if (this->UsesUWR && audioClipRequest->get_result() == UnityWebRequest::Result::Success){
+        getLogger().info("UsesUWR is true, getting result from audioClipRequest");
+        getLogger().debug("Is Request null? {}", fmt::ptr(audioClipRequest));
+        temporaryClip = UnityEngine::Networking::DownloadHandlerAudioClip::GetContent(audioClipRequest); // TODO: This method takes too long
+    }
 
     if(temporaryClip != nullptr)
     {  
-        if (!obj->audioClipGO) {
-            static auto goName = "AudioClipGO";
-            obj->audioClipGO = GameObject::New_ctor(goName);
-            obj->audioSource = obj->audioClipGO->AddComponent<AudioSource*>();
-            UnityEngine::Object::DontDestroyOnLoad(obj->audioClipGO);
+        getLogger().info("TemporaryClip is not nullptr setting it to AudioSource for filepath {}", filePath);
+        if (!this->audioClipGO) {
+            static ConstString goName = "AudioClipGO";
+            audioClipGO = GameObject::New_ctor(goName);
+            audioSource = audioClipGO->AddComponent<AudioSource*>();
+            UnityEngine::Object::DontDestroyOnLoad(audioClipGO);
         }
-        obj->audioSource->set_playOnAwake(false);
-        obj->audioSource->set_clip(temporaryClip);
-        obj->audioSource->set_volume(0.6f);
-        obj->loaded = true;
+        audioSource->set_playOnAwake(false);
+        audioSource->set_clip(temporaryClip);
+        audioSource->set_volume(0.6f);
+        loaded = true;
         getLogger().info("Stage 2 done with temporaryClip");
     }
     else {
-        getLogger().error("Stage 2 failed with temporaryClip being nullptr %p Object FilePath: %s", temporaryClip, obj->filePath.c_str());
-        if (!obj->UsesUWR) getLogger().error("Task Status was %d", (int)obj->audioClipTask->get_Status());
+        getLogger().error("Stage 2 failed with temporaryClip being nullptr {} Object FilePath: {}", fmt::ptr(temporaryClip), filePath.c_str());
+        if (!UsesUWR) getLogger().error("Task Status was {}", (int)audioClipTask->get_Status());
         return;
     } // Finished
 }
 
-UnityEngine::AudioClip* AsyncAudioClipLoader::loader::getClip()
+UnityEngine::AudioClip* QuestSounds::Utils::AsyncAudioClipLoader::getClip()
 {
     if(audioSource != nullptr && loaded)
     {
@@ -146,12 +175,12 @@ UnityEngine::AudioClip* AsyncAudioClipLoader::loader::getClip()
         return audioSource->get_clip();
     } else
     {
-        getLogger().debug("nullptr returned: is AudioSource null: %p, is loaded: %d", audioSource, loaded);
+        getLogger().debug("nullptr returned: is AudioSource null: {}, is loaded: {}", fmt::ptr(audioSource), loaded);
         return nullptr;
     }
 }
 
-void AsyncAudioClipLoader::loader::set_OriginalClip(AudioClip* OriginalAudioClip)
+void QuestSounds::Utils::AsyncAudioClipLoader::set_OriginalClip(AudioClip* OriginalAudioClip)
 {
     // Stage 1
     if (OriginalAudioClip != nullptr)
@@ -167,7 +196,7 @@ void AsyncAudioClipLoader::loader::set_OriginalClip(AudioClip* OriginalAudioClip
     // Finished
 }
 
-UnityEngine::AudioClip* AsyncAudioClipLoader::loader::get_OriginalClip()
+UnityEngine::AudioClip* QuestSounds::Utils::AsyncAudioClipLoader::get_OriginalClip()
 {
     if (OriginalAudioSource != nullptr)
     {
@@ -176,7 +205,7 @@ UnityEngine::AudioClip* AsyncAudioClipLoader::loader::get_OriginalClip()
     }
     else
     {
-        getLogger().debug("nullptr returned: is OriginalAudioSource null: %p", OriginalAudioSource);
+        getLogger().debug("nullptr returned: is OriginalAudioSource null: {}", fmt::ptr(OriginalAudioSource));
         return nullptr;
     }
 }

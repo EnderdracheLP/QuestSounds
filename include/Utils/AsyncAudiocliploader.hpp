@@ -12,16 +12,15 @@
 #include "UnityEngine/Networking/UnityWebRequestMultimedia.hpp"
 #include "UnityEngine/Networking/UnityWebRequest.hpp"
 
-//#include "custom-types/shared/coroutine.hpp"
+#include "custom-types/shared/coroutine.hpp"
 
 
-namespace AsyncAudioClipLoader
+namespace QuestSounds::Utils 
 {
-    // TODO: CustomTypes/Zenject or just a cpp class?
-    class loader : public Il2CppObject
+    // TODO: Cleanup this class
+    class AsyncAudioClipLoader
     {
     public:
-        //static Logger logger;
         std::string filePath;
         int audioType = 14;
         UnityEngine::AudioSource* audioSource;
@@ -32,11 +31,14 @@ namespace AsyncAudioClipLoader
         UnityEngine::AudioClip* get_OriginalClip(); //Audioclip
         UnityEngine::AudioSource* OriginalAudioSource = nullptr;
     private:
+        custom_types::Helpers::Coroutine LoadAudioClip();
+        StringW loadPath;
+        // custom_types::Helpers::Coroutine loadCoroutine;
         UnityEngine::GameObject* audioClipGO;
-        static void audioClipCompleted(loader* obj, Il2CppObject* asyncOp);
-        StringW path;
+        void audioClipCompleted();
+        // StringW path;
         bool UsesUWR = false;
-        System::Threading::Tasks::Task_1<UnityEngine::AudioClip*>* audioClipTask;
+        System::Threading::Tasks::Task_1<::UnityW<UnityEngine::AudioClip>>* audioClipTask;
 
         UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipAsync;
         UnityEngine::Networking::UnityWebRequest* audioClipRequest;
