@@ -26,7 +26,7 @@ if ($args.Count -eq 0 -or $actions -ne $true) {
     $ModID = $qpmJson.config.info.id
     $VERSION = $qpmJson.config.info.version
     if ($release -ne $true) {
-        $VERSION += "-Dev"
+        # $VERSION += "-Dev"
     } elseif ($release -eq $true -and $VERSION.Contains("-Dev")) {
         $VERSION.Replace("-Dev", "")
     }
