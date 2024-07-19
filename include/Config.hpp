@@ -1,5 +1,5 @@
 #include "scotland2/shared/loader.hpp"
-#include "rapidjson-macros\shared\macros.hpp"
+#include "rapidjson-macros/shared/macros.hpp"
 
 #define SOUND_PATH_FORMAT "/sdcard/ModData/{}/Mods/QuestSounds/"
 // #define CONFIG_VERSION "SoundsConfig_v3"
