@@ -66,7 +66,7 @@ $qmod = $qmodName + ".qmod"
 #     Move-Item $qmod $zip -Force
 # }
 
-qpm qmod zip -i ./build/ -i ./extern/libs/ $qmod
+qpm qmod zip -i ./build/ -i ./extern/libs/ -i ./Examples/ $qmod
 
 # Compress-Archive -Path $filelist -DestinationPath $zip -Update
 # Move-Item $zip $qmod -Force
