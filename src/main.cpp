@@ -49,12 +49,7 @@ using namespace QuestSounds;
 
 #define RAPIDJSON_HAS_STDSTRING 1
 
-inline modloader::ModInfo modInfo = {MOD_ID, VERSION, 0}; // Stores the ID and version of our mod, and is sent to the modloader upon startup
-
-Configuration& getConfig() {
-    static Configuration config(modInfo);
-    return config;
-}
+inline modloader::ModInfo modInfo = {MOD_ID, VERSION, 0};
 
 // TODO: Proper paper logging
 Paper::ConstLoggerContext<12UL>& getLogger() {
@@ -151,21 +146,21 @@ void makeFolder()
 namespace QuestSounds::AudioClips {
 /*audioClipLoader::loader*/
 QuestSounds::Utils::AsyncAudioClipLoader    hitSoundLoader,     // hitSound
-                                badHitSoundLoader,  // badHitSound
-                                noteMissedSoundLoader,
-                                menuMusicLoader,    // menuMusic
-                                menuClickLoader,
-                                fireworkSoundLoader,
-                                levelClearedLoader,
-                                levelFailedLoader,  // For LevelFailed sound
-                                lobbyAmbienceLoader;    // Added for LobbyMusic
-Array<UnityEngine::AudioClip*> * hitSoundArr,    // hitSoundArray
-                               * badHitSoundArr, // badHitSoundArray
-                               * menuClickArr,
-                               * fireworkSoundArr;
+                                            badHitSoundLoader,  // badHitSound
+                                            noteMissedSoundLoader,
+                                            menuMusicLoader,    // menuMusic
+                                            menuClickLoader,
+                                            fireworkSoundLoader,
+                                            levelClearedLoader,
+                                            levelFailedLoader,  // For LevelFailed sound
+                                            lobbyAmbienceLoader;    // Added for LobbyMusic
+::ArrayW<::UnityW<::UnityEngine::AudioClip>>    hitSoundArr,    // hitSoundArray
+                                                badHitSoundArr, // badHitSoundArray
+                                                menuClickArr,
+                                                fireworkSoundArr;
 
 
-Array<UnityEngine::AudioClip*>* origMenuClickArr;
+::ArrayW<::UnityW<::UnityEngine::AudioClip>> origMenuClickArr;
 
     void loadAudioClips()
     {
@@ -190,15 +185,13 @@ Array<UnityEngine::AudioClip*>* origMenuClickArr;
         if (Config.Sounds.LobbyMusic.Active) lobbyAmbienceLoader.load();    // Added for LobbyMusic
     }
     // Creates an Array, of AudioClips
-    Array<UnityEngine::AudioClip*>* createAudioClipArray(QuestSounds::Utils::AsyncAudioClipLoader clipLoader, bool GetOriginalClip)
+    ::ArrayW<::UnityW<::UnityEngine::AudioClip>> createAudioClipArray(QuestSounds::Utils::AsyncAudioClipLoader clipLoader, bool GetOriginalClip)
     {
         UnityEngine::AudioClip* tempClip;
         if (!GetOriginalClip) tempClip = clipLoader.getClip();
         else tempClip = clipLoader.get_OriginalClip();
-        auto* temporaryArray = Array<UnityEngine::AudioClip*>::New(tempClip);
-        //temporaryArray->values[0] = tempClip;
+        auto temporaryArray = ArrayW<::UnityW<UnityEngine::AudioClip>>({UnityW<UnityEngine::AudioClip>(tempClip)});
         return temporaryArray;
-        //return ArrayW<UnityEngine::AudioClip*>({ tempClip });
     }
 }
 
@@ -440,9 +433,23 @@ QS_EXPORT void setup(CModInfo *info) {
     Paper::Logger::RegisterFileContextId(getLogger().tag);
 
     getLogger().info("Modloader: {}", modloader::get_modloader_path().c_str());
-    getLogger().debug("Config Path is: {}", getConfig().getConfigFilePath(modInfo).c_str());
-    getLogger().info("Loading Config");
-    getConfig();
+
+    auto& configPath = GetConfigPath();
+    getLogger().debug("Config Path is: {}", configPath);
+
+    getLogger().info("Loading Config from file {}", configPath);
+    if(!fileexists(configPath)) {
+        getLogger().info("Config file not found, creating default config");
+        if(!WriteToFile(configPath, Config, true))
+            getLogger().error("Failed to write config file!");
+    }
+
+    try {
+        ReadFromFile(configPath, Config);
+    } catch(const std::exception& e) {
+        getLogger().error("Failed to read config: {}", e.what());
+    }
+
     getLogger().info("Completed setup!");
 }  
 
@@ -452,23 +459,6 @@ QS_EXPORT void late_load()
 
     auto& hkLog = getLogger();
 
-    //custom_types::Register::RegisterType<QuestSounds::QSoundsFlowCoordinator>();
-    // custom_types::Register::AutoRegister();
-    
-    getLogger().info("Loading Config from file {}", GetConfigPath());
-
-    if(!fileexists(GetConfigPath())) {
-        if(!WriteToFile(GetConfigPath(), Config))
-            getLogger().error("Failed to write config file!");
-    }
-
-    try {
-        ReadFromFile(GetConfigPath(), Config);
-    } catch(const std::exception& e) {
-        getLogger().error("Failed to read config: {}", e.what());
-    }
-
-    // if(!LoadConfig()) SaveConfig();
     makeFolder();
     getLogger().debug("Installing QuestSounds!");
     INSTALL_HOOK(hkLog, SceneManager_Internal_ActiveSceneChanged);
