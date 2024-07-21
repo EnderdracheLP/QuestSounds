@@ -76,7 +76,7 @@ bool QuestSounds::Utils::AsyncAudioClipLoader::load()
     }
 
     //Stage 1
-    if (filePath.ends_with(".ogg") || filePath.ends_with(".wav")) {
+    if ((filePath.ends_with(".ogg") || filePath.ends_with(".wav")) && filePath != QuestSounds::Config.Sounds.HitSound.FilePath) {
         getLogger().info("Stage 1: Running MediaAsyncLoader for FilePath {}", filePath.c_str());
         UsesUWR = false;
         loadPath = std::regex_replace(filePath, std::regex(" "), "%20");
