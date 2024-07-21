@@ -79,8 +79,6 @@ bool QuestSounds::Utils::AsyncAudioClipLoader::load()
     //Stage 1
     if ((filePath.ends_with(".ogg") || filePath.ends_with(".wav")) && filePath != QuestSounds::Config.Sounds.HitSound.FilePath) {
         getLogger().info("Stage 1: Running MediaAsyncLoader for FilePath {}", filePath.c_str());
-        UsesUWR = false;
-        // loadPath = std::regex_replace(filePath, std::regex(" "), "%20");
         loadPath = filePath;
         // Ensure MediaAsyncLoader is initialized
         if (!classof(GlobalNamespace::MediaAsyncLoader*)->initialized) {
@@ -98,7 +96,6 @@ bool QuestSounds::Utils::AsyncAudioClipLoader::load()
     }
     else {
         getLogger().info("Stage 1: Running UnityWebRequestMultimedia for FilePath {}", filePath);
-        UsesUWR = true;
         if (filePath.starts_with("https://") || filePath.starts_with("http://")) {
             loadPath = filePath;
         }

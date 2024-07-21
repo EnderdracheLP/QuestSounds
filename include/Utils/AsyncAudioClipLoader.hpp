@@ -33,11 +33,8 @@ namespace QuestSounds::Utils
     private:
         custom_types::Helpers::Coroutine LoadAudioClip();
         StringW loadPath;
-        // custom_types::Helpers::Coroutine loadCoroutine;
         UnityEngine::GameObject* audioClipGO;
         void audioClipCompleted(UnityEngine::AudioClip* audioClip);
-        // StringW path;
-        bool UsesUWR = false;
         System::Threading::Tasks::Task_1<::UnityW<UnityEngine::AudioClip>>* audioClipTask;
 
         UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipAsync;
