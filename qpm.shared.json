@@ -61,6 +61,11 @@
         "id": "rapidjson-macros",
         "versionRange": "^1.2.1",
         "additionalData": {}
+      },
+      {
+        "id": "kaleb",
+        "versionRange": "^0.1.9",
+        "additionalData": {}
       }
     ]
   },
@@ -159,6 +164,23 @@
     },
     {
       "dependency": {
+        "id": "kaleb",
+        "versionRange": "=0.1.9",
+        "additionalData": {
+          "headersOnly": true,
+          "branchName": "version/v0_1_9",
+          "compileOptions": {
+            "cppFlags": [
+              "-DKALEB_VERSION=\"0.1.9\""
+            ]
+          },
+          "cmake": false
+        }
+      },
+      "version": "0.1.9"
+    },
+    {
+      "dependency": {
         "id": "bs-cordl",
         "versionRange": "=3700.0.0",
         "additionalData": {
@@ -208,6 +230,21 @@
     },
     {
       "dependency": {
+        "id": "tinyxml2",
+        "versionRange": "=10.0.0",
+        "additionalData": {
+          "soLink": "https://github.com/MillzyDev/NDK-tinyxml2/releases/download/v10.0.0/libtinyxml2.so",
+          "debugSoLink": "https://github.com/MillzyDev/NDK-tinyxml2/releases/download/v10.0.0/debug_libtinyxml2.so",
+          "overrideSoName": "libtinyxml2.so",
+          "modLink": "https://github.com/MillzyDev/NDK-tinyxml2/releases/download/v10.0.0/tinyxml2.qmod",
+          "branchName": "version/v10_0_0",
+          "cmake": true
+        }
+      },
+      "version": "10.0.0"
+    },
+    {
+      "dependency": {
         "id": "fmt",
         "versionRange": "=10.0.0",
         "additionalData": {
@@ -221,21 +258,6 @@
               "-DFMT_HEADER_ONLY"
             ]
           }
-        }
-      },
-      "version": "10.0.0"
-    },
-    {
-      "dependency": {
-        "id": "tinyxml2",
-        "versionRange": "=10.0.0",
-        "additionalData": {
-          "soLink": "https://github.com/MillzyDev/NDK-tinyxml2/releases/download/v10.0.0/libtinyxml2.so",
-          "debugSoLink": "https://github.com/MillzyDev/NDK-tinyxml2/releases/download/v10.0.0/debug_libtinyxml2.so",
-          "overrideSoName": "libtinyxml2.so",
-          "modLink": "https://github.com/MillzyDev/NDK-tinyxml2/releases/download/v10.0.0/tinyxml2.qmod",
-          "branchName": "version/v10_0_0",
-          "cmake": true
         }
       },
       "version": "10.0.0"

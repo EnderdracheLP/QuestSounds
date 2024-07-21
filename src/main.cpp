@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include "logging.hpp"
 #include "Utils/AsyncAudioClipLoader.hpp"
+#include "UI/QuestSoundsFlowCoordinator.hpp"
 #include "Config.hpp"
 #include "AudioClips.hpp"
 using namespace QuestSounds::AudioClips;
@@ -31,6 +32,8 @@ using namespace GlobalNamespace;
 #include "UnityEngine/WaitForSeconds.hpp"
 #include "UnityEngine/Time.hpp"
 using namespace UnityEngine::SceneManagement;
+
+#include "bsml/shared/BSML.hpp"
 
 // TODO BSML
 
@@ -457,6 +460,9 @@ QS_EXPORT void setup(CModInfo *info) {
 QS_EXPORT void late_load()
 {
     il2cpp_functions::Init();
+    BSML::Init();
+    custom_types::Register::AutoRegister();
+    BSML::Register::RegisterMainMenu<QuestSounds::UI::QuestSoundsFlowCoordinator*>("QuestSounds", "Let's you customize sounds and music");
 
     auto& hkLog = getLogger();
 

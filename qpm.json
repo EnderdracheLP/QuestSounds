@@ -60,6 +60,11 @@
       "id": "rapidjson-macros",
       "versionRange": "^1.2.1",
       "additionalData": {}
+    },
+    {
+      "id": "kaleb",
+      "versionRange": "^0.1.9",
+      "additionalData": {}
     }
   ]
 }

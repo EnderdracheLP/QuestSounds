@@ -1,0 +1,21 @@
+<vertical spacing='0.4' min-width='125.0' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='https://raw.githubusercontent.com/RedBrumbler/Quest-BSML-Docs/gh-pages/schema.xsd'>
+    <vertical child-align='UpperCenter' child-expand-height='false' child-control-height='true' >
+        <toggle-setting id='SoundEnabled' text='Sound Enabled' hover-hint='Activates or deactivates this custom sound' value='Active' apply-on-change='true' />
+        <slider-setting id='SoundVolumeOffset' text='Volume Offset' hover-hint='Lets you select a Volume Offset that is applied to the sound (Preview volume does not necessarily match volume played in-map)' value='VolumeOffset' min='-1.0' max='1.0' increment='0.01'  show-buttons='true' apply-on-change='true' active='false' />
+        <slider-setting id='SoundBeatOffset' text='Hit Sound Offset' hover-hint='Sets a custom HitSound beatOffSet (default: 0.185 ms)' value='BeatOffset' digits='3' min='0.0' max='0.25' increment='0.001' show-buttons='true' apply-on-change='true' active='false' />
+        <scroll-view min-height='56' >
+            <vertical id='Sounds' child-align='UpperCenter' child-expand-height='false' child-control-height='true' >
+            </vertical>
+            <macro.if value='HasSoundFiles'>
+                <macro.for-each items='SoundFiles'>
+
+                </macro.for-each>
+            </macro.if>
+            <macro.if value='!HasSoundFiles'>
+                <horizontal>
+                    <text rich-text='true' text='No sound files were found\nPlease add some sound files' />
+                </horizontal>
+            </macro.if>
+        </scroll-view>
+    </vertical>
+</vertical>
