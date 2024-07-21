@@ -1,8 +1,5 @@
 #pragma once
 
-// Logging
-#include "paper/shared/logger.hpp"
-
 // Include the modloader header, which allows us to tell the modloader which mod this is, and the version etc.
 #include "scotland2/shared/loader.hpp"
 
@@ -16,9 +13,5 @@
 
 #include "System/Collections/IEnumerator.hpp"
 #include "custom-types/shared/coroutine.hpp"
-
-// Define these functions here so that we can easily read configuration and log information from other files
-Configuration& getConfig();
-Paper::ConstLoggerContext<12UL>& getLogger();
 
 #define QS_EXPORT extern "C" __attribute__((visibility("default")))

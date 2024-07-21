@@ -1,6 +1,7 @@
 // #include "QSoundsConfig.hpp"
 #include "Utils/AsyncAudioClipLoader.hpp"
 #include "main.hpp"
+#include "logging.hpp"
 #include "Config.hpp"
 #include "ObjectInstances.hpp"
 
@@ -79,7 +80,8 @@ bool QuestSounds::Utils::AsyncAudioClipLoader::load()
     if ((filePath.ends_with(".ogg") || filePath.ends_with(".wav")) && filePath != QuestSounds::Config.Sounds.HitSound.FilePath) {
         getLogger().info("Stage 1: Running MediaAsyncLoader for FilePath {}", filePath.c_str());
         UsesUWR = false;
-        loadPath = std::regex_replace(filePath, std::regex(" "), "%20");
+        // loadPath = std::regex_replace(filePath, std::regex(" "), "%20");
+        loadPath = filePath;
         // Ensure MediaAsyncLoader is initialized
         if (!classof(GlobalNamespace::MediaAsyncLoader*)->initialized) {
             getLogger().info("MediaAsyncLoader class not initialized, initializing it");
@@ -91,7 +93,7 @@ bool QuestSounds::Utils::AsyncAudioClipLoader::load()
         audioClipTask->GetAwaiter().OnCompleted(custom_types::MakeDelegate<System::Action*>(std::function([this]()
         {
             getLogger().info("Stage 1: Running MediaAsyncLoader for FilePath {} status is {}", filePath, (int)audioClipTask->get_Status());
-            audioClipCompleted(audioClipTask->get_ResultOnSuccess());
+            audioClipCompleted(audioClipTask->get_Result());
         })));
     }
     else {

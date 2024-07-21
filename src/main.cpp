@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include "logging.hpp"
 #include "Utils/AsyncAudioClipLoader.hpp"
 #include "Config.hpp"
 #include "AudioClips.hpp"
