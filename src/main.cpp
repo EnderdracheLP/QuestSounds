@@ -1,56 +1,30 @@
 #include "main.hpp"
 #include "_config.h"
+#include "hooking.hpp"
 #include "logging.hpp"
 #include "Utils/AsyncAudioClipLoader.hpp"
-#include "UI/QuestSoundsFlowCoordinator.hpp"
 #include "Config.hpp"
 #include "AudioClips.hpp"
 using namespace QuestSounds::AudioClips;
 
-#include "GlobalNamespace/ResultsViewController.hpp"
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
-#include "GlobalNamespace/NoteCutSoundEffectManager.hpp"
-#include "GlobalNamespace/NoteCutSoundEffect.hpp"
-#include "GlobalNamespace/NoteController.hpp"
-#include "GlobalNamespace/NoteData.hpp"
 #include "GlobalNamespace/BasicUIAudioManager.hpp"
-#include "GlobalNamespace/FireworkItemController.hpp"
-#include "GlobalNamespace/GameServerLobbyFlowCoordinator.hpp"
-#include "GlobalNamespace/MultiplayerModeSelectionFlowCoordinator.hpp"
-#include "GlobalNamespace/BeatmapObjectManager.hpp"
-#include "GlobalNamespace/PauseMenuManager.hpp"
 
 #include "GlobalNamespace/FileHelpers.hpp"
-
-#include "GlobalNamespace/LevelCompletionResults.hpp"
 using namespace GlobalNamespace;
 
 #include "System/Action.hpp"
 
 #include "UnityEngine/SceneManagement/Scene.hpp"
 #include "UnityEngine/SceneManagement/SceneManager.hpp"
-#include "UnityEngine/MonoBehaviour.hpp"
-#include "UnityEngine/WaitForSeconds.hpp"
-#include "UnityEngine/Time.hpp"
 using namespace UnityEngine::SceneManagement;
 
 #include "bsml/shared/BSML.hpp"
 
 // TODO BSML
 
-// #include "ViewControllers/MenuSdListViewController.hpp"
-// #include "ViewControllers/HitSdListViewController.hpp"
-// #include "ViewControllers/MenuClickSdListViewController.hpp"
-// #include "ViewControllers/BadHitSdListViewController.hpp"
-// #include "ViewControllers/FireworkSdListViewController.hpp"
-// #include "ViewControllers/LevelClearedSdListViewController.hpp"
-// #include "ViewControllers/LobbyMusicSdListViewController.hpp"
-// #include "ViewControllers/ConfigViewController.hpp"
-// #include "QSoundsFlowCoordinator.hpp"
+#include "UI/QuestSoundsFlowCoordinator.hpp"
 using namespace QuestSounds;
-
-// #include "custom-types/shared/register.hpp"
-// using namespace custom_types;
 
 #define RAPIDJSON_HAS_STDSTRING 1
 
@@ -200,182 +174,12 @@ QuestSounds::Utils::AsyncAudioClipLoader    hitSoundLoader,     // hitSound
     }
 }
 
-MAKE_HOOK_MATCH(ResultsViewController_DidActivate, &ResultsViewController::DidActivate, void, ResultsViewController* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling) {
-    if (firstActivation && addedToHierarchy && !levelClearedLoader.OriginalAudioSource) {
-        levelClearedLoader.set_OriginalClip(self->_levelClearedAudioClip);
-    }
-    if (self->_levelCompletionResults->levelEndStateType == LevelCompletionResults::LevelEndStateType::Failed) {
-        self->_songPreviewPlayer->StopAllCoroutines();
-        if (levelFailedLoader.loaded && addedToHierarchy && Config.Sounds.LevelFailed.Active) {
-            UnityEngine::AudioClip* FailedSound = levelFailedLoader.getClip();
-            float length = FailedSound->get_length();
-            getLogger().debug("Duration of LevelFailed Sound: {}", length);
-            if (length > 7.0f) {
-                getLogger().info("Long LevelFailedSound");
-                self->_songPreviewPlayer->CrossfadeTo(FailedSound, -4.0f, 0.0f, length, nullptr);
-            }
-            else {
-                getLogger().info("Short LevelFailedSound");
-                self->_songPreviewPlayer->FadeOut(0.1f);
-                self->_songPreviewPlayer->_fadeSpeed = self->_songPreviewPlayer->_fadeInSpeed;
-                getLogger().debug("volume: {}", self->_songPreviewPlayer->_volume);
-                getLogger().debug("AmbientVolume: {}", self->_songPreviewPlayer->_ambientVolumeScale);
-                getLogger().debug("Set Volume: {}", self->_songPreviewPlayer->_volume * self->_songPreviewPlayer->_ambientVolumeScale);
-
-                levelFailedLoader.audioSource->set_volume(self->_songPreviewPlayer->_volume * self->_songPreviewPlayer->_ambientVolumeScale);
-                self->_songPreviewPlayer->StartCoroutine(self->_songPreviewPlayer->CrossFadeAfterDelayCoroutine(length - 1.2f));
-                levelFailedLoader.audioSource->Play();
-            }
-        }
-    }
-    else {
-        if (levelClearedLoader.loaded && addedToHierarchy && Config.Sounds.LevelCleared.Active)
-        {
-            UnityEngine::AudioClip* audioClip = levelClearedLoader.getClip();
-            self->_levelClearedAudioClip = audioClip;
-        }
-        else {
-            self->_levelClearedAudioClip = levelClearedLoader.get_OriginalClip();
-        }
-    }
-    ResultsViewController_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
-}
-
-MAKE_HOOK_MATCH(ResultsViewController_RestartButtonPressed, &ResultsViewController::RestartButtonPressed, void, ResultsViewController* self) {
-    if (levelFailedLoader.loaded && levelFailedLoader.audioSource->get_isPlaying()) {
-        levelFailedLoader.audioSource->Stop();
-    }
-    ResultsViewController_RestartButtonPressed(self);
-}
-
-MAKE_HOOK_MATCH(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, SongPreviewPlayer* self) {
-    getLogger().info("is it true: %i", menuMusicLoader.loaded);
-
-    if (!menuMusicLoader.OriginalAudioSource) {
-        menuMusicLoader.set_OriginalClip(self->_defaultAudioClip);
-    }
-
-    if (menuMusicLoader.loaded && Config.Sounds.MenuMusic.Active)
-    {
-        getLogger().debug("Overriding MenuMusic Audio");
-        UnityEngine::AudioClip* audioClip = menuMusicLoader.getClip();
-        if (audioClip != nullptr)
-            self->_defaultAudioClip = audioClip;
-    }
-    else {
-        getLogger().debug("Loading MenuMusic Audio normally: isLoaded='{}' isActive='{}'", menuMusicLoader.loaded, Config.Sounds.MenuMusic.Active);
-        self->_defaultAudioClip = menuMusicLoader.get_OriginalClip();
-    }
-    SongPreviewPlayer_OnEnable(self);
-}
-
-MAKE_HOOK_MATCH(GameServerLobbyFlowCoordinator_DidActivate, &GameServerLobbyFlowCoordinator::DidActivate, void, GameServerLobbyFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
-{
-    getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
-    if (!lobbyAmbienceLoader.OriginalAudioSource) lobbyAmbienceLoader.set_OriginalClip(self->_ambienceAudioClip);
-
-    if (lobbyAmbienceLoader.loaded && Config.Sounds.LobbyMusic.Active)
-    {
-        getLogger().debug("Overwriting LobbyAmbience Audio");
-        self->_ambienceAudioClip = lobbyAmbienceLoader.getClip();
-    }
-    else {
-        self->_ambienceAudioClip = lobbyAmbienceLoader.get_OriginalClip();
-    }
-    GameServerLobbyFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling);
-}
-
-MAKE_HOOK_MATCH(GameServerLobbyFlowCoordinator_DidDeactivate, &GameServerLobbyFlowCoordinator::DidDeactivate, void, GameServerLobbyFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
-{
-    getLogger().debug("GameServerLobbyFlowCoordinator_DidActivate");
-    if (menuMusicLoader.loaded && Config.Sounds.MenuMusic.Active && removedFromHierarchy)
-    {
-        getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
-        self->_ambienceAudioClip = menuMusicLoader.getClip();
-    }
-    else {
-        self->_ambienceAudioClip = menuMusicLoader.get_OriginalClip();
-    }
-    GameServerLobbyFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
-}
-
-MAKE_HOOK_MATCH(MultiplayerModeSelectionFlowCoordinator_DidActivate, &MultiplayerModeSelectionFlowCoordinator::DidActivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
-{
-    getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidActivate");
-    if (menuMusicLoader.loaded && Config.Sounds.MenuMusic.Active)
-    {
-        getLogger().debug("Switching LobbyMusic to MenuMusic Audio");
-        self->_ambienceAudioClip = menuMusicLoader.getClip();
-    }
-    else {
-        self->_ambienceAudioClip = menuMusicLoader.get_OriginalClip();
-    }
-    MultiplayerModeSelectionFlowCoordinator_DidActivate(self, firstActivation, addedToHierarchy, screenSystemEnabling); // This has to be ran last, otherwise it will not work correctly
-}
-
-MAKE_HOOK_MATCH(MultiplayerModeSelectionFlowCoordinator_DidDeactivate, &MultiplayerModeSelectionFlowCoordinator::DidDeactivate, void, MultiplayerModeSelectionFlowCoordinator* self, bool removedFromHierarchy, bool screenSystemDisabling)
-{
-    getLogger().debug("MultiplayerModeSelectionFlowCoordinator_DidDeactivate");
-    if (menuMusicLoader.loaded && Config.Sounds.MenuMusic.Active && removedFromHierarchy)
-    {
-        self->_ambienceAudioClip = menuMusicLoader.getClip();
-    }
-    else {
-        self->_ambienceAudioClip = menuMusicLoader.get_OriginalClip();
-    }
-
-    MultiplayerModeSelectionFlowCoordinator_DidDeactivate(self, removedFromHierarchy, screenSystemDisabling);
-}
-
 #ifdef DEBUG
 MAKE_HOOK_MATCH(FileHelpers_GetEscapedURLForFilePath, &FileHelpers::GetEscapedURLForFilePath, StringW, StringW filePath) {
     return StringW("file://" + filePath);
 }
 #endif
 
-MAKE_HOOK_MATCH(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start, void, NoteCutSoundEffectManager* self) {
-    if(hitSoundLoader.loaded && Config.Sounds.HitSound.Active)
-    {
-        hitSoundArr = createAudioClipArray(hitSoundLoader);
-        self->_longCutEffectsAudioClips = hitSoundArr;
-        self->_shortCutEffectsAudioClips = hitSoundArr;
-        getLogger().debug("NoteCutSoundEffectManager_Start: Loaded hitSoundArray");
-    }
-    else {
-        getLogger().debug("NoteCutSoundEffectManager_Start: Loading normally");
-    }
-    getLogger().debug("audioSamplesBeatAlignOffset was: {}", self->_audioSamplesBeatAlignOffset);
-    if (Config.Sounds.HitSound.BeatOffset.has_value())
-        self->_audioSamplesBeatAlignOffset = Config.Sounds.HitSound.BeatOffset.value();
-    getLogger().debug("audioSamplesBeatAlignOffset changed to: {}", self->_audioSamplesBeatAlignOffset);
-    NoteCutSoundEffectManager_Start(self);
-    getLogger().debug("Beatalign offset is: {}", self->_beatAlignOffset);
-}
-
-MAKE_HOOK_MATCH(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCutSoundEffect* self) {
-    if (hitSoundLoader.loaded && Config.Sounds.HitSound.Active) {
-        self->_goodCutVolume += Config.Sounds.HitSound.VolumeOffset.value_or(0.0f);
-    }
-
-    if(badHitSoundLoader.loaded && Config.Sounds.BadHitSound.Active)
-    {
-        badHitSoundArr = createAudioClipArray(badHitSoundLoader);
-        self->_badCutSoundEffectAudioClips = badHitSoundArr;
-        self->_badCutVolume += Config.Sounds.BadHitSound.VolumeOffset.value_or(0.0f);
-    }
-    NoteCutSoundEffect_Awake(self);
-}
-
-MAKE_HOOK_MATCH(BeatmapObjectManager_HandleNoteWasMissed, &BeatmapObjectManager::HandleNoteControllerNoteWasMissed, void, BeatmapObjectManager* self, NoteController* noteController) {
-    BeatmapObjectManager_HandleNoteWasMissed(self, noteController);
-    if (noteMissedSoundLoader.loaded && 
-        Config.Sounds.NoteMissedSound.Active &&
-        noteController->get_noteData()->get_scoringType() != NoteData::ScoringType::Ignore &&
-        noteController->get_noteData()->get_gameplayType() != NoteData::GameplayType::Bomb) {
-        noteMissedSoundLoader.audioSource->set_volume(0.5f + Config.Sounds.NoteMissedSound.VolumeOffset.value_or(0.0f));
-        noteMissedSoundLoader.audioSource->Play();
-    }
-}
 
 MAKE_HOOK_MATCH(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, BasicUIAudioManager* self) {
     if (!menuClickLoader.OriginalAudioSource) menuClickLoader.set_OriginalClip(self->_clickSounds[0]);
@@ -386,25 +190,6 @@ MAKE_HOOK_MATCH(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, Ba
         self->_clickSounds = menuClickArr;
     }
     BasicUIAudioManager_Start(self);
-}
-
-// Replacing the function here, as replacing the AudioClips proves to be difficult
-MAKE_HOOK_MATCH(FireworkItemController_PlayExplosionSound, &FireworkItemController::PlayExplosionSound, void, FireworkItemController* self) {
-    if (fireworkSoundLoader.loaded && Config.Sounds.Firework.Active) {
-        self->_audioSource->set_clip(fireworkSoundLoader.getClip());
-        float pitch = 1.2f + (((float)rand()) / (float)RAND_MAX) * (0.8f - 1.2f);
-        self->_audioSource->set_pitch(pitch);
-        self->_audioSource->Play();
-    }
-    else FireworkItemController_PlayExplosionSound(self);
-}
-
-MAKE_HOOK_MATCH(PauseMenuManager_MenuButtonPressed, &PauseMenuManager::MenuButtonPressed, void, PauseMenuManager* self) {
-    if (noteMissedSoundLoader.loaded &&
-        Config.Sounds.NoteMissedSound.Active) {
-        if (noteMissedSoundLoader.audioSource) noteMissedSoundLoader.audioSource->Stop();
-    }
-    PauseMenuManager_MenuButtonPressed(self);
 }
 
 MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Internal_ActiveSceneChanged, void, Scene previousActiveScene, Scene newActiveScene) {
@@ -430,7 +215,7 @@ std::string& GetConfigPath() {
     return configPath;
 }
 
-QS_EXPORT void setup(CModInfo *info) {
+QS_EXPORT_FUNC void setup(CModInfo *info) {
     info->id = MOD_ID;
     info->version = VERSION;
 
@@ -458,7 +243,7 @@ QS_EXPORT void setup(CModInfo *info) {
     getLogger().info("Completed setup!");
 }  
 
-QS_EXPORT void late_load()
+QS_EXPORT_FUNC void late_load()
 {
     il2cpp_functions::Init();
     BSML::Init();
@@ -469,20 +254,21 @@ QS_EXPORT void late_load()
 
     makeFolder();
     getLogger().debug("Installing QuestSounds!");
+    QuestSounds::Hooking::InstallHooks();
     INSTALL_HOOK(hkLog, SceneManager_Internal_ActiveSceneChanged);
-    INSTALL_HOOK(hkLog, PauseMenuManager_MenuButtonPressed);
-    INSTALL_HOOK(hkLog, SongPreviewPlayer_OnEnable);
-    INSTALL_HOOK(hkLog, NoteCutSoundEffectManager_Start);
-    INSTALL_HOOK(hkLog, NoteCutSoundEffect_Awake);
-    INSTALL_HOOK(hkLog, BeatmapObjectManager_HandleNoteWasMissed);
+    // INSTALL_HOOK(hkLog, PauseMenuManager_MenuButtonPressed); --> NoteSoundHooks.cpp
+    // INSTALL_HOOK(hkLog, SongPreviewPlayer_OnEnable); //      --> BackgroundMusicHooks.cpp
+    // INSTALL_HOOK(hkLog, NoteCutSoundEffectManager_Start);    --> NoteSoundHooks.cpp
+    // INSTALL_HOOK(hkLog, NoteCutSoundEffect_Awake);           --> NoteSoundHooks.cpp
+    // INSTALL_HOOK(hkLog, BeatmapObjectManager_HandleNoteWasMissed);
     INSTALL_HOOK(hkLog, BasicUIAudioManager_Start);
-    INSTALL_HOOK(hkLog, ResultsViewController_DidActivate);
-    INSTALL_HOOK(hkLog, ResultsViewController_RestartButtonPressed);
-    INSTALL_HOOK(hkLog, FireworkItemController_PlayExplosionSound)
-    INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate);     // Added for switching out MP Lobby Music
-    INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate);  // Added for switching out MP Lobby Music
-    INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidActivate);              // Added for switching out MP Lobby Music
-    INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate);          // Added for switching out MP Lobby Music
+    // INSTALL_HOOK(hkLog, ResultsViewController_DidActivate);          --> LevelResultSoundHooks.cpp
+    // INSTALL_HOOK(hkLog, ResultsViewController_RestartButtonPressed); --> LevelResultSoundHooks.cpp
+    // INSTALL_HOOK(hkLog, FireworkItemController_PlayExplosionSound);  --> LevelResultSoundHooks.cpp
+    // INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate);     // Added for switching out MP Lobby Music --> BackgroundMusicHooks.cpp
+    // INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate);  // Added for switching out MP Lobby Music  --> BackgroundMusicHooks.cpp
+    // INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidActivate);              // Added for switching out MP Lobby Music --> BackgroundMusicHooks.cpp
+    // INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate);          // Added for switching out MP Lobby Music   --> BackgroundMusicHooks.cpp
     // #ifdef DEBUG
     // auto ModList = Modloader::getMods();
     // if (ModList.find("SongLoader") == ModList.end()) {
