@@ -30,10 +30,11 @@ namespace QuestSounds::UI {
         getLogger().info("DidDeactivate");
     }
 
-    void SoundSettingsViewController::Setup(std::string name, QuestSounds::Sound* sound) {
+    void SoundSettingsViewController::Setup(std::string name, QuestSounds::Sound* sound, QuestSounds::Utils::AsyncAudioClipLoader* loader) {
         getLogger().info("Setup for sound: '{}' cfg values: active='{}', filepath='{}' FolderPath='{}'", name, sound->Active, sound->FilePath, sound->FolderPath);
         Name = name;
         Sound = sound;
+        Loader = loader;
 
         showSoundVolumeOffset = sound->VolumeOffset.has_value();
         showSoundBeatOffset = sound->BeatOffset.has_value();
@@ -78,5 +79,15 @@ namespace QuestSounds::UI {
     float SoundSettingsViewController::get_BeatOffset() {
         getLogger().info("Getting BeatOffset for sound: '{}' as '{}'", Name, Sound->BeatOffset.value_or(0.185f));
         return Sound->BeatOffset.value_or(0.185f);
+    }
+
+    void SoundSettingsViewController::set_HasSoundFiles(bool value) {
+        getLogger().info("Setting HasSoundFiles for sound: '{}' to '{}'", Name, value);
+        _HasSoundFiles = value;
+    }
+
+    bool SoundSettingsViewController::get_HasSoundFiles() {
+        getLogger().info("Getting HasSoundFiles for sound: '{}' as '{}'", Name, _HasSoundFiles);
+        return _HasSoundFiles;
     }
 }

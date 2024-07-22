@@ -6,16 +6,19 @@
 #include "bsml/shared/BSML/Components/Settings/SliderSetting.hpp"
 
 #include "Config.hpp"
+#include "Utils/AsyncAudioClipLoader.hpp"
 
 #include "HMUI/ViewController.hpp"
 
 DECLARE_CLASS_CODEGEN(QuestSounds::UI, SoundSettingsViewController, HMUI::ViewController,
     std::string Name;
     QuestSounds::Sound* Sound;
+    QuestSounds::Utils::AsyncAudioClipLoader* Loader;
 
     DECLARE_BSML_PROPERTY(bool, Active);
     DECLARE_BSML_PROPERTY(float, VolumeOffset);
     DECLARE_BSML_PROPERTY(float, BeatOffset);
+    DECLARE_BSML_PROPERTY(bool, HasSoundFiles);
 
     DECLARE_INSTANCE_FIELD(BSML::SliderSetting*, SoundVolumeOffset);
     DECLARE_INSTANCE_FIELD(BSML::SliderSetting*, SoundBeatOffset);
@@ -27,5 +30,5 @@ DECLARE_CLASS_CODEGEN(QuestSounds::UI, SoundSettingsViewController, HMUI::ViewCo
     DECLARE_OVERRIDE_METHOD_MATCH(void, DidDeactivate, &HMUI::ViewController::DidDeactivate, bool removedFromHierarchy, bool screenSystemDisabling);
 
 public:
-    void Setup(std::string name, QuestSounds::Sound* sound);
+    void Setup(std::string name, QuestSounds::Sound* sound, QuestSounds::Utils::AsyncAudioClipLoader* loader);
 )

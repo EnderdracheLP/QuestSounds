@@ -1,6 +1,7 @@
 #include "UI/QuestSoundsFlowCoordinator.hpp"
 #include "Config.hpp"
 #include "logging.hpp"
+#include "AudioClips.hpp"
 
 #include "bsml/shared/Helpers/creation.hpp"
 
@@ -12,9 +13,9 @@ namespace QuestSounds::UI {
         if (!soundSettingsViewController) {
             getLogger().info("Awake ViewController null, Creating SoundSettingsViewController");
             soundSettingsViewController = BSML::Helpers::CreateViewController<SoundSettingsViewController*>();
-            // TODO: Implement iteration through all sounds in the Config and switching between them
+            // TODO: Implement iteration through all sounds in the Config and switching between them also possible use some sort of safeptr for the config and loader
             // Testing using HitSounds for now
-            soundSettingsViewController->Setup("HitSound", &QuestSounds::Config.Sounds.HitSound);
+            soundSettingsViewController->Setup("HitSound", &QuestSounds::Config.Sounds.HitSound, &QuestSounds::AudioClips::hitSoundLoader);
         }
     }
 
