@@ -1,10 +1,9 @@
 #pragma once
-//#include "main.hpp"
-//#include "audiocliploader.hpp"
+
 #include "Utils/AsyncAudioClipLoader.hpp"
 
 namespace QuestSounds::AudioClips {
-	//extern audioClipLoader::loader
+	
 	extern QuestSounds::Utils::AsyncAudioClipLoader	hitSoundLoader,     // hitSound
 										badHitSoundLoader,  // badHitSound
 										noteMissedSoundLoader,
@@ -14,6 +13,7 @@ namespace QuestSounds::AudioClips {
 										levelClearedLoader,
 										levelFailedLoader,
 										lobbyAmbienceLoader;    // Added for LobbyMusic
+
 	extern ::ArrayW<::UnityW<::UnityEngine::AudioClip>>	hitSoundArr,    // hitSoundArray
 														badHitSoundArr, // badHitSoundArray
 														menuClickArr,
