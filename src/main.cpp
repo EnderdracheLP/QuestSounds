@@ -1,4 +1,5 @@
 #include "main.hpp"
+#include "_config.h"
 #include "logging.hpp"
 #include "Utils/AsyncAudioClipLoader.hpp"
 #include "UI/QuestSoundsFlowCoordinator.hpp"

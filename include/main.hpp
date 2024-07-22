@@ -1,5 +1,7 @@
 #pragma once
 
+// TODO: Cleanup this file
+
 // Include the modloader header, which allows us to tell the modloader which mod this is, and the version etc.
 #include "scotland2/shared/loader.hpp"
 
@@ -10,8 +12,3 @@
 #include "beatsaber-hook/shared/utils/il2cpp-functions.hpp"
 #include "beatsaber-hook/shared/config/config-utils.hpp"
 #include "beatsaber-hook/shared/utils/hooking.hpp"
-
-#include "System/Collections/IEnumerator.hpp"
-#include "custom-types/shared/coroutine.hpp"
-
-#define QS_EXPORT extern "C" __attribute__((visibility("default")))
