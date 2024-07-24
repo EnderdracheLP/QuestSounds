@@ -51,14 +51,16 @@ namespace QuestSounds::UI {
             getLogger().info("Sound files found for sound: '{}'", name);
             // set_HasSoundFiles(true);
             if (NoSoundsFoundHorizontal) NoSoundsFoundHorizontal->gameObject->SetActive(false);
-            if (SoundList) SoundList->gameObject->SetActive(true);
-            for (int i = 0; i < _Sounds->Count; i++) {
-                auto cell = il2cpp_utils::cast<CustomSoundFileCell>(_Sounds[i]);
-                if (cell->FilePath == Sound->FilePath) {
-                    SoundList->tableView->SelectCellWithIdx(i, false);
-                    break;
+            if (SoundList) {
+                SoundList->gameObject->SetActive(true);
+                SoundList->tableView->ReloadData();
+                for (int i = 0; i < _Sounds->Count; i++) {
+                    auto cell = il2cpp_utils::cast<CustomSoundFileCell>(_Sounds[i]);
+                    if (cell->FilePath == Sound->FilePath) {
+                        SoundList->tableView->SelectCellWithIdx(i, false);
+                        break;
+                    }
                 }
-                
             }
         }
         getLogger().info("DidActivate");
@@ -86,22 +88,6 @@ namespace QuestSounds::UI {
 
         showSoundVolumeOffset = Sound->VolumeOffset.has_value();
         showSoundBeatOffset = Sound->BeatOffset.has_value();
-
-        // if (SoundEnabled) {
-        //     SoundEnabled->set_Value(Sound->Active);
-        // }
-
-        // if (SoundVolumeOffset) {
-        //     SoundVolumeOffset->gameObject->SetActive(showSoundVolumeOffset);
-        //     if (showSoundVolumeOffset)
-        //         SoundVolumeOffset->set_Value(Sound->VolumeOffset.value());
-        // }
-
-        // if (SoundBeatOffset) {
-        //     SoundBeatOffset->gameObject->SetActive(showSoundBeatOffset);
-        //     if (showSoundBeatOffset)
-        //         SoundBeatOffset->set_Value(Sound->BeatOffset.value());
-        // }
 
         // Load list of available Sound Files in the folder
         if (_Sounds) {
