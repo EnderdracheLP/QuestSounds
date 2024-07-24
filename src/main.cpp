@@ -181,7 +181,13 @@ MAKE_HOOK_MATCH(FileHelpers_GetEscapedURLForFilePath, &FileHelpers::GetEscapedUR
 #endif
 
 
+namespace QuestSounds::ObjectInstances {
+    GlobalNamespace::BasicUIAudioManager* BUIAM;
+}
+
 MAKE_HOOK_MATCH(BasicUIAudioManager_Start, &BasicUIAudioManager::Start, void, BasicUIAudioManager* self) {
+    getLogger().info("BasicUIAudioManager_Start");
+    QuestSounds::ObjectInstances::BUIAM = self;
     if (!menuClickLoader.OriginalAudioSource) menuClickLoader.set_OriginalClip(self->_clickSounds[0]);
 
     if(menuClickLoader.loaded && Config.Sounds.MenuClick.Active)
