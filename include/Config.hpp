@@ -31,6 +31,8 @@ class _JSONValueAdder_##name { \
 #pragma endregion
 
 namespace QuestSounds {
+    inline modloader::ModInfo modInfo = {MOD_ID, VERSION, 0};
+
     static const std::string soundPath = fmt::format(SOUND_PATH_FORMAT, modloader::get_application_id().c_str());
 
     DECLARE_JSON_CLASS(Sound,
@@ -62,6 +64,8 @@ namespace QuestSounds {
         NAMED_VALUE(Sounds, Sounds, NAME_OPTS("SoundsConfig_v3", "SoundsConfig_v2", "SoundsConfig_v1", "Sounds"));
     )
     extern SoundsConfig Config;
+
+    extern std::string& GetConfigPath();
 }
 
 

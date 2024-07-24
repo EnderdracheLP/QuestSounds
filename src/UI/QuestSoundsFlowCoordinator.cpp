@@ -3,6 +3,10 @@
 #include "logging.hpp"
 #include "AudioClips.hpp"
 
+#include "ObjectInstances.hpp"
+
+#include "GlobalNamespace/RandomObjectPicker_1.hpp"
+
 #include "bsml/shared/Helpers/creation.hpp"
 
 DEFINE_TYPE(QuestSounds::UI, QuestSoundsFlowCoordinator);
@@ -32,15 +36,29 @@ namespace QuestSounds::UI {
         }
         SetTitle("QuestSounds", HMUI::ViewController::AnimationType::In);
         showBackButton = true;
+
+        // Disable BGM Music
+        if (QuestSounds::ObjectInstances::SPP)
+            QuestSounds::ObjectInstances::SPP->PauseCurrentChannel();
     }
 
     void QuestSoundsFlowCoordinator::DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling) {
         getLogger().info("DidDeactivate");
+        if (QuestSounds::ObjectInstances::SPP)
+            QuestSounds::ObjectInstances::SPP->UnPauseCurrentChannel();
+
+        WriteToFile(QuestSounds::GetConfigPath(), QuestSounds::Config, true);
     }
 
     void QuestSoundsFlowCoordinator::BackButtonWasPressed(HMUI::ViewController* topViewController) {
         getLogger().info("BackButtonWasPressed");
         _parentFlowCoordinator->DismissFlowCoordinator(this, HMUI::ViewController::AnimationDirection::Horizontal, nullptr, false);
+        // Ensure MenuMusic is playing after leaving the settings menu, for some reason it breaks with .ogg files when we pause the channel
+        if (QuestSounds::ObjectInstances::SPP && QuestSounds::Config.Sounds.MenuMusic.Active) {
+            QuestSounds::ObjectInstances::SPP->CrossfadeToNewDefault(QuestSounds::AudioClips::menuMusicLoader.getClip());
+        } else if (QuestSounds::ObjectInstances::SPP) {
+            QuestSounds::ObjectInstances::SPP->CrossfadeToNewDefault(QuestSounds::AudioClips::menuMusicLoader.get_OriginalClip());
+        }
     }
 
     void QuestSoundsFlowCoordinator::SubMenuButtonPressed(int index) {
@@ -51,6 +69,25 @@ namespace QuestSounds::UI {
             case 0:
                 getLogger().info("MenuMusicButtonPressed");
                 soundSettingsViewController->Setup("MenuMusic", &QuestSounds::Config.Sounds.MenuMusic, &QuestSounds::AudioClips::menuMusicLoader);
+                // soundSettingsViewController->Setup("MenuMusic", &QuestSounds::Config.Sounds.MenuMusic, &QuestSounds::AudioClips::menuMusicLoader, std::function<void()>(
+                //     [this]() {
+                //         // TODO: Figure out why PauseCurrentChannel also affects our own audio source only when using .ogg files
+                //         // if (QuestSounds::ObjectInstances::SPP && QuestSounds::Config.Sounds.MenuMusic.Active) {
+                //         //     // QuestSounds::ObjectInstances::SPP->CrossfadeToNewDefault(QuestSounds::AudioClips::menuMusicLoader.getClip());
+                //         //     // QuestSounds::ObjectInstances::SPP->PauseCurrentChannel();
+
+                            
+                //         //     // if (QuestSounds::AudioClips::menuMusicLoader.audioSource) {
+                //         //     //     QuestSounds::AudioClips::menuMusicLoader.audioSource->Stop();
+                //         //     //     QuestSounds::AudioClips::menuMusicLoader.audioSource->Play();
+                //         //     // }
+                //         // }
+                //         // // else if (QuestSounds::ObjectInstances::SPP) {
+                //         // //     QuestSounds::ObjectInstances::SPP->CrossfadeToNewDefault(QuestSounds::AudioClips::menuMusicLoader.get_OriginalClip());
+                //         // //     QuestSounds::ObjectInstances::SPP->PauseCurrentChannel();
+                //         // // } else getLogger().error("SPP is null");
+                //     }
+                // ));
                 SetTitle("Menu Music", HMUI::ViewController::AnimationType::In);
                 // ReplaceTopViewController(soundSettingsViewController, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
                 break;
@@ -62,7 +99,18 @@ namespace QuestSounds::UI {
                 break;
             case 2:
                 getLogger().info("MenuClickButtonPressed");
-                soundSettingsViewController->Setup("MenuClicks", &QuestSounds::Config.Sounds.MenuClick, &QuestSounds::AudioClips::menuClickLoader);
+                soundSettingsViewController->Setup("MenuClicks", &QuestSounds::Config.Sounds.MenuClick, &QuestSounds::AudioClips::menuClickLoader, std::function<void()>(
+                    [this]() {
+                        if (QuestSounds::ObjectInstances::BUIAM && QuestSounds::Config.Sounds.MenuClick.Active) {
+                            QuestSounds::AudioClips::menuClickArr = QuestSounds::AudioClips::createAudioClipArray(QuestSounds::AudioClips::menuClickLoader);
+                            QuestSounds::ObjectInstances::BUIAM->_randomSoundPicker->_objects = QuestSounds::AudioClips::menuClickArr;
+                        } else if (QuestSounds::ObjectInstances::BUIAM) {
+                            QuestSounds::ObjectInstances::BUIAM->_randomSoundPicker->_objects = QuestSounds::AudioClips::origMenuClickArr;
+                        }
+                        else
+                            getLogger().error("BUIAM is null");
+                    }
+                ));
                 SetTitle("Menu Clicks", HMUI::ViewController::AnimationType::In);
                 // ReplaceTopViewController(soundSettingsViewController, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
                 break;

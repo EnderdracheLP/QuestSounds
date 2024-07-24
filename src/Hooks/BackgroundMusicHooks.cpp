@@ -7,14 +7,20 @@ using namespace QuestSounds;
 #include "AudioClips.hpp"
 using namespace QuestSounds::AudioClips;
 
+#include "ObjectInstances.hpp"
+
 #include "GlobalNamespace/SongPreviewPlayer.hpp"
 #include "GlobalNamespace/GameServerLobbyFlowCoordinator.hpp"
 #include "GlobalNamespace/MultiplayerModeSelectionFlowCoordinator.hpp"
 using namespace GlobalNamespace;
 
+namespace QuestSounds::ObjectInstances {
+    GlobalNamespace::SongPreviewPlayer* SPP;
+}
 
 MAKE_AUTO_HOOK_MATCH(SongPreviewPlayer_OnEnable, &SongPreviewPlayer::OnEnable, void, SongPreviewPlayer* self) {
     getLogger().info("is it true: %i", menuMusicLoader.loaded);
+    QuestSounds::ObjectInstances::SPP = self;
 
     if (!menuMusicLoader.OriginalAudioSource) {
         menuMusicLoader.set_OriginalClip(self->_defaultAudioClip);

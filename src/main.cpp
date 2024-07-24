@@ -28,8 +28,6 @@ using namespace QuestSounds;
 
 #define RAPIDJSON_HAS_STDSTRING 1
 
-inline modloader::ModInfo modInfo = {MOD_ID, VERSION, 0};
-
 // TODO: Proper paper logging
 Paper::ConstLoggerContext<12UL>& getLogger() {
     static auto fastContext = Paper::Logger::WithContext<MOD_ID>();
@@ -216,11 +214,6 @@ MAKE_HOOK_MATCH(SceneManager_Internal_ActiveSceneChanged, &SceneManager::Interna
     }
 }
 
-std::string& GetConfigPath() {
-    static std::string configPath = Configuration::getConfigFilePath(modInfo);
-    return configPath;
-}
-
 QS_EXPORT_FUNC void setup(CModInfo *info) {
     info->id = MOD_ID;
     info->version = VERSION;
@@ -262,19 +255,7 @@ QS_EXPORT_FUNC void late_load()
     getLogger().debug("Installing QuestSounds!");
     QuestSounds::Hooking::InstallHooks();
     INSTALL_HOOK(hkLog, SceneManager_Internal_ActiveSceneChanged);
-    // INSTALL_HOOK(hkLog, PauseMenuManager_MenuButtonPressed); --> NoteSoundHooks.cpp
-    // INSTALL_HOOK(hkLog, SongPreviewPlayer_OnEnable); //      --> BackgroundMusicHooks.cpp
-    // INSTALL_HOOK(hkLog, NoteCutSoundEffectManager_Start);    --> NoteSoundHooks.cpp
-    // INSTALL_HOOK(hkLog, NoteCutSoundEffect_Awake);           --> NoteSoundHooks.cpp
-    // INSTALL_HOOK(hkLog, BeatmapObjectManager_HandleNoteWasMissed);
     INSTALL_HOOK(hkLog, BasicUIAudioManager_Start);
-    // INSTALL_HOOK(hkLog, ResultsViewController_DidActivate);          --> LevelResultSoundHooks.cpp
-    // INSTALL_HOOK(hkLog, ResultsViewController_RestartButtonPressed); --> LevelResultSoundHooks.cpp
-    // INSTALL_HOOK(hkLog, FireworkItemController_PlayExplosionSound);  --> LevelResultSoundHooks.cpp
-    // INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidActivate);     // Added for switching out MP Lobby Music --> BackgroundMusicHooks.cpp
-    // INSTALL_HOOK(hkLog, MultiplayerModeSelectionFlowCoordinator_DidDeactivate);  // Added for switching out MP Lobby Music  --> BackgroundMusicHooks.cpp
-    // INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidActivate);              // Added for switching out MP Lobby Music --> BackgroundMusicHooks.cpp
-    // INSTALL_HOOK(hkLog, GameServerLobbyFlowCoordinator_DidDeactivate);          // Added for switching out MP Lobby Music   --> BackgroundMusicHooks.cpp
     // #ifdef DEBUG
     // auto ModList = Modloader::getMods();
     // if (ModList.find("SongLoader") == ModList.end()) {
