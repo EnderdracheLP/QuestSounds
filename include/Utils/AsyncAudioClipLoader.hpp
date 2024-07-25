@@ -3,6 +3,7 @@
 #include "UnityEngine/AudioClip.hpp"
 #include "UnityEngine/GameObject.hpp"
 
+#include "System/Type.hpp"
 #include "System/Threading/Tasks/Task.hpp"
 #include "GlobalNamespace/MediaAsyncLoader.hpp"
 
