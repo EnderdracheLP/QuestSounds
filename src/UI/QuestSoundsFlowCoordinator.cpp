@@ -54,7 +54,7 @@ namespace QuestSounds::UI {
         getLogger().info("BackButtonWasPressed");
         _parentFlowCoordinator->DismissFlowCoordinator(this, HMUI::ViewController::AnimationDirection::Horizontal, nullptr, false);
         // Ensure MenuMusic is playing after leaving the settings menu, for some reason it breaks with .ogg files when we pause the channel
-        if (QuestSounds::ObjectInstances::SPP && QuestSounds::Config.Sounds.MenuMusic.Active) {
+        if (QuestSounds::ObjectInstances::SPP && QuestSounds::Config.Sounds.MenuMusic.Active && QuestSounds::AudioClips::menuMusicLoader.loaded) {
             QuestSounds::ObjectInstances::SPP->CrossfadeToNewDefault(QuestSounds::AudioClips::menuMusicLoader.getClip());
         } else if (QuestSounds::ObjectInstances::SPP) {
             QuestSounds::ObjectInstances::SPP->CrossfadeToNewDefault(QuestSounds::AudioClips::menuMusicLoader.get_OriginalClip());
@@ -69,25 +69,6 @@ namespace QuestSounds::UI {
             case 0:
                 getLogger().info("MenuMusicButtonPressed");
                 soundSettingsViewController->Setup("MenuMusic", &QuestSounds::Config.Sounds.MenuMusic, &QuestSounds::AudioClips::menuMusicLoader);
-                // soundSettingsViewController->Setup("MenuMusic", &QuestSounds::Config.Sounds.MenuMusic, &QuestSounds::AudioClips::menuMusicLoader, std::function<void()>(
-                //     [this]() {
-                //         // TODO: Figure out why PauseCurrentChannel also affects our own audio source only when using .ogg files
-                //         // if (QuestSounds::ObjectInstances::SPP && QuestSounds::Config.Sounds.MenuMusic.Active) {
-                //         //     // QuestSounds::ObjectInstances::SPP->CrossfadeToNewDefault(QuestSounds::AudioClips::menuMusicLoader.getClip());
-                //         //     // QuestSounds::ObjectInstances::SPP->PauseCurrentChannel();
-
-                            
-                //         //     // if (QuestSounds::AudioClips::menuMusicLoader.audioSource) {
-                //         //     //     QuestSounds::AudioClips::menuMusicLoader.audioSource->Stop();
-                //         //     //     QuestSounds::AudioClips::menuMusicLoader.audioSource->Play();
-                //         //     // }
-                //         // }
-                //         // // else if (QuestSounds::ObjectInstances::SPP) {
-                //         // //     QuestSounds::ObjectInstances::SPP->CrossfadeToNewDefault(QuestSounds::AudioClips::menuMusicLoader.get_OriginalClip());
-                //         // //     QuestSounds::ObjectInstances::SPP->PauseCurrentChannel();
-                //         // // } else getLogger().error("SPP is null");
-                //     }
-                // ));
                 SetTitle("Menu Music", HMUI::ViewController::AnimationType::In);
                 // ReplaceTopViewController(soundSettingsViewController, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
                 break;
