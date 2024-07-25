@@ -116,7 +116,12 @@ custom_types::Helpers::Coroutine QuestSounds::Utils::AsyncAudioClipLoader::LoadA
 {
     if (audioClipRequest && !audioClipRequest->isDone) {
         getLogger().info("Stage 1: Cancelling previous request for LoadPath {}", loadPath);
-        audioClipRequest->Abort();
+        try {
+            audioClipRequest->Abort();
+        }
+        catch (const std::exception& e) {
+            getLogger().error("Stage 1: Failed to abort previous request for LoadPath {} with error {}", loadPath, e.what());
+        }
     }
     getLogger().info("Stage 1: Running UnityWebRequestMultimedia for LoadPath {}", loadPath);
     audioClipRequest = UnityEngine::Networking::UnityWebRequestMultimedia::GetAudioClip(loadPath, audioType);
@@ -155,6 +160,8 @@ custom_types::Helpers::Coroutine QuestSounds::Utils::AsyncAudioClipLoader::LoadA
         else {
             getLogger().error("UnityWebRequestMultimedia for path '{}' failed with result {}", loadPath, EnumHelper::GetEnumName(audioClipRequest->get_result()));
         }
+        audioClipRequest->Dispose();
+        audioClipRequest = nullptr;
     }
     co_return;
 }
