@@ -34,10 +34,19 @@ namespace QuestSounds::Utils
         custom_types::Helpers::Coroutine LoadAudioClip();
         StringW loadPath;
         UnityEngine::GameObject* audioClipGO;
-        void audioClipCompleted(UnityEngine::AudioClip* audioClip);
+        void audioClipCompleted(::UnityW<UnityEngine::AudioClip> audioClip);
         System::Threading::Tasks::Task_1<::UnityW<UnityEngine::AudioClip>>* audioClipTask;
 
         UnityEngine::Networking::UnityWebRequestAsyncOperation* audioClipAsync;
         UnityEngine::Networking::UnityWebRequest* audioClipRequest;
+    };
+
+    struct EnumHelper {
+        template <class T>
+        static StringW GetEnumName(T value)
+        {
+            auto enumType = (System::Type*)csTypeOf(T);
+            return enumType->GetEnumName((System::Object*)il2cpp_functions::value_box(classof(T), &value));
+        }
     };
 }
