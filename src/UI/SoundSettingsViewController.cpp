@@ -69,7 +69,7 @@ namespace QuestSounds::UI {
     void SoundSettingsViewController::DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling) {
         getLogger().info("DidDeactivate");
 
-        if (Loader->audioSource && Loader->audioSource->isPlaying) {
+        if (Loader && Loader->audioSource && Loader->audioSource->isPlaying) {
             Loader->audioSource->Stop();
         }
     }
