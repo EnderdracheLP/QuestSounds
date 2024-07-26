@@ -131,6 +131,12 @@ namespace QuestSounds::UI {
                 SetTitle("Firework", HMUI::ViewController::AnimationType::In);
                 // ReplaceTopViewController(soundSettingsViewController, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
                 break;
+            case 9:
+                getLogger().info("BombExplosionSoundButtonPressed");
+                soundSettingsViewController->Setup("BombExplosionSounds", &QuestSounds::Config.Sounds.BombExplosionSound, &QuestSounds::AudioClips::bombExplosionSoundLoader);
+                SetTitle("Bomb Explosion Sound", HMUI::ViewController::AnimationType::In);
+                // ReplaceTopViewController(soundSettingsViewController, nullptr, HMUI::ViewController::AnimationType::In, HMUI::ViewController::AnimationDirection::Horizontal);
+                break;
             default:
                 getLogger().error("Invalid index");
                 SetTitle("QuestSounds", HMUI::ViewController::AnimationType::In);

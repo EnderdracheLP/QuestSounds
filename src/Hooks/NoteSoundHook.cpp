@@ -9,6 +9,7 @@ using namespace QuestSounds::AudioClips;
 
 #include "GlobalNamespace/NoteCutSoundEffectManager.hpp"
 #include "GlobalNamespace/NoteCutSoundEffect.hpp"
+#include "GlobalNamespace/BombCutSoundEffectManager.hpp"
 #include "GlobalNamespace/BeatmapObjectManager.hpp"
 #include "GlobalNamespace/NoteController.hpp"
 #include "GlobalNamespace/NoteData.hpp"
@@ -16,6 +17,7 @@ using namespace QuestSounds::AudioClips;
 using namespace GlobalNamespace;
 
 
+#pragma region HitSounds
 
 MAKE_AUTO_HOOK_MATCH(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager::Start, void, NoteCutSoundEffectManager* self) {
     if(hitSoundLoader.loaded && Config.Sounds.HitSound.Active)
@@ -36,6 +38,10 @@ MAKE_AUTO_HOOK_MATCH(NoteCutSoundEffectManager_Start, &NoteCutSoundEffectManager
     getLogger().debug("Beatalign offset is: {}", self->_beatAlignOffset);
 }
 
+#pragma endregion
+
+#pragma region HitSoundsAndBadHitSounds
+
 MAKE_AUTO_HOOK_MATCH(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void, NoteCutSoundEffect* self) {
     if (hitSoundLoader.loaded && Config.Sounds.HitSound.Active) {
         self->_goodCutVolume += Config.Sounds.HitSound.VolumeOffset.value_or(0.0f);
@@ -49,6 +55,10 @@ MAKE_AUTO_HOOK_MATCH(NoteCutSoundEffect_Awake, &NoteCutSoundEffect::Awake, void,
     }
     NoteCutSoundEffect_Awake(self);
 }
+
+#pragma endregion
+
+#pragma region NoteMissedSounds
 
 MAKE_AUTO_HOOK_MATCH(BeatmapObjectManager_HandleNoteWasMissed, &BeatmapObjectManager::HandleNoteControllerNoteWasMissed, void, BeatmapObjectManager* self, NoteController* noteController) {
     BeatmapObjectManager_HandleNoteWasMissed(self, noteController);
@@ -68,3 +78,18 @@ MAKE_AUTO_HOOK_MATCH(PauseMenuManager_MenuButtonPressed, &PauseMenuManager::Menu
     }
     PauseMenuManager_MenuButtonPressed(self);
 }
+
+#pragma endregion
+
+#pragma region BombHitSounds
+
+MAKE_AUTO_HOOK_MATCH(BombCutSoundEffectManager_Start, &BombCutSoundEffectManager::Start, void, BombCutSoundEffectManager* self) {
+    if (bombExplosionSoundLoader.loaded && Config.Sounds.BombExplosionSound.Active) {
+        bombExplosionSoundLoaderArr = createAudioClipArray(bombExplosionSoundLoader);
+        self->_bombExplosionAudioClips = bombExplosionSoundLoaderArr;
+        self->_volume += Config.Sounds.BombExplosionSound.VolumeOffset.value_or(0.0f);
+    }
+    BombCutSoundEffectManager_Start(self);
+}
+
+#pragma endregion

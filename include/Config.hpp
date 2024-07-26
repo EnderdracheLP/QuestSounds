@@ -57,10 +57,12 @@ namespace QuestSounds {
         SOUND_VALUE_SIMPLE(LevelCleared, "LevelCleared");
         SOUND_VALUE(LevelFailed, "LevelFailed", 0);
         SOUND_VALUE_SIMPLE(LobbyMusic, "LobbyMusic");
+        SOUND_VALUE(BombExplosionSound, "BombExplosionSounds", 0);
     )
 
     DECLARE_JSON_CLASS(
         SoundsConfig,
+        VALUE_DEFAULT(std::string, ConfigVersion, "3.1.0");
         NAMED_VALUE(Sounds, Sounds, NAME_OPTS("SoundsConfig_v3", "SoundsConfig_v2", "SoundsConfig_v1", "Sounds"));
     )
     extern SoundsConfig Config;

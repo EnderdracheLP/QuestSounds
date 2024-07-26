@@ -7,6 +7,7 @@ namespace QuestSounds::AudioClips {
 	extern QuestSounds::Utils::AsyncAudioClipLoader	hitSoundLoader,     // hitSound
 										badHitSoundLoader,  // badHitSound
 										noteMissedSoundLoader,
+										bombExplosionSoundLoader,
 										menuMusicLoader,    // menuMusic
 										menuClickLoader,
 										fireworkSoundLoader,
@@ -16,6 +17,7 @@ namespace QuestSounds::AudioClips {
 
 	extern ::ArrayW<::UnityW<::UnityEngine::AudioClip>>	hitSoundArr,    // hitSoundArray
 														badHitSoundArr, // badHitSoundArray
+														bombExplosionSoundLoaderArr,
 														menuClickArr,
 														fireworkSoundArr;
 

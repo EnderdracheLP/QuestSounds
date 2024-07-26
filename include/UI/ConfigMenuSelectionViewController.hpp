@@ -21,6 +21,7 @@ DECLARE_CLASS_CODEGEN(QuestSounds::UI, ConfigMenuSelectionViewController, HMUI::
     DECLARE_INSTANCE_METHOD(void, LevelClearedButtonPressed);
     DECLARE_INSTANCE_METHOD(void, LevelFailedButtonPressed);
     DECLARE_INSTANCE_METHOD(void, FireworkButtonPressed);
+    DECLARE_INSTANCE_METHOD(void, BombExplosionSoundButtonPressed);
 
     DECLARE_CTOR(ctor);
 

@@ -72,6 +72,15 @@ void makeFolder()
         }
     }
 
+    if (!direxists(Config.Sounds.BombExplosionSound.FolderPath.c_str()))
+    {
+        int makePath = mkpath(Config.Sounds.BombExplosionSound.FolderPath.c_str());
+        if (makePath == -1)
+        {
+            getLogger().error("Failed to make BombExplosionSound Folder path!");
+        }
+    }
+
     if (!direxists(Config.Sounds.MenuClick.FolderPath.c_str()))
     {
         int makePath = mkpath(Config.Sounds.MenuClick.FolderPath.c_str());
@@ -125,6 +134,7 @@ namespace QuestSounds::AudioClips {
 QuestSounds::Utils::AsyncAudioClipLoader    hitSoundLoader,     // hitSound
                                             badHitSoundLoader,  // badHitSound
                                             noteMissedSoundLoader,
+                                            bombExplosionSoundLoader,
                                             menuMusicLoader,    // menuMusic
                                             menuClickLoader,
                                             fireworkSoundLoader,
@@ -133,6 +143,7 @@ QuestSounds::Utils::AsyncAudioClipLoader    hitSoundLoader,     // hitSound
                                             lobbyAmbienceLoader;    // Added for LobbyMusic
 ::ArrayW<::UnityW<::UnityEngine::AudioClip>>    hitSoundArr,    // hitSoundArray
                                                 badHitSoundArr, // badHitSoundArray
+                                                bombExplosionSoundLoaderArr,
                                                 menuClickArr,
                                                 fireworkSoundArr;
 
@@ -145,6 +156,7 @@ QuestSounds::Utils::AsyncAudioClipLoader    hitSoundLoader,     // hitSound
         hitSoundLoader.streamAudio = false; // Streaming HitSounds breaks them
         badHitSoundLoader.filePath = Config.Sounds.BadHitSound.FilePath;
         noteMissedSoundLoader.filePath = Config.Sounds.NoteMissedSound.FilePath;
+        bombExplosionSoundLoader.filePath = Config.Sounds.BombExplosionSound.FilePath;
         menuMusicLoader.filePath = Config.Sounds.MenuMusic.FilePath;
         menuClickLoader.filePath = Config.Sounds.MenuClick.FilePath;
         fireworkSoundLoader.filePath = Config.Sounds.Firework.FilePath;
@@ -157,6 +169,7 @@ QuestSounds::Utils::AsyncAudioClipLoader    hitSoundLoader,     // hitSound
         if (Config.Sounds.HitSound.Active) hitSoundLoader.load();
         if (Config.Sounds.BadHitSound.Active) badHitSoundLoader.load();
         if (Config.Sounds.NoteMissedSound.Active) noteMissedSoundLoader.load();
+        if (Config.Sounds.BombExplosionSound.Active) bombExplosionSoundLoader.load();
         if (Config.Sounds.Firework.Active) fireworkSoundLoader.load();
         if (Config.Sounds.LevelCleared.Active) levelClearedLoader.load();
         if (Config.Sounds.LevelFailed.Active) levelFailedLoader.load();

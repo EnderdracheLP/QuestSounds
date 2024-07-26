@@ -8,10 +8,11 @@
             </vertical>
         </tab>
         <tab tags='main' tab-name='Notes' >
-            <vertical pad-left="3" pad-right="3" pad-top="2" pad-bottom="2" horizontal-fit="PreferredSize" vertical-fit="PreferredSize">
+            <vertical pad-left="3" pad-right="3" pad-top="1" pad-bottom="1" horizontal-fit="PreferredSize" vertical-fit="PreferredSize">
                 <button text="Hit Sounds" pref-width="50" on-click="HitSoundButtonPressed" />
                 <button text="Bad Hit Sounds" pref-width="50" on-click="BadHitSoundButtonPressed" />
-                <button text="Miss Sounds" pref-width="50" on-click="MissSoundButtonPressed" />        
+                <button text="Miss Sounds" pref-width="50" on-click="MissSoundButtonPressed" />
+                <button text="Bomb Explosions" pref-width="50" on-click="BombExplosionSoundButtonPressed" />
             </vertical>
         </tab>
         <tab tags='main' tab-name='Level Results' >

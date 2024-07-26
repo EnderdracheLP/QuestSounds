@@ -89,4 +89,11 @@ namespace QuestSounds::UI {
             callback(8);
         }
     }
+
+    void ConfigMenuSelectionViewController::BombExplosionSoundButtonPressed() {
+        getLogger().info("BombExplosionSoundButtonPressed");
+        if (callback) {
+            callback(9);
+        }
+    }
 }
