@@ -78,7 +78,7 @@ bool QuestSounds::Utils::AsyncAudioClipLoader::load()
     }
 
     //Stage 1
-    if ((filePath.ends_with(".ogg") || filePath.ends_with(".wav")) && filePath != QuestSounds::Config.Sounds.HitSound.FilePath) {
+    if ((filePath.ends_with(".ogg") || filePath.ends_with(".wav")) && streamAudio) {
         getLogger().info("Stage 1: Running MediaAsyncLoader for FilePath {}", filePath.c_str());
         loadPath = filePath;
         // Ensure MediaAsyncLoader is initialized
@@ -153,7 +153,7 @@ custom_types::Helpers::Coroutine QuestSounds::Utils::AsyncAudioClipLoader::LoadA
             getLogger().info("UnityWebRequestMultimedia for path '{}' completed successfully", loadPath);
 
             // We stream the audio to avoid blocking the main thread
-            downloadHandler->streamAudio = true;
+            downloadHandler->streamAudio = streamAudio;
             audioClipCompleted(downloadHandler->audioClip);
             audioClipAsync->allowSceneActivation = true;
         }

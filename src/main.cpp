@@ -142,6 +142,7 @@ QuestSounds::Utils::AsyncAudioClipLoader    hitSoundLoader,     // hitSound
     void loadAudioClips()
     {
         hitSoundLoader.filePath = Config.Sounds.HitSound.FilePath;
+        hitSoundLoader.streamAudio = false; // Streaming HitSounds breaks them
         badHitSoundLoader.filePath = Config.Sounds.BadHitSound.FilePath;
         noteMissedSoundLoader.filePath = Config.Sounds.NoteMissedSound.FilePath;
         menuMusicLoader.filePath = Config.Sounds.MenuMusic.FilePath;

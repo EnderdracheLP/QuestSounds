@@ -26,6 +26,7 @@ namespace QuestSounds::Utils
         int audioType = 14;
         UnityEngine::AudioSource* audioSource;
         UnityEngine::AudioClip* getClip(); //Audioclip
+        bool streamAudio = true;
         bool loaded = false;
         bool load();
         void set_OriginalClip(UnityEngine::AudioClip* OriginalAudioClip); //Audioclip
