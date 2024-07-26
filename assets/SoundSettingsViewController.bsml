@@ -22,7 +22,7 @@
                 <!-- </macro.if>
                 <macro.if value='!HasSoundFiles'> -->
                     <horizontal id='NoSoundsFoundHorizontal'>
-                        <text rich-text='true' text='No sound files were found.&#xA;Please add some sound files.' />
+                        <text align="Center" rich-text='true' text='No sound files were found.&#xA;Please add some sound files.' />
                     </horizontal>
                 <!-- </macro.if> -->
             <!-- </scroll-view> -->
