@@ -1,26 +1,28 @@
 #pragma once
-//#include "main.hpp"
-//#include "audiocliploader.hpp"
-#include "Utils/AsyncAudiocliploader.hpp"
+
+#include "Utils/AsyncAudioClipLoader.hpp"
 
 namespace QuestSounds::AudioClips {
-	//extern audioClipLoader::loader
-	extern AsyncAudioClipLoader::loader	hitSoundLoader,     // hitSound
+	
+	extern QuestSounds::Utils::AsyncAudioClipLoader	hitSoundLoader,     // hitSound
 										badHitSoundLoader,  // badHitSound
 										noteMissedSoundLoader,
+										bombExplosionSoundLoader,
 										menuMusicLoader,    // menuMusic
 										menuClickLoader,
 										fireworkSoundLoader,
 										levelClearedLoader,
 										levelFailedLoader,
 										lobbyAmbienceLoader;    // Added for LobbyMusic
-	extern Array<UnityEngine::AudioClip*> *	hitSoundArr,    // hitSoundArray
-										  * badHitSoundArr, // badHitSoundArray
-										  * menuClickArr,
-										  * fireworkSoundArr;
 
-	extern Array<UnityEngine::AudioClip*> *	origMenuClickArr;
+	extern ::ArrayW<::UnityW<::UnityEngine::AudioClip>>	hitSoundArr,    // hitSoundArray
+														badHitSoundArr, // badHitSoundArray
+														bombExplosionSoundLoaderArr,
+														menuClickArr,
+														fireworkSoundArr;
+
+	extern ::ArrayW<::UnityW<::UnityEngine::AudioClip>>	origMenuClickArr;
 	extern void loadAudioClips();
 
-	extern Array<UnityEngine::AudioClip*>* createAudioClipArray(AsyncAudioClipLoader::loader clipLoader, bool GetOriginalClip = false);
+	extern ::ArrayW<::UnityW<::UnityEngine::AudioClip>> createAudioClipArray(QuestSounds::Utils::AsyncAudioClipLoader clipLoader, bool GetOriginalClip = false);
 }
