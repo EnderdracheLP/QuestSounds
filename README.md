@@ -1,6 +1,6 @@
 # QuestSounds
 
-Beat Saber mod for Meta Quest 1 and 2.   
+Beat Saber mod for Meta Quest 1 and 2 and 3.   
 Quest sounds allows the users to change the sound effects to their own sounds,
 drop them into specified folder Path!
 
@@ -10,17 +10,18 @@ drop them into specified folder Path!
   Creates QuestSounds folder at /sdcard/ModData/com.beatgames.beatsaber/Mods/ 
   which contains the subfolders for the sounds.
   AFTER YOU HAVE RAN THE MOD ONCE
-  
-  **Avoid using any files that use MPEG format like MP3 or MP2 unless you don't mind brief freezing upon loading**
 
 Sounds you can change and their default folder Path:
--  HitSounds:        sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSounds/
--  BadHitSounds:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/
--  MenuMusic:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic/
--  MenuClicks:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuClicks/
--  Firework:         sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Fireworks/
--  LevelCleared:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared/
--  LobbyMusic:		sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic/
+-  **MenuMusic**: sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuMusic/
+-  **LobbyMusic**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LobbyMusic/
+-  **MenuClicks**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/MenuClicks/
+-  **HitSounds**: sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSounds/
+-  **BadHitSounds**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/
+-  **NoteMissedSounds**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/NoteMissedSounds/
+-  **BombExplosionSounds**: sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BombExplosionSounds/
+-  **LevelCleared**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared/
+-  **LevelFailed**: sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelFailed/
+-  **Firework**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Fireworks/
 
 ## Credits:
 ### Original Mod author
