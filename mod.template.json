@@ -59,6 +59,10 @@
     {
       "name": "OsuMiss.ogg",
       "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/Osu Miss.ogg"
+    },
+    {
+      "name": "BombHitExplosion.ogg",
+      "destination": "/sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BombExplosionSounds/BombHitExplosion.ogg"
     }
   ],
   "copyExtensions": []
