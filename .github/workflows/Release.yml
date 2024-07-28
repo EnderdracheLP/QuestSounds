@@ -35,10 +35,10 @@ jobs:
       run: |
         echo "$ANDROID_NDK_LATEST_HOME" > ${GITHUB_WORKSPACE}/ndkpath.txt
 
-        - name: Get QPM
-        if: steps.cache-qpm.outputs.cache-hit != 'true'
-        uses: dawidd6/action-download-artifact@v2
-        with:
+    - name: Get QPM
+      if: steps.cache-qpm.outputs.cache-hit != 'true'
+      uses: dawidd6/action-download-artifact@v2
+      with:
           github_token: ${{secrets.GITHUB_TOKEN}}
           workflow: cargo-build.yml
           name: linux-qpm
