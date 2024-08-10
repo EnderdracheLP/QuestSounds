@@ -19,7 +19,7 @@
             <vertical pad-left="3" pad-right="3" pad-top="2" pad-bottom="2" horizontal-fit="PreferredSize" vertical-fit="PreferredSize">
                 <button text="Level Cleared" pref-width="50" on-click="LevelClearedButtonPressed" />
                 <button text="Level Failed" pref-width="50" on-click="LevelFailedButtonPressed" />
-                <button text="Firworks" pref-width="50" on-click="FireworkButtonPressed" />
+                <button text="Fireworks" pref-width="50" on-click="FireworkButtonPressed" />
             </vertical>
         </tab>
 </vertical>
