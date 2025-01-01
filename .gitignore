@@ -41,6 +41,9 @@
 .vs/
 !.vs/tasks.vs.json
 
+# clangd
+.cache/
+
 # NDK stuff
 out/
 [Ll]ib/
