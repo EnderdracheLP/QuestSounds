@@ -6,6 +6,7 @@ on:
     paths-ignore:
       - '**.yml'
       - '!.github/workflows/BuildMod.yml'
+      - '!.github/workflows/BuildQSounds.yml'
       - '**.json'
       - '!qpm.json'
       - '**.ps1'
