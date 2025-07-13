@@ -14,9 +14,10 @@
     },
     "workspace": {
       "scripts": {},
+      "ndk": "^27.2.12479018",
       "qmodIncludeDirs": [],
       "qmodIncludeFiles": [],
-      "qmodOutput": null
+      "qmodOutput": "QuestSounds.qmod"
     },
     "dependencies": [
       {

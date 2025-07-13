@@ -4,11 +4,8 @@ QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sound
 just drop them into the folder and select them in-game!
 
 __**Changelog:**__ 
-- Updated for Beat Saber version 1.37.0_9064817954
-- Rewritten UI from scratch
-- **NEW Feature:** Added support for BombExplosionSounds
-- Internal changes to improve performance and stability
-- Fixed freezing on loading with MP3 and MP2 files by streaming audio (except for HitSounds)
+- Updated for Beat Saber version 1.40.4_5283
+
 
 ### Features:
   In-Game Menu for selecting sound files and enabling/disabling custom sounds.
@@ -24,7 +21,7 @@ Sounds you can change and their default folder Path:
 -  **HitSounds**: sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/HitSounds/
 -  **BadHitSounds**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BadHitSounds/
 -  **NoteMissedSounds**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/NoteMissedSounds/
--  ***NEW:*** **BombExplosionSounds**: sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BombExplosionSounds/
+-  **BombExplosionSounds**: sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/BombExplosionSounds/
 -  **LevelCleared**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelCleared/
 -  **LevelFailed**: sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/LevelFailed/
 -  **Firework**:  sdcard/ModData/com.beatgames.beatsaber/Mods/QuestSounds/Fireworks/
