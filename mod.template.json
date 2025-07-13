@@ -5,7 +5,7 @@
   "author": "Rugtveit, EnderdracheLP",
   "version": "${version}",
   "packageId": "com.beatgames.beatsaber",
-  "packageVersion": "1.40.6_6407",
+  "packageVersion": "1.40.7_7060",
   "description": "Allows users to change their sfx sounds and in-game music easily!",
   "coverImage": "Cover.jpg",
   "dependencies": [],

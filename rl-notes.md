@@ -4,7 +4,7 @@ QuestSounds or short QSounds allows you to add Custom Hit Sounds and other sound
 just drop them into the folder and select them in-game!
 
 __**Changelog:**__ 
-- Updated for Beat Saber version 1.40.4_5283
+- Updated for Beat Saber version 1.40.7_7060
 
 
 ### Features:
