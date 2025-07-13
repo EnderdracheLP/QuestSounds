@@ -15,7 +15,9 @@
     "scripts": {},
     "qmodIncludeDirs": [],
     "qmodIncludeFiles": [],
-    "qmodOutput": null
+    "qmodOutput": "QuestSounds.qmod",
+    "ndk": "^27.2.12479018"
+
   },
   "dependencies": [
     {
