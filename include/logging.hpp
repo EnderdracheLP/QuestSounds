@@ -1,5 +1,5 @@
 // Logging
-#include "paper/shared/logger.hpp"
+#include "paper2_scotland2/shared/logger.hpp"
 
 Paper::ConstLoggerContext<12UL>& getLogger();
 

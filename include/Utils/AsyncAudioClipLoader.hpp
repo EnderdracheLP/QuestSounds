@@ -19,6 +19,7 @@
 namespace QuestSounds::Utils 
 {
     // TODO: Cleanup this class
+    // TODO: Allow loading multiple audio clips at once
     class AsyncAudioClipLoader
     {
     public:
@@ -26,6 +27,7 @@ namespace QuestSounds::Utils
         int audioType = 14;
         UnityEngine::AudioSource* audioSource;
         UnityEngine::AudioClip* getClip(); //Audioclip
+        // ListW<UnityEngine::AudioClip*> getClips(); //Audioclip
         bool streamAudio = true;
         bool loaded = false;
         bool load();
@@ -35,6 +37,7 @@ namespace QuestSounds::Utils
     private:
         custom_types::Helpers::Coroutine LoadAudioClip();
         StringW loadPath;
+        // ListW<StringW> loadPaths;
         UnityEngine::GameObject* audioClipGO;
         void audioClipCompleted(::UnityW<UnityEngine::AudioClip> audioClip);
         System::Threading::Tasks::Task_1<::UnityW<UnityEngine::AudioClip>>* audioClipTask;

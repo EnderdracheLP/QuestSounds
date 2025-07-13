@@ -5,7 +5,7 @@
 
 #include "HMUI/ViewController.hpp"
 
-DECLARE_CLASS_CODEGEN(QuestSounds::UI, ConfigMenuSelectionViewController, HMUI::ViewController,
+DECLARE_CLASS_CODEGEN(QuestSounds::UI, ConfigMenuSelectionViewController, HMUI::ViewController) {
     // DECLARE_INSTANCE_FIELD(ListW<BSML::CustomCellInfo*>, _menus);
     // DECLARE_INSTANCE_FIELD(BSML::CustomListTableData*, menuList);
     
@@ -28,4 +28,4 @@ DECLARE_CLASS_CODEGEN(QuestSounds::UI, ConfigMenuSelectionViewController, HMUI::
 public:
     void set_selectCallback(std::function<void(int)> callback);
     std::function<void(int)> callback;
-)
+};

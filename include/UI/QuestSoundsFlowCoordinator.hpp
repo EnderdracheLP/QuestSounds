@@ -12,7 +12,7 @@
 
 #include "Zenject/IInitializable.hpp"
 
-DECLARE_CLASS_CODEGEN(QuestSounds::UI, QuestSoundsFlowCoordinator, HMUI::FlowCoordinator,
+DECLARE_CLASS_CODEGEN(QuestSounds::UI, QuestSoundsFlowCoordinator, HMUI::FlowCoordinator) {
 
     DECLARE_INSTANCE_FIELD(QuestSounds::UI::ConfigMenuSelectionViewController*, configMenuSelectionViewController);
     DECLARE_INSTANCE_FIELD(QuestSounds::UI::SoundSettingsViewController*, soundSettingsViewController);
@@ -25,4 +25,4 @@ DECLARE_CLASS_CODEGEN(QuestSounds::UI, QuestSoundsFlowCoordinator, HMUI::FlowCoo
     DECLARE_INSTANCE_METHOD(void, SubMenuButtonPressed, int index);
 
     DECLARE_DEFAULT_CTOR();
-)
+};

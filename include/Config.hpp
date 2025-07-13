@@ -2,6 +2,7 @@
 
 #include "scotland2/shared/loader.hpp"
 #include "rapidjson-macros/shared/macros.hpp"
+#include <optional>
 
 #define SOUND_PATH_FORMAT "/sdcard/ModData/{}/Mods/QuestSounds/"
 // #define CONFIG_VERSION "SoundsConfig_v3"
@@ -12,42 +13,46 @@
 #define SOUND_VALUE(name, folder, ...) VALUE_DEFAULT(Sound, name, Sound(#name, soundPath + folder + "/", soundPath + folder + "/" + #name + ".ogg", __VA_ARGS__))
 #define SOUND_VALUE_SIMPLE(name, folder) VALUE_DEFAULT(Sound, name, Sound(#name, soundPath + folder + "/", soundPath + folder + "/" + #name + ".ogg"))
 
-// define an automatically serialized / deserialized instance variable with a custom name in the json file and a default value
-#pragma region NAMED_VALUE_CUSTOM(type, name, default, jsonName)
-#define NAMED_VALUE_CUSTOM(type, name, def, jsonName) \
-type name = def; \
-class _JSONValueAdder_##name { \
-    _JSONValueAdder_##name() { \
-        serializers().emplace_back([](const SelfType* self, rapidjson::Value& jsonObject, rapidjson::Document::AllocatorType& allocator) { \
-            rapidjson_macros_auto::Serialize(self->name, jsonName, jsonObject, allocator); \
-        }); \
-        deserializers().emplace_back([](SelfType* self, rapidjson::Value& jsonValue) { \
-            rapidjson_macros_auto::Deserialize(self->name, jsonName, self->def, jsonValue); \
-        }); \
-    } \
-    friend class rapidjson_macros_types::ConstructorRunner<_JSONValueAdder_##name>; \
-    static inline rapidjson_macros_types::ConstructorRunner<_JSONValueAdder_##name> _##name##_JSONValueAdderInstance; \
-};
-#pragma endregion
 
 namespace QuestSounds {
     inline modloader::ModInfo modInfo = {MOD_ID, VERSION, 0};
 
     static const std::string soundPath = fmt::format(SOUND_PATH_FORMAT, modloader::get_application_id().c_str());
 
-    DECLARE_JSON_CLASS(Sound,
+    DECLARE_JSON_STRUCT(Sound) {
+        // Sound(std::string name, std::string folderPath, std::string defaultFilePath, std::optional<float> volumeOffset = std::nullopt, std::optional<float> pitchMaxOffset = std::nullopt, std::optional<float> pitchMinOffset = std::nullopt, std::optional<float> beatOffset = std::nullopt) : 
+        //     Name(name), FolderPath(folderPath), DefaultFilePath(defaultFilePath), VolumeOffset(volumeOffset), BeatOffset(beatOffset), PitchMaxOffset(pitchMaxOffset), PitchMinOffset(pitchMinOffset) {}
+        Sound() {}
+        Sound(std::string name, std::string folderPath, std::string defaultFilePath, std::optional<float> volumeOffset = std::nullopt, std::optional<float> beatOffset = std::nullopt) : 
+            Name(name), FolderPath(folderPath), DefaultFilePath(defaultFilePath), VolumeOffset(volumeOffset), BeatOffset(beatOffset) {}
+
         std::string Name;
         std::string FolderPath;
         std::string DefaultFilePath;
         NAMED_VALUE_DEFAULT(bool, Active, true, "activated");
-        NAMED_VALUE_CUSTOM(std::string, FilePath, DefaultFilePath, "filepath");
+        NAMED_VALUE_DEFAULT(std::string, FilePath, self->DefaultFilePath, "filepath");
+        // TODO: Replace above NAMED_VALUE_CUSTOM use NAMED_VALUE_DEFAULT instead. EDIT: actually not sure it expects a static value
         NAMED_VALUE_OPTIONAL(float, VolumeOffset, "audioVolumeOffset");
         NAMED_VALUE_OPTIONAL(float, BeatOffset, "beatOffSet");
-        Sound(std::string name, std::string folderPath, std::string defaultFilePath, std::optional<float> volumeOffset = std::nullopt, std::optional<float> beatOffset = std::nullopt) : Name(name), FolderPath(folderPath), DefaultFilePath(defaultFilePath), VolumeOffset(volumeOffset), BeatOffset(beatOffset) {}
-    )
+        // VALUE_OPTIONAL(bool, EnablePitchRandomization);
+        // VALUE_OPTIONAL(float, PitchMaxOffset);
+        // VALUE_OPTIONAL(float, PitchMinOffset);
+    };
 
-    DECLARE_JSON_CLASS(
-        Sounds, 
+    // DECLARE_JSON_STRUCT(SoundFiles) {
+    //     std::string Name;
+    //     std::string FolderPath;
+    //     std::vector<std::string> DefaultFilePath;
+    //     NAMED_VALUE_DEFAULT(bool, Active, true, "activated");
+    //     NAMED_VALUE_OPTIONAL(std::string, FilePath, "filepath");
+    //     NAMED_VALUE_DEFAULT(std::vector<std::string>, FilePaths, self->DefaultFilePath, "FilePaths");
+    //     NAMED_VALUE_OPTIONAL(float, VolumeOffset, "audioVolumeOffset");
+    //     NAMED_VALUE_OPTIONAL(float, BeatOffset, "beatOffSet");
+    //     SoundFiles(std::string name, std::string folderPath, std::vector<std::string> defaultFilePath, std::optional<float> volumeOffset = std::nullopt, std::optional<float> pitchMaxOffset = std::nullopt, std::optional<float> pitchMinOffset = std::nullopt, std::optional<float> beatOffset = std::nullopt) : 
+    //         Name(name), FolderPath(folderPath), DefaultFilePath(defaultFilePath), VolumeOffset(volumeOffset), BeatOffset(beatOffset) {}
+    // };
+
+    DECLARE_JSON_STRUCT(Sounds) {
         SOUND_VALUE(HitSound, "HitSounds", 0, 0.185f);
         SOUND_VALUE(BadHitSound, "BadHitSounds", 0);
         SOUND_VALUE(NoteMissedSound, "NoteMissedSounds", 0);
@@ -58,13 +63,12 @@ namespace QuestSounds {
         SOUND_VALUE(LevelFailed, "LevelFailed", 0);
         SOUND_VALUE_SIMPLE(LobbyMusic, "LobbyMusic");
         SOUND_VALUE(BombExplosionSound, "BombExplosionSounds", 0);
-    )
+    };
 
-    DECLARE_JSON_CLASS(
-        SoundsConfig,
+    DECLARE_JSON_STRUCT(SoundsConfig) {
         VALUE_DEFAULT(std::string, ConfigVersion, "3.1.0");
         NAMED_VALUE(Sounds, Sounds, NAME_OPTS("SoundsConfig_v3", "SoundsConfig_v2", "SoundsConfig_v1", "Sounds"));
-    )
+    };
     extern SoundsConfig Config;
 
     extern std::string& GetConfigPath();

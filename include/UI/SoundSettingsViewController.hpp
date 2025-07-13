@@ -16,7 +16,7 @@
 
 #include "HMUI/ViewController.hpp"
 
-DECLARE_CLASS_CODEGEN(QuestSounds::UI, SoundSettingsViewController, HMUI::ViewController,
+DECLARE_CLASS_CODEGEN(QuestSounds::UI, SoundSettingsViewController, HMUI::ViewController) {
     std::string Name;
     QuestSounds::Sound* Sound;
     QuestSounds::Utils::AsyncAudioClipLoader* Loader;
@@ -53,4 +53,4 @@ public:
     void Setup(std::string name, QuestSounds::Sound* sound, QuestSounds::Utils::AsyncAudioClipLoader* loader, std::optional<std::function<void()>> onSoundChanged = std::nullopt);
 
     custom_types::Helpers::Coroutine PreviewSelection();
-)
+};
