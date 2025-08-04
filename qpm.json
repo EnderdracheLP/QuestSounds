@@ -5,7 +5,7 @@
   "info": {
     "name": "QuestSounds",
     "id": "QuestSounds",
-    "version": "1.5.0-Dev",
+    "version": "1.5.4",
     "url": null,
     "additionalData": {
       "overrideSoName": "libQuestSounds.so"
@@ -34,7 +34,7 @@
     },
     {
       "id": "bs-cordl",
-      "versionRange": "4007.*",
+      "versionRange": "4008.*",
       "additionalData": {}
     },
     {
@@ -44,7 +44,7 @@
     },
     {
       "id": "bsml",
-      "versionRange": "^0.4.54",
+      "versionRange": "^0.4.55",
       "additionalData": {
         "private": true
       }
